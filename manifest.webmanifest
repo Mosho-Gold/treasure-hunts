@@ -1,0 +1,8 @@
+{
+  "name":"Project Starfall — NOVA Terminal",
+  "short_name":"NOVA Terminal",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#eef8ff",
+  "theme_color":"#061c3a"
+}
