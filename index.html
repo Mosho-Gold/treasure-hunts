@@ -3,55 +3,262 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#061c3a">
-<title>Project Starfall — NOVA Terminal</title>
+<meta name="theme-color" content="#041429">
+<title>Project Starfall — Ship Terminal</title>
 <link rel="manifest" href="./manifest.webmanifest">
 <style>
-:root{--navy:#061c3a;--blue:#0b4d7d;--cyan:#16c8ff;--ink:#10254d}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(#fafdff,#eaf6ff);font-family:Arial,sans-serif;color:var(--ink)}
-.shell{max-width:520px;margin:auto;padding:14px}.card{background:#fff;border:3px solid var(--blue);border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 5px 0 #0001}
-header{text-align:center;padding:16px}.kicker{font-size:11px;letter-spacing:4px;font-weight:900;color:#157db8}h1{margin:4px 0 0;color:#082b61}h2{margin:6px 0;color:#12a9e8;font-size:18px}
-.title{background:linear-gradient(90deg,#07335f,#0e4a7d);color:white;font-weight:900;padding:10px 14px;border-bottom:3px solid #25cfff}
-.nova{background:linear-gradient(135deg,#05162f,#06264b);min-height:210px;color:white;padding:24px;display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center}
-.avatar{width:110px;height:145px;border-radius:55px 55px 40px 40px;background:radial-gradient(circle at 50% 28%,#d9fbff 0 23%,#58d9ff 24% 42%,transparent 43%),linear-gradient(#38d8ff,#0c80bd);box-shadow:0 0 25px #44ddff99;position:relative}
-.avatar:after{content:"✦";position:absolute;left:43px;bottom:25px;font-size:26px;color:white}
-.speech{line-height:1.35}.speech strong{color:#9beaff}
-.terminal{padding:18px}.code{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:320px;margin:0 auto 14px}.cell{height:62px;border:3px solid #1599d0;border-radius:12px;background:#071f40;color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900}
-.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:320px;margin:auto}.key,.btn,.hint{border:0;border-radius:12px;padding:14px;font-weight:900;cursor:pointer}.key{font-size:20px;background:#edf9ff;color:#0a3565;box-shadow:inset 0 0 0 2px #51c9ed}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:320px;margin:9px auto}.clear{background:#e9eef5}.submit{background:#21cfff;color:#062342}
-.message{margin:14px auto 0;max-width:390px;padding:12px;border-radius:12px;text-align:center;font-weight:800;background:#f3f8fc;border:2px solid #d4e7f4}.bad{background:#fff1f3;color:#a02137;border-color:#ffabb7}.good{background:#ebfff8;color:#087c58;border-color:#71e8c0}
-.hints{padding:14px}.hint{width:100%;border:2px solid #1c83b8;background:white;color:#0c4775}.hintbox{display:none;margin-top:10px;padding:10px;background:#eefaff;border-left:4px solid #19bde9}
-.success{position:fixed;inset:0;background:#021126f2;color:white;display:none;align-items:center;justify-content:center;padding:24px;text-align:center}.success>div{max-width:460px;border:3px solid #25d5ff;border-radius:20px;padding:28px;background:#08264b}.success h3{color:#79ebff;font-size:28px}.success button{padding:12px 18px;border:0;border-radius:10px;font-weight:900;background:#77eaff}
-.footer{text-align:center;padding:10px 0 28px;color:#2d739f;font-size:10px;letter-spacing:3px;font-weight:900}
+:root{
+  --bg:#020b18;--panel:#071c34;--panel2:#0a2948;--line:#155783;
+  --cyan:#31d7ff;--cyan2:#a8f4ff;--blue:#1699d4;--white:#f7fdff;
+  --green:#58efb0;--yellow:#ffd85b;--red:#ff667a;--muted:#6f91ad;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--white)}
+body{
+  background:
+    radial-gradient(circle at 50% -10%,rgba(37,204,255,.18),transparent 35%),
+    radial-gradient(circle at 10% 35%,rgba(14,108,170,.08),transparent 26%),
+    linear-gradient(#020a16,#031326 55%,#020914);
+}
+button{font:inherit}
+.app{max-width:760px;margin:0 auto;min-height:100vh;padding:14px 14px 28px}
+.topbar{
+  position:relative;border:2px solid #14608e;background:linear-gradient(180deg,#092846,#06192f);
+  border-radius:18px;padding:15px 16px 13px;text-align:center;box-shadow:0 0 28px #0acfff18,inset 0 0 0 1px #38d8ff22;
+  user-select:none
+}
+.brand{font-size:11px;font-weight:900;letter-spacing:4px;color:#75e8ff}
+.topbar h1{font-size:25px;margin:4px 0 1px;letter-spacing:1px}
+.sub{font-size:11px;letter-spacing:2px;color:#72a8c8;font-weight:800}
+.statusbar{display:flex;justify-content:space-between;gap:8px;margin-top:11px;padding-top:10px;border-top:1px solid #185073;font-size:10px;letter-spacing:1.3px;color:#84b5d1;font-weight:800}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);margin-right:6px}
+.nova-strip{
+  display:grid;grid-template-columns:78px 1fr;gap:12px;align-items:center;
+  margin-top:12px;padding:12px;border:2px solid #104d73;border-radius:16px;
+  background:linear-gradient(90deg,#061a31,#082440);box-shadow:inset 0 0 24px #11cfff0b;
+}
+.nova-avatar{height:84px;position:relative;filter:drop-shadow(0 0 10px #35d9ff66)}
+.nova-head{position:absolute;width:38px;height:45px;border-radius:50% 50% 46% 46%;left:20px;top:3px;background:linear-gradient(145deg,#e1fcff,#69defe 58%,#1588c0);border:1px solid #bff7ff}
+.nova-hair{position:absolute;width:42px;height:24px;border-radius:55% 55% 30% 30%;left:18px;top:1px;background:#1488bd;clip-path:polygon(0 35%,22% 0,76% 4%,100% 29%,83% 63%,66% 38%,50% 64%,32% 40%,17% 68%)}
+.nova-body{position:absolute;width:68px;height:45px;left:5px;bottom:0;background:linear-gradient(#4ddcff,#0a82ba);clip-path:polygon(22% 8%,42% 0,58% 0,78% 8%,94% 36%,84% 100%,16% 100%,6% 36%)}
+.nova-star{position:absolute;left:31px;bottom:12px;font-size:15px;color:white}
+.nova-text{font-size:14px;line-height:1.35;color:#d7f7ff}.nova-text strong{color:#72eaff}
+.section-title{margin:16px 2px 9px;font-size:11px;letter-spacing:3px;font-weight:900;color:#64cceb}
+.missions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.mission{
+  position:relative;min-height:165px;border:2px solid #174e70;border-radius:16px;padding:13px;
+  background:linear-gradient(145deg,#071b32,#061326);overflow:hidden;cursor:pointer;color:white;text-align:left;
+  transition:.2s transform,.2s border-color,.2s box-shadow;box-shadow:inset 0 0 0 1px #4de0ff0a
+}
+.mission:active:not(.locked){transform:scale(.985)}
+.mission.current{border-color:#30d7ff;box-shadow:0 0 20px #21cbff26,inset 0 0 24px #1edaff10}
+.mission.complete{border-color:#2c9d82;background:linear-gradient(145deg,#08293a,#06251f);box-shadow:0 0 18px #4ff0af1c}
+.mission.locked{opacity:.5;cursor:not-allowed;filter:saturate(.55)}
+.mnum{font-size:10px;letter-spacing:2px;font-weight:900;color:#6fa6c6}
+.icon-wrap{height:68px;display:flex;align-items:center;justify-content:center;margin:3px 0 5px}
+.icon{width:58px;height:58px;filter:drop-shadow(0 0 8px #38d9ff55)}
+.complete .icon{filter:drop-shadow(0 0 8px #5af0b280)}
+.locked .icon{filter:none}
+.mission h3{font-size:15px;margin:4px 0 2px;letter-spacing:.4px}.mission .desc{font-size:11px;color:#8fb7cf}
+.state{position:absolute;right:9px;top:9px;padding:5px 7px;border-radius:999px;font-size:8px;font-weight:900;letter-spacing:1px;background:#102d46;color:#88b6cf;border:1px solid #235c7c}
+.current .state{background:#0b4258;color:#86ecff;border-color:#2bd8ff}.complete .state{background:#103c34;color:#78efbd;border-color:#42dba4}
+.lock{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);font-size:30px;text-shadow:0 0 9px #000}
+.mission.wide{grid-column:1/-1;min-height:150px}
+.progress-card{margin-top:12px;border:2px solid #144c70;border-radius:15px;background:#06182c;padding:12px}
+.progress-top{display:flex;justify-content:space-between;font-size:10px;letter-spacing:1.2px;color:#83b3ce;font-weight:900;margin-bottom:8px}
+.progress-track{height:11px;border-radius:999px;background:#0b263e;border:1px solid #194d6d;overflow:hidden}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#159bc9,#4ce6ff,#55efb2);box-shadow:0 0 10px #36dbff;transition:width .45s ease}
+.launch{
+  display:none;width:100%;margin-top:12px;border:2px solid #62f1c4;border-radius:15px;padding:16px;background:linear-gradient(#0d604e,#0a4138);
+  color:#dffff4;font-weight:900;letter-spacing:1.2px;cursor:pointer;box-shadow:0 0 18px #48eeb52b
+}
+.footer{text-align:center;color:#4f8daf;font-size:9px;letter-spacing:3px;font-weight:900;padding:17px 0 4px}
+.view{display:none}.view.active{display:block}
+.mission-view{margin-top:12px;border:2px solid #155d88;border-radius:17px;overflow:hidden;background:#061a30}
+.mv-head{padding:13px 14px;background:linear-gradient(90deg,#09345b,#0b4b74);border-bottom:2px solid #27cfff}
+.mv-kicker{font-size:9px;letter-spacing:2px;color:#8cecff;font-weight:900}.mv-head h2{margin:3px 0 0;font-size:21px}
+.mv-body{padding:15px}.mv-status{font-size:11px;letter-spacing:1.5px;color:#68dfff;font-weight:900;margin-bottom:10px}
+.mv-body p{color:#c7eafa;line-height:1.45;font-size:14px}
+.back,.primary,.secondary{
+  border:0;border-radius:11px;padding:12px 14px;font-weight:900;cursor:pointer
+}
+.back{background:#123957;color:#c8efff;margin-top:8px}.primary{background:#2ad5ff;color:#05283d}.secondary{background:#14364d;color:#add5e8;border:1px solid #2c6585}
+.parent-note{font-size:11px;color:#6b9bb5;margin-top:14px;border-top:1px solid #194968;padding-top:10px}
+.modal{position:fixed;inset:0;background:#020b16ee;display:none;align-items:center;justify-content:center;padding:18px;z-index:50}
+.modal.show{display:flex}.modal-card{width:min(440px,100%);border:2px solid #2cd7ff;border-radius:17px;background:#071b31;padding:17px;box-shadow:0 0 38px #20cfff2b}
+.modal h3{margin:0 0 5px}.modal p{font-size:12px;color:#9cc9df}.parent-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.parent-grid button{border:1px solid #296787;background:#0d2c44;color:#d8f6ff;border-radius:10px;padding:11px;font-weight:800;cursor:pointer}
+.parent-grid .danger{border-color:#874151;color:#ffc4cb}.close-modal{width:100%;margin-top:10px}
+.countdown{font-size:76px;color:#82efff;text-shadow:0 0 24px #38dcff;margin:10px 0}
+@media(min-width:640px){.missions{grid-template-columns:repeat(3,1fr)}.mission.wide{grid-column:auto}.mission{min-height:180px}}
 </style>
 </head>
 <body>
-<div class="shell">
-<header class="card"><div class="kicker">PROJECT: STARFALL</div><h1>MISSION 5</h1><h2>COMMUNICATIONS TERMINAL</h2></header>
-<section class="card"><div class="title">NOVA TRANSMISSION</div><div class="nova"><div class="avatar"></div><div class="speech"><strong>Crew, the decoder is responding.</strong><br><br>Enter the four-digit frequency you recovered from the communications puzzle.</div></div></section>
-<section class="card"><div class="title">ENTER FREQUENCY</div><div class="terminal">
-<div class="code"><div class="cell">—</div><div class="cell">—</div><div class="cell">—</div><div class="cell">—</div></div>
-<div class="keypad">
-<button class="key" data-key="1">1</button><button class="key" data-key="2">2</button><button class="key" data-key="3">3</button>
-<button class="key" data-key="4">4</button><button class="key" data-key="5">5</button><button class="key" data-key="6">6</button>
-<button class="key" data-key="7">7</button><button class="key" data-key="8">8</button><button class="key" data-key="9">9</button>
-<button class="key" data-key="0" style="grid-column:2">0</button>
+<div class="app">
+  <div id="homeView" class="view active">
+    <header class="topbar" id="secretHeader">
+      <div class="brand">PROJECT: STARFALL</div>
+      <h1>SHIP SYSTEMS TERMINAL</h1>
+      <div class="sub">NOVA • EMERGENCY RESTORATION MODE</div>
+      <div class="statusbar"><span><span class="dot"></span>TERMINAL ONLINE</span><span id="shipStatus">4 SYSTEMS OFFLINE</span></div>
+    </header>
+
+    <section class="nova-strip">
+      <div class="nova-avatar" aria-hidden="true">
+        <div class="nova-head"></div><div class="nova-hair"></div><div class="nova-body"></div><div class="nova-star">✦</div>
+      </div>
+      <div class="nova-text" id="novaMessage"><strong>Crew, the ship is damaged.</strong><br>Restore each system in order. Completing a mission will bring that system back online and unlock the next one.</div>
+    </section>
+
+    <div class="section-title">CRITICAL SYSTEMS</div>
+    <div class="missions" id="missionGrid"></div>
+
+    <section class="progress-card">
+      <div class="progress-top"><span>SHIP RESTORATION</span><span id="progressText">0 / 5 SYSTEMS</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </section>
+
+    <button class="launch" id="launchBtn">INITIATE LAUNCH SEQUENCE</button>
+    <div class="footer">EXPLORE • SOLVE • BELONG</div>
+  </div>
+
+  <div id="missionView" class="view">
+    <section class="mission-view">
+      <div class="mv-head"><div class="mv-kicker" id="mvKicker">MISSION</div><h2 id="mvTitle">SYSTEM</h2></div>
+      <div class="mv-body">
+        <div class="mv-status" id="mvStatus"></div>
+        <div id="mvContent"></div>
+        <button class="back" id="backBtn">← RETURN TO TERMINAL</button>
+      </div>
+    </section>
+  </div>
 </div>
-<div class="actions"><button class="btn clear" id="clear">CLEAR</button><button class="btn submit" id="submit">TRANSMIT</button></div>
-<div class="message" id="message">Awaiting decoded frequency...</div>
-</div></section>
-<section class="card"><div class="title">MISSION HINTS</div><div class="hints"><button class="hint" id="hintbtn">Reveal next hint</button><div class="hintbox" id="hintbox"></div></div></section>
-<div class="footer">EXPLORE • SOLVE • BELONG</div>
+
+<div class="modal" id="parentModal">
+  <div class="modal-card">
+    <h3>PARENT / GAME MASTER CONTROLS</h3>
+    <p>Use these controls to test progression, recover from a problem, or reset the game. Hold the PROJECT: STARFALL header for 2 seconds to reopen this panel.</p>
+    <div class="parent-grid" id="parentGrid"></div>
+    <button class="secondary close-modal" id="closeParent">CLOSE</button>
+  </div>
 </div>
-<div class="success" id="success"><div><div style="font-size:52px">✦</div><h3>COMMUNICATIONS RESTORED</h3><p>Frequency locked.<br>Orbital beacon connected.<br><br>Retrieve the Communications repair module and return to the Engine Map.</p><button id="closeSuccess">RETURN TO TERMINAL</button></div></div>
+
+<div class="modal" id="launchModal">
+  <div class="modal-card" style="text-align:center">
+    <div class="mv-kicker">ALL CRITICAL SYSTEMS ONLINE</div>
+    <h3>LAUNCH SEQUENCE</h3>
+    <div class="countdown" id="countdown">3</div>
+    <div id="launchText" style="color:#b9eaff">Stand by...</div>
+    <button class="primary close-modal" id="closeLaunch" style="display:none;width:100%;margin-top:15px">RETURN TO TERMINAL</button>
+  </div>
+</div>
+
 <script>
-const CODE="4729";let value="",hintIndex=0;const cells=[...document.querySelectorAll(".cell")],msg=document.getElementById("message");
-const hints=["Hint 1: Solve every decoder-wheel turn before entering a frequency.","Hint 2: Read the symbols in the exact order NOVA reveals them.","Hint 3 (demo): The prototype frequency starts with 4."];
-function draw(){cells.forEach((c,i)=>c.textContent=value[i]||"—")}
-document.querySelectorAll("[data-key]").forEach(b=>b.onclick=()=>{if(value.length<4){value+=b.dataset.key;draw()}});
-clear.onclick=()=>{value="";draw();msg.className="message";msg.textContent="Awaiting decoded frequency..."};
-submit.onclick=()=>{if(value.length<4){msg.className="message bad";msg.textContent="SIGNAL INCOMPLETE — enter all four digits.";return}if(value===CODE){msg.className="message good";msg.textContent="FREQUENCY LOCKED — communication channel established.";success.style.display="flex"}else{msg.className="message bad";msg.textContent="SIGNAL REJECTED — check the decoder and try again.";value="";draw()}};
-hintbtn.onclick=()=>{if(hintIndex<hints.length){hintbox.style.display="block";hintbox.textContent=hints[hintIndex++]}};
-closeSuccess.onclick=()=>success.style.display="none";draw();
-if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{});
+const missions=[
+  {id:1,title:"POWER CORE",desc:"Restore primary ship power",icon:"core"},
+  {id:2,title:"POWER ROUTING",desc:"Reconnect the ship's circuits",icon:"circuit"},
+  {id:3,title:"COOLING SYSTEM",desc:"Stabilize reactor temperature",icon:"cool"},
+  {id:4,title:"NAVIGATION",desc:"Rebuild the flight path and fuel supply",icon:"nav"},
+  {id:5,title:"COMMUNICATIONS",desc:"Restore the orbital signal",icon:"comms"}
+];
+
+const svg={
+core:`<svg class="icon" viewBox="0 0 100 100"><circle cx="50" cy="50" r="34" fill="none" stroke="#28d8ff" stroke-width="5"/><circle cx="50" cy="50" r="20" fill="#113e69" stroke="#8af0ff" stroke-width="4"/><circle cx="50" cy="50" r="9" fill="#dfffff"/><path d="M50 5v17M50 78v17M5 50h17M78 50h17" stroke="#2acfff" stroke-width="5" stroke-linecap="round"/></svg>`,
+circuit:`<svg class="icon" viewBox="0 0 100 100"><path d="M20 25h25v18h35M20 75h24V58h36" fill="none" stroke="#34d7ff" stroke-width="6" stroke-linejoin="round"/><circle cx="18" cy="25" r="8" fill="#9af3ff"/><circle cx="18" cy="75" r="8" fill="#9af3ff"/><circle cx="82" cy="43" r="8" fill="#fff"/><circle cx="82" cy="58" r="8" fill="#fff"/></svg>`,
+cool:`<svg class="icon" viewBox="0 0 100 100"><path d="M50 12v76M17 31l66 38M17 69l66-38" stroke="#5be4ff" stroke-width="7" stroke-linecap="round"/><circle cx="50" cy="50" r="13" fill="#bff9ff" stroke="#24c9ee" stroke-width="4"/><path d="M50 12l-8 10M50 12l8 10M17 31l13 1M17 31l6 11M83 31l-13 1M83 31l-6 11M17 69l13-1M17 69l6-11M83 69l-13-1M83 69l-6-11M50 88l-8-10M50 88l8-10" stroke="#5be4ff" stroke-width="5" stroke-linecap="round"/></svg>`,
+nav:`<svg class="icon" viewBox="0 0 100 100"><circle cx="50" cy="50" r="35" fill="none" stroke="#2fd5ff" stroke-width="5"/><path d="M63 36L54 55 35 64l9-19z" fill="#bdf8ff" stroke="#39d9ff" stroke-width="4"/><circle cx="50" cy="50" r="5" fill="#fff"/><path d="M50 8v12M50 80v12M8 50h12M80 50h12" stroke="#2fd5ff" stroke-width="4" stroke-linecap="round"/></svg>`,
+comms:`<svg class="icon" viewBox="0 0 100 100"><path d="M50 72V44" stroke="#39d8ff" stroke-width="6"/><circle cx="50" cy="38" r="8" fill="#d9fcff"/><path d="M35 51a22 22 0 0 1 0-26M65 25a22 22 0 0 1 0 26M25 61a36 36 0 0 1 0-46M75 15a36 36 0 0 1 0 46" fill="none" stroke="#39d8ff" stroke-width="5" stroke-linecap="round"/><path d="M34 83h32M42 72l-8 11M58 72l8 11" stroke="#7feaff" stroke-width="5" stroke-linecap="round"/></svg>`
+};
+
+let state={completed:0};
+try{const saved=JSON.parse(localStorage.getItem("starfallProgress"));if(saved&&Number.isInteger(saved.completed))state=saved}catch(e){}
+state.completed=Math.max(0,Math.min(5,state.completed));
+
+const grid=document.getElementById("missionGrid");
+const novaMessage=document.getElementById("novaMessage");
+const progressText=document.getElementById("progressText");
+const progressFill=document.getElementById("progressFill");
+const shipStatus=document.getElementById("shipStatus");
+const launchBtn=document.getElementById("launchBtn");
+
+function save(){localStorage.setItem("starfallProgress",JSON.stringify(state))}
+function missionState(id){if(id<=state.completed)return"complete";if(id===state.completed+1)return"current";return"locked"}
+function render(){
+  grid.innerHTML="";
+  missions.forEach(m=>{
+    const s=missionState(m.id);
+    const b=document.createElement("button");
+    b.className=`mission ${s} ${m.id===5?"wide":""}`;
+    b.disabled=s==="locked";
+    b.innerHTML=`
+      <div class="mnum">MISSION ${m.id}</div>
+      <div class="state">${s==="complete"?"SYSTEM ONLINE":s==="current"?"AVAILABLE":"LOCKED"}</div>
+      <div class="icon-wrap">${svg[m.icon]} ${s==="locked"?'<div class="lock">⌕</div>':""}</div>
+      <h3>${m.title}</h3><div class="desc">${m.desc}</div>`;
+    if(s!=="locked")b.onclick=()=>openMission(m);
+    grid.appendChild(b);
+  });
+  progressText.textContent=`${state.completed} / 5 SYSTEMS`;
+  progressFill.style.width=`${state.completed*20}%`;
+  const offline=5-state.completed;
+  shipStatus.textContent=offline? `${offline} SYSTEM${offline===1?"":"S"} OFFLINE`:"ALL SYSTEMS ONLINE";
+  if(state.completed===0)novaMessage.innerHTML="<strong>Crew, the ship is damaged.</strong><br>Restore each system in order. Completing a mission will bring that system back online and unlock the next one.";
+  else if(state.completed<5)novaMessage.innerHTML=`<strong>${missions[state.completed-1].title} restored.</strong><br>System online. Mission ${state.completed+1} is now available.`;
+  else novaMessage.innerHTML="<strong>All critical systems restored.</strong><br>The ship is ready. Launch authorization is available.";
+  launchBtn.style.display=state.completed===5?"block":"none";
+  renderParent();
+}
+function openMission(m){
+  document.getElementById("homeView").classList.remove("active");
+  document.getElementById("missionView").classList.add("active");
+  document.getElementById("mvKicker").textContent=`PROJECT: STARFALL • MISSION ${m.id}`;
+  document.getElementById("mvTitle").textContent=m.title;
+  const s=missionState(m.id);
+  document.getElementById("mvStatus").textContent=s==="complete"?"SYSTEM STATUS: ONLINE":"SYSTEM STATUS: MISSION ACTIVE";
+  let html="";
+  if(s==="complete"){
+    html=`<p>This system has been restored. The terminal has recorded the repair.</p><div style="font-size:52px;text-align:center;color:#5df0b6">✓</div>`;
+  } else if(m.id===5){
+    html=`<p>The Communications mission will eventually contain the circular decoder and final frequency entry here. The current prototype keeps this screen ready for the mechanic we are designing.</p>
+    <div class="parent-note">For now, use Parent / Game Master Controls to test the unlock sequence.</div>`;
+  } else {
+    html=`<p>This is where Mission ${m.id}'s interactive terminal step will live. The physical puzzle can stay in the room, while the terminal records the successful repair and unlocks the next system.</p>
+    <div class="parent-note">The exact completion mechanic for this mission has not been changed or invented. We can connect each approved mission to this screen next.</div>`;
+  }
+  document.getElementById("mvContent").innerHTML=html;
+}
+document.getElementById("backBtn").onclick=()=>{
+  document.getElementById("missionView").classList.remove("active");
+  document.getElementById("homeView").classList.add("active");
+};
+
+function renderParent(){
+  const pg=document.getElementById("parentGrid");pg.innerHTML="";
+  missions.forEach(m=>{
+    const b=document.createElement("button");
+    b.textContent=m.id<=state.completed?`✓ Mission ${m.id} complete`:`Set progress through M${m.id}`;
+    b.onclick=()=>{state.completed=m.id;save();render();document.getElementById("parentModal").classList.remove("show")};
+    pg.appendChild(b);
+  });
+  const reset=document.createElement("button");reset.className="danger";reset.textContent="RESET GAME";
+  reset.onclick=()=>{state.completed=0;save();render();document.getElementById("parentModal").classList.remove("show")};
+  pg.appendChild(reset);
+}
+document.getElementById("closeParent").onclick=()=>document.getElementById("parentModal").classList.remove("show");
+let holdTimer;
+const header=document.getElementById("secretHeader");
+["mousedown","touchstart"].forEach(evt=>header.addEventListener(evt,()=>{holdTimer=setTimeout(()=>document.getElementById("parentModal").classList.add("show"),2000)},{passive:true}));
+["mouseup","mouseleave","touchend","touchcancel"].forEach(evt=>header.addEventListener(evt,()=>clearTimeout(holdTimer),{passive:true}));
+
+launchBtn.onclick=()=>{
+  const modal=document.getElementById("launchModal"),num=document.getElementById("countdown"),txt=document.getElementById("launchText"),close=document.getElementById("closeLaunch");
+  modal.classList.add("show");close.style.display="none";let n=3;num.textContent=n;txt.textContent="Stand by...";
+  const timer=setInterval(()=>{n--;if(n>0){num.textContent=n}else{clearInterval(timer);num.textContent="LIFTOFF";num.style.fontSize="48px";txt.innerHTML="<strong>PROJECT: STARFALL CADETS</strong><br>Mission accomplished.";close.style.display="block"}},900)
+};
+document.getElementById("closeLaunch").onclick=()=>{document.getElementById("launchModal").classList.remove("show");document.getElementById("countdown").style.fontSize="76px"};
+
+render();
+if("serviceWorker" in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{});
 </script>
-</body></html>
+</body>
+</html>
