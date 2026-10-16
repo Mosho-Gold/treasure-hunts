@@ -131,7 +131,7 @@ button{font:inherit}
     </section>
 
     <button class="launch" id="launchBtn">INITIATE LAUNCH SEQUENCE</button>
-    <div class="footer">EXPLORE • SOLVE • BELONG • BUILD 4</div>
+    <div class="footer">EXPLORE • SOLVE • BELONG • PREVIEW MODE • BUILD 5</div>
   </div>
 
   <div id="systemView" class="view">
@@ -209,7 +209,13 @@ const shipStatus=document.getElementById("shipStatus");
 const launchBtn=document.getElementById("launchBtn");
 
 function save(){localStorage.setItem("starfallProgress",JSON.stringify(state))}
-function missionState(id){if(id<=state.completed)return"complete";if(id===state.completed+1)return"current";return"locked"}
+const PREVIEW_ALL_MISSIONS=true;
+function missionState(id){
+  if(id<=state.completed)return"complete";
+  if(PREVIEW_ALL_MISSIONS)return"current";
+  if(id===state.completed+1)return"current";
+  return"locked";
+}
 function render(){
   grid.innerHTML="";
   missions.forEach(m=>{
