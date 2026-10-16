@@ -104,6 +104,14 @@ button{font:inherit}
 .system-actions button{border:0;border-radius:11px;padding:13px;font-weight:900;cursor:pointer}
 .system-actions .backhome{background:#123957;color:#c8efff}
 .system-actions .openmission{background:#2ad5ff;color:#05283d}
+.serial-panel{margin-top:16px;padding:14px;border:2px solid #17577e;border-radius:14px;background:#04172b}
+.serial-label{font-size:10px;letter-spacing:2px;color:#7ce8ff;font-weight:900;margin-bottom:8px}
+.serial-row{display:grid;grid-template-columns:1fr auto;gap:8px}
+.serial-input{min-width:0;border:2px solid #1f7eaa;border-radius:10px;background:#02101f;color:#eaffff;padding:12px 13px;font-size:22px;font-weight:900;letter-spacing:5px;text-align:center;outline:none}
+.serial-input:focus{border-color:#39ddff;box-shadow:0 0 15px #21d7ff22}
+.serial-submit{border:0;border-radius:10px;background:#2ad5ff;color:#05283d;padding:0 14px;font-weight:900;cursor:pointer}
+.serial-message{min-height:20px;margin-top:9px;font-size:12px;font-weight:800;color:#8ebbd0;text-align:center}
+.serial-message.bad{color:#ff91a2}.serial-message.good{color:#6af0b8}
 @media(min-width:640px){.missions{grid-template-columns:repeat(3,1fr)}.mission.wide{grid-column:auto}.mission{min-height:180px}}
 </style>
 </head>
@@ -131,7 +139,7 @@ button{font:inherit}
     </section>
 
     <button class="launch" id="launchBtn">INITIATE LAUNCH SEQUENCE</button>
-    <div class="footer">EXPLORE • SOLVE • BELONG • PREVIEW MODE • BUILD 5</div>
+    <div class="footer">EXPLORE • SOLVE • BELONG • PREVIEW MODE • BUILD 6</div>
   </div>
 
   <div id="systemView" class="view">
@@ -277,7 +285,15 @@ function openMission(m){
   } else if(m.id===1){
     html=`<p><strong>NOVA:</strong> Crew, I have detected the Power Core nearby. Emergency security systems activated during impact, and a laser field now blocks the path.</p>
     <p>Cross the laser field without touching the beams. The Power Core may only be recovered when every crew member has crossed safely.</p>
-    <div class="parent-note">Physical mission: string, ribbon, or crepe-paper laser field. If a beam is touched, that attempt resets.</div>`;
+    <div class="parent-note">When you recover the replacement Power Core, locate its serial number and enter it below.</div>
+    <div class="serial-panel">
+      <div class="serial-label">REPLACEMENT CORE • SERIAL NUMBER</div>
+      <div class="serial-row">
+        <input id="coreSerialInput" class="serial-input" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="••••••" aria-label="Power Core serial number">
+        <button id="coreSerialSubmit" class="serial-submit">VERIFY</button>
+      </div>
+      <div id="coreSerialMessage" class="serial-message">Awaiting replacement core serial...</div>
+    </div>`;
   } else if(m.id===5){
     html=`<p>The Communications mission will eventually contain the circular decoder and final frequency entry here. The current prototype keeps this screen ready for the mechanic we are designing.</p>
     <div class="parent-note">For now, use Parent / Game Master Controls to test the unlock sequence.</div>`;
@@ -286,6 +302,32 @@ function openMission(m){
     <div class="parent-note">The exact completion mechanic for this mission has not been changed or invented. We can connect each approved mission to this screen next.</div>`;
   }
   document.getElementById("mvContent").innerHTML=html;
+  if(m.id===1 && s!=="complete"){
+    const serialInput=document.getElementById("coreSerialInput");
+    const serialSubmit=document.getElementById("coreSerialSubmit");
+    const serialMessage=document.getElementById("coreSerialMessage");
+    const verifyCore=()=>{
+      const entered=(serialInput.value||"").replace(/\D/g,"");
+      if(entered==="030787"){
+        state.completed=Math.max(state.completed,1);
+        save();
+        render();
+        document.getElementById("mvStatus").textContent="SYSTEM STATUS: ONLINE";
+        serialMessage.className="serial-message good";
+        serialMessage.textContent="SERIAL VERIFIED • POWER CORE ACCEPTED";
+        serialInput.disabled=true;
+        serialSubmit.disabled=true;
+        setTimeout(()=>openCoreStatus(),900);
+      }else{
+        serialMessage.className="serial-message bad";
+        serialMessage.textContent="SERIAL NOT RECOGNIZED • CHECK THE REPLACEMENT CORE";
+        serialInput.value="";
+        serialInput.focus();
+      }
+    };
+    serialSubmit.onclick=verifyCore;
+    serialInput.addEventListener("keydown",e=>{if(e.key==="Enter")verifyCore()});
+  }
 }
 document.getElementById("backBtn").onclick=()=>{
   document.getElementById("missionView").classList.remove("active");
