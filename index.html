@@ -131,7 +131,7 @@ button{font:inherit}
     </section>
 
     <button class="launch" id="launchBtn">INITIATE LAUNCH SEQUENCE</button>
-    <div class="footer">EXPLORE • SOLVE • BELONG</div>
+    <div class="footer">EXPLORE • SOLVE • BELONG • BUILD 4</div>
   </div>
 
   <div id="systemView" class="view">
@@ -315,7 +315,11 @@ launchBtn.onclick=()=>{
 document.getElementById("closeLaunch").onclick=()=>{document.getElementById("launchModal").classList.remove("show");document.getElementById("countdown").style.fontSize="76px"};
 
 render();
-if("serviceWorker" in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{});
+// Development mode: always load the newest terminal build.
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.getRegistrations().then(regs=>regs.forEach(r=>r.unregister())).catch(()=>{});
+  if ("caches" in window) caches.keys().then(keys=>keys.forEach(k=>caches.delete(k))).catch(()=>{});
+}
 </script>
 </body>
 </html>
