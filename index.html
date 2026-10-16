@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#061c3a">
+<title>Project Starfall — NOVA Terminal</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<style>
+:root{--navy:#061c3a;--blue:#0b4d7d;--cyan:#16c8ff;--ink:#10254d}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(#fafdff,#eaf6ff);font-family:Arial,sans-serif;color:var(--ink)}
+.shell{max-width:520px;margin:auto;padding:14px}.card{background:#fff;border:3px solid var(--blue);border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 5px 0 #0001}
+header{text-align:center;padding:16px}.kicker{font-size:11px;letter-spacing:4px;font-weight:900;color:#157db8}h1{margin:4px 0 0;color:#082b61}h2{margin:6px 0;color:#12a9e8;font-size:18px}
+.title{background:linear-gradient(90deg,#07335f,#0e4a7d);color:white;font-weight:900;padding:10px 14px;border-bottom:3px solid #25cfff}
+.nova{background:linear-gradient(135deg,#05162f,#06264b);min-height:210px;color:white;padding:24px;display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center}
+.avatar{width:110px;height:145px;border-radius:55px 55px 40px 40px;background:radial-gradient(circle at 50% 28%,#d9fbff 0 23%,#58d9ff 24% 42%,transparent 43%),linear-gradient(#38d8ff,#0c80bd);box-shadow:0 0 25px #44ddff99;position:relative}
+.avatar:after{content:"✦";position:absolute;left:43px;bottom:25px;font-size:26px;color:white}
+.speech{line-height:1.35}.speech strong{color:#9beaff}
+.terminal{padding:18px}.code{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:320px;margin:0 auto 14px}.cell{height:62px;border:3px solid #1599d0;border-radius:12px;background:#071f40;color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:320px;margin:auto}.key,.btn,.hint{border:0;border-radius:12px;padding:14px;font-weight:900;cursor:pointer}.key{font-size:20px;background:#edf9ff;color:#0a3565;box-shadow:inset 0 0 0 2px #51c9ed}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:320px;margin:9px auto}.clear{background:#e9eef5}.submit{background:#21cfff;color:#062342}
+.message{margin:14px auto 0;max-width:390px;padding:12px;border-radius:12px;text-align:center;font-weight:800;background:#f3f8fc;border:2px solid #d4e7f4}.bad{background:#fff1f3;color:#a02137;border-color:#ffabb7}.good{background:#ebfff8;color:#087c58;border-color:#71e8c0}
+.hints{padding:14px}.hint{width:100%;border:2px solid #1c83b8;background:white;color:#0c4775}.hintbox{display:none;margin-top:10px;padding:10px;background:#eefaff;border-left:4px solid #19bde9}
+.success{position:fixed;inset:0;background:#021126f2;color:white;display:none;align-items:center;justify-content:center;padding:24px;text-align:center}.success>div{max-width:460px;border:3px solid #25d5ff;border-radius:20px;padding:28px;background:#08264b}.success h3{color:#79ebff;font-size:28px}.success button{padding:12px 18px;border:0;border-radius:10px;font-weight:900;background:#77eaff}
+.footer{text-align:center;padding:10px 0 28px;color:#2d739f;font-size:10px;letter-spacing:3px;font-weight:900}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="card"><div class="kicker">PROJECT: STARFALL</div><h1>MISSION 5</h1><h2>COMMUNICATIONS TERMINAL</h2></header>
+<section class="card"><div class="title">NOVA TRANSMISSION</div><div class="nova"><div class="avatar"></div><div class="speech"><strong>Crew, the decoder is responding.</strong><br><br>Enter the four-digit frequency you recovered from the communications puzzle.</div></div></section>
+<section class="card"><div class="title">ENTER FREQUENCY</div><div class="terminal">
+<div class="code"><div class="cell">—</div><div class="cell">—</div><div class="cell">—</div><div class="cell">—</div></div>
+<div class="keypad">
+<button class="key" data-key="1">1</button><button class="key" data-key="2">2</button><button class="key" data-key="3">3</button>
+<button class="key" data-key="4">4</button><button class="key" data-key="5">5</button><button class="key" data-key="6">6</button>
+<button class="key" data-key="7">7</button><button class="key" data-key="8">8</button><button class="key" data-key="9">9</button>
+<button class="key" data-key="0" style="grid-column:2">0</button>
+</div>
+<div class="actions"><button class="btn clear" id="clear">CLEAR</button><button class="btn submit" id="submit">TRANSMIT</button></div>
+<div class="message" id="message">Awaiting decoded frequency...</div>
+</div></section>
+<section class="card"><div class="title">MISSION HINTS</div><div class="hints"><button class="hint" id="hintbtn">Reveal next hint</button><div class="hintbox" id="hintbox"></div></div></section>
+<div class="footer">EXPLORE • SOLVE • BELONG</div>
+</div>
+<div class="success" id="success"><div><div style="font-size:52px">✦</div><h3>COMMUNICATIONS RESTORED</h3><p>Frequency locked.<br>Orbital beacon connected.<br><br>Retrieve the Communications repair module and return to the Engine Map.</p><button id="closeSuccess">RETURN TO TERMINAL</button></div></div>
+<script>
+const CODE="4729";let value="",hintIndex=0;const cells=[...document.querySelectorAll(".cell")],msg=document.getElementById("message");
+const hints=["Hint 1: Solve every decoder-wheel turn before entering a frequency.","Hint 2: Read the symbols in the exact order NOVA reveals them.","Hint 3 (demo): The prototype frequency starts with 4."];
+function draw(){cells.forEach((c,i)=>c.textContent=value[i]||"—")}
+document.querySelectorAll("[data-key]").forEach(b=>b.onclick=()=>{if(value.length<4){value+=b.dataset.key;draw()}});
+clear.onclick=()=>{value="";draw();msg.className="message";msg.textContent="Awaiting decoded frequency..."};
+submit.onclick=()=>{if(value.length<4){msg.className="message bad";msg.textContent="SIGNAL INCOMPLETE — enter all four digits.";return}if(value===CODE){msg.className="message good";msg.textContent="FREQUENCY LOCKED — communication channel established.";success.style.display="flex"}else{msg.className="message bad";msg.textContent="SIGNAL REJECTED — check the decoder and try again.";value="";draw()}};
+hintbtn.onclick=()=>{if(hintIndex<hints.length){hintbox.style.display="block";hintbox.textContent=hints[hintIndex++]}};
+closeSuccess.onclick=()=>success.style.display="none";draw();
+if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{});
+</script>
+</body></html>
