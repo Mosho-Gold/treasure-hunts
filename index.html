@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#041429">
-<title>Project Starfall — Ship Terminal</title>
+<title>Project Starfall — Ship Restoration</title>
 <link rel="manifest" href="./manifest.webmanifest">
 <style>
 :root{
@@ -14,156 +14,168 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--white)}
-body{
-  background:
-    radial-gradient(circle at 50% -10%,rgba(37,204,255,.18),transparent 35%),
-    radial-gradient(circle at 10% 35%,rgba(14,108,170,.08),transparent 26%),
-    linear-gradient(#020a16,#031326 55%,#020914);
-}
-button{font:inherit}
-.app{max-width:760px;margin:0 auto;min-height:100vh;padding:14px 14px 28px}
+body{background:radial-gradient(circle at 50% -10%,rgba(37,204,255,.18),transparent 35%),linear-gradient(#020a16,#031326 55%,#020914)}
+button,input{font:inherit}
+button{cursor:pointer}
+.app{max-width:980px;margin:0 auto;min-height:100vh;padding:12px 12px 28px}
+.view{display:none}.view.active{display:block}
 .topbar{
   position:relative;border:2px solid #14608e;background:linear-gradient(180deg,#092846,#06192f);
-  border-radius:18px;padding:15px 16px 13px;text-align:center;box-shadow:0 0 28px #0acfff18,inset 0 0 0 1px #38d8ff22;
+  border-radius:18px;padding:14px 170px 12px 16px;text-align:left;box-shadow:0 0 28px #0acfff18,inset 0 0 0 1px #38d8ff22;
   user-select:none
 }
 .brand{font-size:11px;font-weight:900;letter-spacing:4px;color:#75e8ff}
-.topbar h1{font-size:25px;margin:4px 0 1px;letter-spacing:1px}
-.sub{font-size:11px;letter-spacing:2px;color:#72a8c8;font-weight:800}
-.statusbar{display:flex;justify-content:space-between;gap:8px;margin-top:11px;padding-top:10px;border-top:1px solid #185073;font-size:10px;letter-spacing:1.3px;color:#84b5d1;font-weight:800}
+.topbar h1{font-size:24px;margin:4px 0 1px;letter-spacing:1px}
+.sub{font-size:10px;letter-spacing:2px;color:#72a8c8;font-weight:800}
+.terminal-btn{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  border:2px solid #31d7ff;background:linear-gradient(#0b4667,#082e49);color:#dffaff;
+  border-radius:11px;padding:12px 14px;font-weight:900;letter-spacing:.8px;box-shadow:0 0 14px #22ceff2b
+}
+.statusbar{display:flex;justify-content:space-between;gap:8px;margin-top:10px;padding-top:9px;border-top:1px solid #185073;font-size:10px;letter-spacing:1.2px;color:#84b5d1;font-weight:800}
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);margin-right:6px}
-.nova-strip{
-  display:grid;grid-template-columns:92px 1fr;gap:13px;align-items:center;
-  margin-top:12px;padding:10px;border:3px solid #0b4f7c;border-radius:14px;
-  background:linear-gradient(90deg,#06182f,#082846);box-shadow:inset 0 0 0 1px #39dfff22,0 0 16px #12cfff12;
+.engine-shell{margin-top:12px;border:3px solid #176390;border-radius:18px;padding:12px;background:radial-gradient(circle at 50% 42%,#103b5c 0,#061a30 30%,#03111f 78%);box-shadow:inset 0 0 40px #25d7ff13,0 0 22px #0fd8ff12}
+.engine-title{text-align:center;font-size:11px;letter-spacing:3px;color:#79dff8;font-weight:900;margin:1px 0 10px}
+.engine-room{
+  position:relative;aspect-ratio:4/3;min-height:410px;border:2px solid #174c70;border-radius:16px;overflow:hidden;
+  background:
+   linear-gradient(90deg,transparent 49.7%,#1cb7eb20 50%,transparent 50.3%),
+   linear-gradient(transparent 49.7%,#1cb7eb14 50%,transparent 50.3%),
+   radial-gradient(circle at 50% 42%,#0b4064 0 8%,#0a2b47 9% 18%,transparent 19%),
+   linear-gradient(#06172a,#04111f);
 }
-.nova-avatar{
-  width:92px;height:116px;overflow:hidden;border:2px solid #27d4ff;border-radius:10px;
-  background:#03172d;box-shadow:0 0 16px #29d9ff44,inset 0 0 0 1px #bdf8ff33;
+.pipe{position:absolute;background:linear-gradient(90deg,#233f59,#46c9ef,#20394f);border:1px solid #5be5ff55;border-radius:999px;box-shadow:0 0 9px #28d6ff22}
+.p1{left:28%;top:22%;width:44%;height:3%}.p2{left:19%;top:48%;width:62%;height:3%}.p3{left:49%;top:18%;width:3%;height:62%}
+.core-chamber{
+  position:absolute;left:41%;top:17%;width:18%;height:38%;border:3px solid #45dfff;border-radius:22px;
+  background:linear-gradient(90deg,#0d2f4d,#25c9f1 35%,#a5f6ff 50%,#25c9f1 65%,#0d2f4d);
+  box-shadow:0 0 35px #30dcff66,inset 0 0 25px #fff5
 }
-.nova-avatar img{width:100%;height:100%;object-fit:cover;object-position:center 10%;display:block}
-.nova-text{font-size:14px;line-height:1.35;color:#d7f7ff}.nova-text strong{color:#72eaff}
-.section-title{margin:16px 2px 9px;font-size:11px;letter-spacing:3px;font-weight:900;color:#64cceb}
-.missions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.mission{
-  position:relative;min-height:165px;border:2px solid #174e70;border-radius:16px;padding:13px;
-  background:linear-gradient(145deg,#071b32,#061326);overflow:hidden;cursor:pointer;color:white;text-align:left;
-  transition:.2s transform,.2s border-color,.2s box-shadow;box-shadow:inset 0 0 0 1px #4de0ff0a
+.core-chamber:after{content:"STARFALL";position:absolute;bottom:8%;left:0;right:0;text-align:center;color:#08344c;font-size:8px;font-weight:900;letter-spacing:2px}
+.system{
+  position:absolute;width:22%;min-height:22%;border:3px solid #ff5369;border-radius:13px;background:linear-gradient(145deg,#30131b,#130c14);
+  padding:9px;color:#fff;box-shadow:0 0 18px #ff41531c,inset 0 0 18px #ff41530d;transition:.35s
 }
-.mission:active:not(.locked){transform:scale(.985)}
-.mission.current{border-color:#30d7ff;box-shadow:0 0 20px #21cbff26,inset 0 0 24px #1edaff10}
-.mission.complete{border-color:#2c9d82;background:linear-gradient(145deg,#08293a,#06251f);box-shadow:0 0 18px #4ff0af1c}
-.mission.locked{opacity:.5;cursor:not-allowed;filter:saturate(.55)}
-.mnum{font-size:10px;letter-spacing:2px;font-weight:900;color:#6fa6c6}
-.icon-wrap{height:68px;display:flex;align-items:center;justify-content:center;margin:3px 0 5px}
-.icon{width:58px;height:58px;filter:drop-shadow(0 0 8px #38d9ff55)}
-.complete .icon{filter:drop-shadow(0 0 8px #5af0b280)}
-.locked .icon{filter:none}
-.mission h3{font-size:15px;margin:4px 0 2px;letter-spacing:.4px}.mission .desc{font-size:11px;color:#8fb7cf}
-.state{position:absolute;right:9px;top:9px;padding:5px 7px;border-radius:999px;font-size:8px;font-weight:900;letter-spacing:1px;background:#102d46;color:#88b6cf;border:1px solid #235c7c}
-.current .state{background:#0b4258;color:#86ecff;border-color:#2bd8ff}.complete .state{background:#103c34;color:#78efbd;border-color:#42dba4}
-.lock{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);font-size:30px;text-shadow:0 0 9px #000}
-.mission.wide{grid-column:1/-1;min-height:150px}
-.progress-card{margin-top:12px;border:2px solid #144c70;border-radius:15px;background:#06182c;padding:12px}
-.progress-top{display:flex;justify-content:space-between;font-size:10px;letter-spacing:1.2px;color:#83b3ce;font-weight:900;margin-bottom:8px}
-.progress-track{height:11px;border-radius:999px;background:#0b263e;border:1px solid #194d6d;overflow:hidden}
+.system:before{content:"";position:absolute;inset:6px;border:1px solid #ffffff0d;border-radius:8px;pointer-events:none}
+.system.fixed{border-color:#3fe1af;background:linear-gradient(145deg,#09312b,#071e25);box-shadow:0 0 22px #51efb52c,inset 0 0 18px #51efb512}
+.sys-core{left:5%;top:13%}.sys-routing{right:5%;top:13%}.sys-cooling{left:5%;bottom:8%}.sys-nav{left:39%;bottom:5%}.sys-comms{right:5%;bottom:8%}
+.sys-label{font-size:9px;letter-spacing:1.3px;font-weight:900;color:#ffd7dc;position:relative;z-index:2}
+.fixed .sys-label{color:#9ff4d5}
+.sys-icon{font-size:42px;text-align:center;padding:8px 0 3px;filter:grayscale(.35);position:relative;z-index:2}
+.sys-state{text-align:center;font-size:8px;letter-spacing:1px;font-weight:900;color:#ff8390;position:relative;z-index:2}
+.fixed .sys-state{color:#62efbd}
+.crack{position:absolute;left:50%;top:45%;width:4px;height:50px;background:#ff596b;transform:rotate(32deg);box-shadow:0 0 8px #ff485a}
+.fixed .crack{display:none}
+.engine-progress{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:11px;padding:10px;border:1px solid #195275;border-radius:12px;background:#051426}
+.progress-track{height:10px;flex:1;border-radius:999px;background:#0b263e;border:1px solid #194d6d;overflow:hidden}
 .progress-fill{height:100%;width:0;background:linear-gradient(90deg,#159bc9,#4ce6ff,#55efb2);box-shadow:0 0 10px #36dbff;transition:width .45s ease}
-.launch{
-  display:none;width:100%;margin-top:12px;border:2px solid #62f1c4;border-radius:15px;padding:16px;background:linear-gradient(#0d604e,#0a4138);
-  color:#dffff4;font-weight:900;letter-spacing:1.2px;cursor:pointer;box-shadow:0 0 18px #48eeb52b
+.progress-text{font-size:10px;letter-spacing:1px;color:#8ec5de;font-weight:900;white-space:nowrap}
+.launch{display:none;width:100%;margin-top:10px;border:2px solid #62f1c4;border-radius:14px;padding:14px;background:linear-gradient(#0d604e,#0a4138);color:#dffff4;font-weight:900;letter-spacing:1.2px}
+.footer{text-align:center;color:#4f8daf;font-size:9px;letter-spacing:3px;font-weight:900;padding:14px 0 4px}
+
+.terminal-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.backhome,.back,.primary,.secondary{border:0;border-radius:11px;padding:11px 13px;font-weight:900}
+.backhome,.back,.secondary{background:#123957;color:#c8efff}.primary{background:#2ad5ff;color:#05283d}
+.terminal-panel{border:2px solid #155d88;border-radius:17px;background:#061a30;overflow:hidden}
+.term-banner{display:grid;grid-template-columns:86px 1fr;gap:12px;align-items:center;padding:11px;background:linear-gradient(90deg,#06203a,#0a3557);border-bottom:2px solid #1ca9d4}
+.nova-avatar{width:86px;height:103px;overflow:hidden;border:2px solid #27d4ff;border-radius:10px;background:#03172d;box-shadow:0 0 16px #29d9ff44}
+.nova-avatar img{width:100%;height:100%;object-fit:cover;object-position:center 10%;display:block}
+.nova-copy{font-size:13px;line-height:1.4;color:#d7f7ff}.nova-copy strong{color:#72eaff}
+.missions{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;padding:11px}
+.mission{
+  position:relative;min-height:120px;border:2px solid #174e70;border-radius:14px;padding:11px;background:linear-gradient(145deg,#071b32,#061326);color:white;text-align:left;
 }
-.footer{text-align:center;color:#4f8daf;font-size:9px;letter-spacing:3px;font-weight:900;padding:17px 0 4px}
-.view{display:none}.view.active{display:block}
-.mission-view{margin-top:12px;border:2px solid #155d88;border-radius:17px;overflow:hidden;background:#061a30}
+.mission.current{border-color:#30d7ff;box-shadow:0 0 18px #21cbff20}.mission.complete{border-color:#2c9d82;background:linear-gradient(145deg,#08293a,#06251f)}
+.mission.locked{opacity:.45}.mnum{font-size:9px;letter-spacing:2px;color:#6fa6c6;font-weight:900}.mission h3{font-size:14px;margin:7px 0 3px}
+.mission .desc{font-size:10px;color:#8fb7cf}.state{position:absolute;right:8px;top:8px;padding:4px 6px;border-radius:999px;font-size:8px;font-weight:900;background:#102d46;color:#88b6cf;border:1px solid #235c7c}
+.current .state{background:#0b4258;color:#86ecff;border-color:#2bd8ff}.complete .state{background:#103c34;color:#78efbd;border-color:#42dba4}
+.term-progress{margin:0 11px 12px;padding:10px;border:1px solid #164c6e;border-radius:12px;background:#04162a}
+
+.mission-view{border:2px solid #155d88;border-radius:17px;overflow:hidden;background:#061a30}
 .mv-head{padding:13px 14px;background:linear-gradient(90deg,#09345b,#0b4b74);border-bottom:2px solid #27cfff}
 .mv-kicker{font-size:9px;letter-spacing:2px;color:#8cecff;font-weight:900}.mv-head h2{margin:3px 0 0;font-size:21px}
 .mv-body{padding:15px}.mv-status{font-size:11px;letter-spacing:1.5px;color:#68dfff;font-weight:900;margin-bottom:10px}
 .mv-body p{color:#c7eafa;line-height:1.45;font-size:14px}
-.back,.primary,.secondary{
-  border:0;border-radius:11px;padding:12px 14px;font-weight:900;cursor:pointer
+.note{font-size:11px;color:#77a9c3;margin:12px 0;border-top:1px solid #194968;padding-top:10px}
+.input-panel{margin-top:14px;padding:13px;border:2px solid #17577e;border-radius:14px;background:#04172b}
+.input-label{font-size:10px;letter-spacing:2px;color:#7ce8ff;font-weight:900;margin-bottom:8px}
+.code-row{display:grid;grid-template-columns:1fr auto;gap:8px}
+.code-input{min-width:0;border:2px solid #1f7eaa;border-radius:10px;background:#02101f;color:#eaffff;padding:12px 13px;font-size:21px;font-weight:900;letter-spacing:4px;text-align:center;outline:none}
+.code-input:focus{border-color:#39ddff;box-shadow:0 0 15px #21d7ff22}
+.msg{min-height:20px;margin-top:8px;font-size:12px;font-weight:800;color:#8ebbd0;text-align:center}.msg.bad{color:#ff91a2}.msg.good{color:#6af0b8}
+.routing-grid{display:grid;grid-template-columns:1fr 96px;gap:7px;align-items:center;margin-top:9px}.routing-grid label{font-size:12px;color:#bcecff}.routing-grid input{width:100%;border:1px solid #2576a1;background:#02101f;color:#fff;border-radius:8px;padding:9px;text-align:center;font-weight:900}
+.symbol-pad{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}.symbol-btn{border:1px solid #2b85ad;background:#0b2942;color:#e9fbff;border-radius:10px;padding:10px 4px;font-size:12px;font-weight:900}
+.symbol-seq{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0}.symbol-slot{height:48px;border:2px solid #2d83a7;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#8feaff;background:#031526}
+.alert{margin-top:12px;border:2px solid #b54755;border-radius:12px;padding:12px;background:#2b1119;color:#ffd3d8}.alert strong{color:#ff7888}
+.successbox{margin-top:12px;border:2px solid #39c99a;border-radius:12px;padding:12px;background:#092b25;color:#b8f5df}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+.modal{position:fixed;inset:0;background:#020b16ee;display:none;align-items:center;justify-content:center;padding:18px;z-index:50}.modal.show{display:flex}
+.modal-card{width:min(440px,100%);border:2px solid #2cd7ff;border-radius:17px;background:#071b31;padding:17px;box-shadow:0 0 38px #20cfff2b}.modal h3{margin:0 0 5px}.modal p{font-size:12px;color:#9cc9df}
+.parent-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.parent-grid button{border:1px solid #296787;background:#0d2c44;color:#d8f6ff;border-radius:10px;padding:11px;font-weight:800}.parent-grid .danger{border-color:#874151;color:#ffc4cb}
+.countdown{font-size:76px;color:#82efff;text-shadow:0 0 24px #38dcff;margin:10px 0;text-align:center}
+@media(max-width:680px){
+ .app{padding:8px}.topbar{padding-right:132px}.topbar h1{font-size:18px}.terminal-btn{font-size:10px;padding:10px 9px}
+ .engine-room{min-height:390px}.system{width:25%;min-height:21%;padding:6px}.sys-core{left:2%}.sys-routing{right:2%}.sys-cooling{left:2%}.sys-comms{right:2%}.sys-nav{left:37.5%;width:25%}
+ .sys-icon{font-size:32px}.missions{grid-template-columns:1fr 1fr}.term-banner{grid-template-columns:72px 1fr}.nova-avatar{width:72px;height:88px}
 }
-.back{background:#123957;color:#c8efff;margin-top:8px}.primary{background:#2ad5ff;color:#05283d}.secondary{background:#14364d;color:#add5e8;border:1px solid #2c6585}
-.parent-note{font-size:11px;color:#6b9bb5;margin-top:14px;border-top:1px solid #194968;padding-top:10px}
-.modal{position:fixed;inset:0;background:#020b16ee;display:none;align-items:center;justify-content:center;padding:18px;z-index:50}
-.modal.show{display:flex}.modal-card{width:min(440px,100%);border:2px solid #2cd7ff;border-radius:17px;background:#071b31;padding:17px;box-shadow:0 0 38px #20cfff2b}
-.modal h3{margin:0 0 5px}.modal p{font-size:12px;color:#9cc9df}.parent-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.parent-grid button{border:1px solid #296787;background:#0d2c44;color:#d8f6ff;border-radius:10px;padding:11px;font-weight:800;cursor:pointer}
-.parent-grid .danger{border-color:#874151;color:#ffc4cb}.close-modal{width:100%;margin-top:10px}
-.countdown{font-size:76px;color:#82efff;text-shadow:0 0 24px #38dcff;margin:10px 0}
-.system-card{margin-top:12px;border:2px solid #155d88;border-radius:17px;overflow:hidden;background:#061a30}
-.system-visual{padding:18px;text-align:center;background:radial-gradient(circle at 50% 45%,rgba(36,211,255,.12),transparent 42%),#041428}
-.system-visual img{width:min(280px,78vw);aspect-ratio:1;border-radius:16px;border:3px solid #1c7ca8;box-shadow:0 0 25px rgba(20,207,255,.2)}
-.system-info{padding:15px}
-.system-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
-.system-label{font-size:10px;letter-spacing:2px;color:#79dff8;font-weight:900}
-.system-badge{padding:6px 10px;border-radius:999px;font-size:9px;font-weight:900;letter-spacing:1px}
-.system-badge.bad{background:#481b29;color:#ff9aaa;border:1px solid #b43c54}
-.system-badge.good{background:#103c34;color:#78efbd;border:1px solid #42dba4}
-.system-copy{font-size:14px;line-height:1.45;color:#c9ecfa}
-.system-actions{display:grid;grid-template-columns:1fr 1.4fr;gap:9px;margin-top:14px}
-.system-actions button{border:0;border-radius:11px;padding:13px;font-weight:900;cursor:pointer}
-.system-actions .backhome{background:#123957;color:#c8efff}
-.system-actions .openmission{background:#2ad5ff;color:#05283d}
-.serial-panel{margin-top:16px;padding:14px;border:2px solid #17577e;border-radius:14px;background:#04172b}
-.serial-label{font-size:10px;letter-spacing:2px;color:#7ce8ff;font-weight:900;margin-bottom:8px}
-.serial-row{display:grid;grid-template-columns:1fr auto;gap:8px}
-.serial-input{min-width:0;border:2px solid #1f7eaa;border-radius:10px;background:#02101f;color:#eaffff;padding:12px 13px;font-size:22px;font-weight:900;letter-spacing:5px;text-align:center;outline:none}
-.serial-input:focus{border-color:#39ddff;box-shadow:0 0 15px #21d7ff22}
-.serial-submit{border:0;border-radius:10px;background:#2ad5ff;color:#05283d;padding:0 14px;font-weight:900;cursor:pointer}
-.serial-message{min-height:20px;margin-top:9px;font-size:12px;font-weight:800;color:#8ebbd0;text-align:center}
-.serial-message.bad{color:#ff91a2}.serial-message.good{color:#6af0b8}
-@media(min-width:640px){.missions{grid-template-columns:repeat(3,1fr)}.mission.wide{grid-column:auto}.mission{min-height:180px}}
 </style>
 </head>
 <body>
 <div class="app">
-  <div id="homeView" class="view active">
+  <div id="engineView" class="view active">
     <header class="topbar" id="secretHeader">
       <div class="brand">PROJECT: STARFALL</div>
-      <h1>SHIP SYSTEMS TERMINAL</h1>
-      <div class="sub">NOVA • EMERGENCY RESTORATION MODE</div>
-      <div class="statusbar"><span><span class="dot"></span>TERMINAL ONLINE</span><span id="shipStatus">4 SYSTEMS OFFLINE</span></div>
+      <h1>ENGINE RESTORATION</h1>
+      <div class="sub">NOVA • EMERGENCY REPAIR MODE</div>
+      <button class="terminal-btn" id="openTerminal">MISSION TERMINAL →</button>
+      <div class="statusbar"><span><span class="dot"></span>SHIP COMPUTER ONLINE</span><span id="shipStatus">5 SYSTEMS OFFLINE</span></div>
     </header>
 
-    <section class="nova-strip">
-      <div class="nova-avatar"><img src="data:image/jpeg;base64,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" alt="NOVA hologram"></div>
-      <div class="nova-text" id="novaMessage"><strong>Crew, the ship is damaged.</strong><br>Restore each system in order. Completing a mission will bring that system back online and unlock the next one.</div>
-    </section>
+    <section class="engine-shell">
+      <div class="engine-title">MAIN ENGINE • DAMAGE OVERVIEW</div>
+      <div class="engine-room">
+        <div class="pipe p1"></div><div class="pipe p2"></div><div class="pipe p3"></div>
+        <div class="core-chamber"></div>
 
-    <div class="section-title">CRITICAL SYSTEMS</div>
-    <div class="missions" id="missionGrid"></div>
-
-    <section class="progress-card">
-      <div class="progress-top"><span>SHIP RESTORATION</span><span id="progressText">0 / 5 SYSTEMS</span></div>
-      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-    </section>
-
-    <button class="launch" id="launchBtn">INITIATE LAUNCH SEQUENCE</button>
-    <div class="footer">EXPLORE • SOLVE • BELONG • PREVIEW MODE • BUILD 6</div>
-  </div>
-
-  <div id="systemView" class="view">
-    <section class="system-card">
-      <div class="mv-head"><div class="mv-kicker">PROJECT: STARFALL • SYSTEM 01</div><h2>POWER CORE STATUS</h2></div>
-      <div class="system-visual"><img id="coreStatusImage" alt="Power Core status"></div>
-      <div class="system-info">
-        <div class="system-row"><span class="system-label">PRIMARY POWER CORE</span><span class="system-badge bad" id="coreStatusBadge">CRITICAL • OFFLINE</span></div>
-        <div class="system-copy" id="coreStatusCopy">Impact damage detected. The Power Core housing is fractured and primary power is unavailable.</div>
-        <div class="system-actions">
-          <button class="backhome" id="coreBackBtn">← TERMINAL</button>
-          <button class="openmission" id="coreMissionBtn">OPEN MISSION 1</button>
-        </div>
+        <div class="system sys-core" data-system="1"><div class="crack"></div><div class="sys-label">POWER CORE</div><div class="sys-icon">◉</div><div class="sys-state">OFFLINE</div></div>
+        <div class="system sys-routing" data-system="2"><div class="crack"></div><div class="sys-label">POWER ROUTING</div><div class="sys-icon">⌁</div><div class="sys-state">ROUTING FAILURE</div></div>
+        <div class="system sys-cooling" data-system="3"><div class="crack"></div><div class="sys-label">COOLING SYSTEM</div><div class="sys-icon">❄</div><div class="sys-state">TEMP CRITICAL</div></div>
+        <div class="system sys-nav" data-system="4"><div class="crack"></div><div class="sys-label">NAVIGATION / FUEL</div><div class="sys-icon">✦</div><div class="sys-state">SIGNAL LOST</div></div>
+        <div class="system sys-comms" data-system="5"><div class="crack"></div><div class="sys-label">COMMUNICATIONS</div><div class="sys-icon">◔</div><div class="sys-state">COMMS OFFLINE</div></div>
+      </div>
+      <div class="engine-progress">
+        <div class="progress-text" id="engineProgressText">0 / 5 RESTORED</div>
+        <div class="progress-track"><div class="progress-fill" id="engineProgressFill"></div></div>
       </div>
     </section>
+    <button class="launch" id="launchBtn">INITIATE LAUNCH SEQUENCE</button>
+    <div class="footer">SAME CREW • BRIGHTER WORLDS • PREVIEW MODE • BUILD 7</div>
+  </div>
+
+  <div id="terminalView" class="view">
+    <div class="terminal-head"><button class="backhome" id="terminalBack">← ENGINE</button><div><div class="brand">PROJECT: STARFALL</div><div style="font-weight:900">MISSION TERMINAL</div></div></div>
+    <section class="terminal-panel">
+      <div class="term-banner">
+        <div class="nova-avatar"><img src="data:image/jpeg;base64,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" alt="NOVA hologram"></div>
+        <div class="nova-copy" id="novaMessage"><strong>Crew, the ship is damaged.</strong><br>Complete each physical mission, then use this terminal to verify your repair.</div>
+      </div>
+      <div class="missions" id="missionGrid"></div>
+      <div class="term-progress">
+        <div class="progress-text" id="terminalProgressText">0 / 5 SYSTEMS</div>
+        <div class="progress-track" style="margin-top:7px"><div class="progress-fill" id="terminalProgressFill"></div></div>
+      </div>
+    </section>
+    <div class="footer">EXPLORE • SOLVE • BELONG • MISSION TERMINAL</div>
   </div>
 
   <div id="missionView" class="view">
+    <button class="back" id="backBtn" style="margin-bottom:10px">← RETURN TO TERMINAL</button>
     <section class="mission-view">
       <div class="mv-head"><div class="mv-kicker" id="mvKicker">MISSION</div><h2 id="mvTitle">SYSTEM</h2></div>
       <div class="mv-body">
         <div class="mv-status" id="mvStatus"></div>
         <div id="mvContent"></div>
-        <button class="back" id="backBtn">← RETURN TO TERMINAL</button>
       </div>
     </section>
   </div>
@@ -172,9 +184,9 @@ button{font:inherit}
 <div class="modal" id="parentModal">
   <div class="modal-card">
     <h3>PARENT / GAME MASTER CONTROLS</h3>
-    <p>Use these controls to test progression, recover from a problem, or reset the game. Hold the PROJECT: STARFALL header for 2 seconds to reopen this panel.</p>
+    <p>Preview, recover progress, or reset the game. Hold the PROJECT: STARFALL engine header for 2 seconds to reopen.</p>
     <div class="parent-grid" id="parentGrid"></div>
-    <button class="secondary close-modal" id="closeParent">CLOSE</button>
+    <button class="secondary" id="closeParent" style="width:100%;margin-top:10px">CLOSE</button>
   </div>
 </div>
 
@@ -184,189 +196,217 @@ button{font:inherit}
     <h3>LAUNCH SEQUENCE</h3>
     <div class="countdown" id="countdown">3</div>
     <div id="launchText" style="color:#b9eaff">Stand by...</div>
-    <button class="primary close-modal" id="closeLaunch" style="display:none;width:100%;margin-top:15px">RETURN TO TERMINAL</button>
+    <button class="primary" id="closeLaunch" style="display:none;width:100%;margin-top:15px">RETURN TO ENGINE</button>
   </div>
 </div>
 
 <script>
+const PREVIEW_ALL_MISSIONS=true;
 const missions=[
-  {id:1,title:"POWER CORE",desc:"Restore primary ship power",icon:"core"},
-  {id:2,title:"POWER ROUTING",desc:"Reconnect the ship's circuits",icon:"circuit"},
-  {id:3,title:"COOLING SYSTEM",desc:"Stabilize reactor temperature",icon:"cool"},
-  {id:4,title:"NAVIGATION",desc:"Rebuild the flight path and fuel supply",icon:"nav"},
-  {id:5,title:"COMMUNICATIONS",desc:"Restore the orbital signal",icon:"comms"}
+ {id:1,title:'POWER CORE',desc:'Recover and verify the replacement core'},
+ {id:2,title:'POWER ROUTING',desc:'Solve the routing logic and restore power flow'},
+ {id:3,title:'COOLING SYSTEM',desc:'Rebuild the coolant route and transfer coolant'},
+ {id:4,title:'NAVIGATION / FUEL',desc:'Rebuild the star chart, verify the route, then restore fuel'},
+ {id:5,title:'COMMUNICATIONS',desc:'Restore the orbital signal'}
 ];
 
-const svg={
-core:`<svg class="icon" viewBox="0 0 100 100"><circle cx="50" cy="50" r="34" fill="none" stroke="#28d8ff" stroke-width="5"/><circle cx="50" cy="50" r="20" fill="#113e69" stroke="#8af0ff" stroke-width="4"/><circle cx="50" cy="50" r="9" fill="#dfffff"/><path d="M50 5v17M50 78v17M5 50h17M78 50h17" stroke="#2acfff" stroke-width="5" stroke-linecap="round"/></svg>`,
-circuit:`<svg class="icon" viewBox="0 0 100 100"><path d="M20 25h25v18h35M20 75h24V58h36" fill="none" stroke="#34d7ff" stroke-width="6" stroke-linejoin="round"/><circle cx="18" cy="25" r="8" fill="#9af3ff"/><circle cx="18" cy="75" r="8" fill="#9af3ff"/><circle cx="82" cy="43" r="8" fill="#fff"/><circle cx="82" cy="58" r="8" fill="#fff"/></svg>`,
-cool:`<svg class="icon" viewBox="0 0 100 100"><path d="M50 12v76M17 31l66 38M17 69l66-38" stroke="#5be4ff" stroke-width="7" stroke-linecap="round"/><circle cx="50" cy="50" r="13" fill="#bff9ff" stroke="#24c9ee" stroke-width="4"/><path d="M50 12l-8 10M50 12l8 10M17 31l13 1M17 31l6 11M83 31l-13 1M83 31l-6 11M17 69l13-1M17 69l6-11M83 69l-13-1M83 69l-6-11M50 88l-8-10M50 88l8-10" stroke="#5be4ff" stroke-width="5" stroke-linecap="round"/></svg>`,
-nav:`<svg class="icon" viewBox="0 0 100 100"><circle cx="50" cy="50" r="35" fill="none" stroke="#2fd5ff" stroke-width="5"/><path d="M63 36L54 55 35 64l9-19z" fill="#bdf8ff" stroke="#39d9ff" stroke-width="4"/><circle cx="50" cy="50" r="5" fill="#fff"/><path d="M50 8v12M50 80v12M8 50h12M80 50h12" stroke="#2fd5ff" stroke-width="4" stroke-linecap="round"/></svg>`,
-comms:`<svg class="icon" viewBox="0 0 100 100"><path d="M50 72V44" stroke="#39d8ff" stroke-width="6"/><circle cx="50" cy="38" r="8" fill="#d9fcff"/><path d="M35 51a22 22 0 0 1 0-26M65 25a22 22 0 0 1 0 26M25 61a36 36 0 0 1 0-46M75 15a36 36 0 0 1 0 46" fill="none" stroke="#39d8ff" stroke-width="5" stroke-linecap="round"/><path d="M34 83h32M42 72l-8 11M58 72l8 11" stroke="#7feaff" stroke-width="5" stroke-linecap="round"/></svg>`
+let raw=localStorage.getItem('starfallProgress');
+let parsed;
+try{parsed=JSON.parse(raw||'{}')}catch(e){parsed={}}
+if(typeof parsed==='number') parsed={completed:parsed};
+let state={
+ completed:Number(parsed.completed)||0,
+ navVerified:!!parsed.navVerified
 };
-
-let state={completed:0};
-try{const saved=JSON.parse(localStorage.getItem("starfallProgress"));if(saved&&Number.isInteger(saved.completed))state=saved}catch(e){}
-state.completed=Math.max(0,Math.min(5,state.completed));
-
-const grid=document.getElementById("missionGrid");
-const novaMessage=document.getElementById("novaMessage");
-const progressText=document.getElementById("progressText");
-const progressFill=document.getElementById("progressFill");
-const shipStatus=document.getElementById("shipStatus");
-const launchBtn=document.getElementById("launchBtn");
-
-function save(){localStorage.setItem("starfallProgress",JSON.stringify(state))}
-const PREVIEW_ALL_MISSIONS=true;
+function save(){localStorage.setItem('starfallProgress',JSON.stringify(state))}
+function show(id){['engineView','terminalView','missionView'].forEach(function(v){document.getElementById(v).classList.toggle('active',v===id)})}
 function missionState(id){
-  if(id<=state.completed)return"complete";
-  if(PREVIEW_ALL_MISSIONS)return"current";
-  if(id===state.completed+1)return"current";
-  return"locked";
+ if(id<=state.completed)return 'complete';
+ if(PREVIEW_ALL_MISSIONS)return 'current';
+ if(id===state.completed+1)return 'current';
+ return 'locked';
 }
-function render(){
-  grid.innerHTML="";
-  missions.forEach(m=>{
-    const s=missionState(m.id);
-    const b=document.createElement("button");
-    b.className=`mission ${s} ${m.id===5?"wide":""}`;
-    b.disabled=s==="locked";
-    b.innerHTML=`
-      <div class="mnum">MISSION ${m.id}</div>
-      <div class="state">${s==="complete"?"SYSTEM ONLINE":s==="current"?"AVAILABLE":"LOCKED"}</div>
-      <div class="icon-wrap">${svg[m.icon]} ${s==="locked"?'<div class="lock">⌕</div>':""}</div>
-      <h3>${m.title}</h3><div class="desc">${m.desc}</div>`;
-    if(s!=="locked")b.onclick=()=>m.id===1?openCoreStatus():openMission(m);
-    grid.appendChild(b);
-  });
-  progressText.textContent=`${state.completed} / 5 SYSTEMS`;
-  progressFill.style.width=`${state.completed*20}%`;
-  const offline=5-state.completed;
-  shipStatus.textContent=offline? `${offline} SYSTEM${offline===1?"":"S"} OFFLINE`:"ALL SYSTEMS ONLINE";
-  if(state.completed===0)novaMessage.innerHTML="<strong>Crew, the ship is damaged.</strong><br>Restore each system in order. Completing a mission will bring that system back online and unlock the next one.";
-  else if(state.completed<5)novaMessage.innerHTML=`<strong>${missions[state.completed-1].title} restored.</strong><br>System online. Mission ${state.completed+1} is now available.`;
-  else novaMessage.innerHTML="<strong>All critical systems restored.</strong><br>The ship is ready. Launch authorization is available.";
-  launchBtn.style.display=state.completed===5?"block":"none";
-  renderParent();
+function completeMission(id){
+ state.completed=Math.max(state.completed,id);
+ if(id>=4) state.navVerified=true;
+ save();render();show('engineView');
 }
-const CORE_DAMAGED="data:image/jpeg;base64,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";
-const CORE_REPAIRED="data:image/jpeg;base64,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";
+function renderEngine(){
+ document.querySelectorAll('.system').forEach(function(el){
+   const id=Number(el.getAttribute('data-system'));
+   const fixed=id<=state.completed;
+   el.classList.toggle('fixed',fixed);
+   const st=el.querySelector('.sys-state');
+   if(fixed) st.textContent='SYSTEM ONLINE';
+   else st.textContent=id===1?'CORE OFFLINE':id===2?'ROUTING FAILURE':id===3?'TEMP CRITICAL':id===4?'SIGNAL LOST':'COMMS OFFLINE';
+ });
+ const remaining=Math.max(0,5-state.completed);
+ document.getElementById('shipStatus').textContent=remaining===0?'ALL SYSTEMS ONLINE':remaining+' SYSTEM'+(remaining===1?'':'S')+' OFFLINE';
+ document.getElementById('engineProgressText').textContent=state.completed+' / 5 RESTORED';
+ document.getElementById('engineProgressFill').style.width=(state.completed*20)+'%';
+ document.getElementById('launchBtn').style.display=state.completed>=5?'block':'none';
+}
+function renderTerminal(){
+ const grid=document.getElementById('missionGrid');grid.innerHTML='';
+ missions.forEach(function(m){
+   const s=missionState(m.id);
+   const b=document.createElement('button');
+   b.className='mission '+s;
+   b.innerHTML='<div class="mnum">MISSION '+m.id+'</div><span class="state">'+(s==='complete'?'ONLINE':s==='locked'?'LOCKED':'ACTIVE')+'</span><h3>'+m.title+'</h3><div class="desc">'+m.desc+'</div>';
+   b.onclick=function(){if(s!=='locked')openMission(m)};
+   grid.appendChild(b);
+ });
+ document.getElementById('terminalProgressText').textContent=state.completed+' / 5 SYSTEMS RESTORED';
+ document.getElementById('terminalProgressFill').style.width=(state.completed*20)+'%';
+ const msg=document.getElementById('novaMessage');
+ if(state.completed===0) msg.innerHTML='<strong>Crew, the ship is damaged.</strong><br>Begin with the Power Core. Complete the physical challenge, then verify the repair here.';
+ else if(state.completed===1) msg.innerHTML='<strong>Power Core online.</strong><br>Power is not reaching the ship systems. Restore Power Routing.';
+ else if(state.completed===2) msg.innerHTML='<strong>Power flow restored.</strong><br>Engine temperature is rising. The Cooling System must be repaired.';
+ else if(state.completed===3) msg.innerHTML='<strong>Cooling stable.</strong><br>The Navigation Array is still damaged. Rebuild the Star Chart.';
+ else if(state.completed===4) msg.innerHTML='<strong>Navigation and fuel restored.</strong><br>One system remains: Communications.';
+ else msg.innerHTML='<strong>All critical systems restored.</strong><br>Return to the engine and initiate launch.';
+}
+function render(){renderEngine();renderTerminal();renderParent()}
+function setMsg(id,text,good){
+ const el=document.getElementById(id); if(!el)return;
+ el.className='msg '+(good?'good':'bad'); el.textContent=text;
+}
 
-function showHome(){
-  document.getElementById("systemView").classList.remove("active");
-  document.getElementById("missionView").classList.remove("active");
-  document.getElementById("homeView").classList.add("active");
-}
-function openCoreStatus(){
-  document.getElementById("homeView").classList.remove("active");
-  document.getElementById("missionView").classList.remove("active");
-  document.getElementById("systemView").classList.add("active");
-  const done=state.completed>=1;
-  document.getElementById("coreStatusImage").src=done?CORE_REPAIRED:CORE_DAMAGED;
-  const badge=document.getElementById("coreStatusBadge");
-  badge.className="system-badge "+(done?"good":"bad");
-  badge.textContent=done?"SYSTEM ONLINE":"CRITICAL • OFFLINE";
-  document.getElementById("coreStatusCopy").textContent=done
-    ?"Power Core restored. Primary power output is stable and the repair has been recorded by NOVA."
-    :"Impact damage detected. The Power Core housing is fractured and primary power is unavailable.";
-  document.getElementById("coreMissionBtn").textContent=done?"VIEW MISSION 1":"OPEN MISSION 1";
-}
 function openMission(m){
-  document.getElementById("homeView").classList.remove("active");
-  document.getElementById("systemView").classList.remove("active");
-  document.getElementById("missionView").classList.add("active");
-  document.getElementById("mvKicker").textContent=`PROJECT: STARFALL • MISSION ${m.id}`;
-  document.getElementById("mvTitle").textContent=m.title;
-  const s=missionState(m.id);
-  document.getElementById("mvStatus").textContent=s==="complete"?"SYSTEM STATUS: ONLINE":"SYSTEM STATUS: MISSION ACTIVE";
-  let html="";
-  if(s==="complete"){
-    html=`<p>This system has been restored. The terminal has recorded the repair.</p><div style="font-size:52px;text-align:center;color:#5df0b6">✓</div>`;
-  } else if(m.id===1){
-    html=`<p><strong>NOVA:</strong> Crew, I have detected the Power Core nearby. Emergency security systems activated during impact, and a laser field now blocks the path.</p>
-    <p>Cross the laser field without touching the beams. The Power Core may only be recovered when every crew member has crossed safely.</p>
-    <div class="parent-note">When you recover the replacement Power Core, locate its serial number and enter it below.</div>
-    <div class="serial-panel">
-      <div class="serial-label">REPLACEMENT CORE • SERIAL NUMBER</div>
-      <div class="serial-row">
-        <input id="coreSerialInput" class="serial-input" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="••••••" aria-label="Power Core serial number">
-        <button id="coreSerialSubmit" class="serial-submit">VERIFY</button>
-      </div>
-      <div id="coreSerialMessage" class="serial-message">Awaiting replacement core serial...</div>
-    </div>`;
-  } else if(m.id===5){
-    html=`<p>The Communications mission will eventually contain the circular decoder and final frequency entry here. The current prototype keeps this screen ready for the mechanic we are designing.</p>
-    <div class="parent-note">For now, use Parent / Game Master Controls to test the unlock sequence.</div>`;
-  } else {
-    html=`<p>This is where Mission ${m.id}'s interactive terminal step will live. The physical puzzle can stay in the room, while the terminal records the successful repair and unlocks the next system.</p>
-    <div class="parent-note">The exact completion mechanic for this mission has not been changed or invented. We can connect each approved mission to this screen next.</div>`;
-  }
-  document.getElementById("mvContent").innerHTML=html;
-  if(m.id===1 && s!=="complete"){
-    const serialInput=document.getElementById("coreSerialInput");
-    const serialSubmit=document.getElementById("coreSerialSubmit");
-    const serialMessage=document.getElementById("coreSerialMessage");
-    const verifyCore=()=>{
-      const entered=(serialInput.value||"").replace(/\D/g,"");
-      if(entered==="030787"){
-        state.completed=Math.max(state.completed,1);
-        save();
-        render();
-        document.getElementById("mvStatus").textContent="SYSTEM STATUS: ONLINE";
-        serialMessage.className="serial-message good";
-        serialMessage.textContent="SERIAL VERIFIED • POWER CORE ACCEPTED";
-        serialInput.disabled=true;
-        serialSubmit.disabled=true;
-        setTimeout(()=>openCoreStatus(),900);
-      }else{
-        serialMessage.className="serial-message bad";
-        serialMessage.textContent="SERIAL NOT RECOGNIZED • CHECK THE REPLACEMENT CORE";
-        serialInput.value="";
-        serialInput.focus();
-      }
-    };
-    serialSubmit.onclick=verifyCore;
-    serialInput.addEventListener("keydown",e=>{if(e.key==="Enter")verifyCore()});
-  }
+ show('missionView');
+ document.getElementById('mvKicker').textContent='PROJECT: STARFALL • MISSION '+m.id;
+ document.getElementById('mvTitle').textContent=m.title;
+ const s=missionState(m.id);
+ document.getElementById('mvStatus').textContent=s==='complete'?'SYSTEM STATUS: ONLINE':'SYSTEM STATUS: MISSION ACTIVE';
+ let html='';
+
+ if(s==='complete'){
+   html='<div class="successbox"><strong>SYSTEM ONLINE</strong><br>This repair has been verified and recorded by NOVA.</div>';
+ }
+ else if(m.id===1){
+   html='<p><strong>NOVA:</strong> Recover the replacement Power Core after every crew member crosses the laser field safely.</p>'+
+   '<div class="input-panel"><div class="input-label">REPLACEMENT CORE • SERIAL NUMBER</div><div class="code-row">'+
+   '<input id="coreSerialInput" class="code-input" inputmode="numeric" maxlength="6" placeholder="••••••"><button id="coreSerialSubmit" class="primary">VERIFY</button></div>'+
+   '<div id="m1msg" class="msg">Awaiting replacement core serial...</div></div>';
+ }
+ else if(m.id===2){
+   html='<p>Complete the approved Symbol Equations and Diagnostic Clues. Then enter the final port value for each system.</p>'+
+   '<div class="input-panel"><div class="input-label">POWER ROUTING • PORT VALUES</div>'+
+   '<div class="routing-grid"><label>Reactor</label><input id="rReactor" inputmode="numeric"></div>'+
+   '<div class="routing-grid"><label>Navigation</label><input id="rNavigation" inputmode="numeric"></div>'+
+   '<div class="routing-grid"><label>Communications</label><input id="rCommunications" inputmode="numeric"></div>'+
+   '<div class="routing-grid"><label>Life Support</label><input id="rLife" inputmode="numeric"></div>'+
+   '<div class="routing-grid"><label>Defense</label><input id="rDefense" inputmode="numeric"></div>'+
+   '<div class="actions"><button id="routingVerify" class="primary">VERIFY ROUTING</button></div><div id="m2msg" class="msg">Awaiting routing solution...</div></div>';
+ }
+ else if(m.id===3){
+   html='<p>Rebuild the approved cooling route with the recovered pipe pieces. Read the small maintenance numbers on the completed route and enter the six-digit Coolant Layout Number.</p>'+
+   '<div class="input-panel"><div class="input-label">COOLANT LAYOUT NUMBER</div><div class="code-row"><input id="coolantCode" class="code-input" inputmode="numeric" maxlength="6" placeholder="••••••"><button id="coolantVerify" class="primary">VERIFY</button></div>'+
+   '<div id="m3msg" class="msg">Awaiting coolant layout number...</div><div id="coolantStage" style="display:none"><div class="successbox"><strong>ROUTE VERIFIED</strong><br>Coolant line integrity confirmed. Complete the physical coolant-transfer challenge.</div><button id="coolantDone" class="primary" style="width:100%;margin-top:10px">COOLANT TRANSFER COMPLETE</button></div></div>';
+ }
+ else if(m.id===4){
+   html='<p>Assemble the approved 24-piece Star Chart. Trace one safe route from START to DESTINATION and record the navigation symbols in the order you encounter them.</p>'+
+   '<div class="input-panel"><div class="input-label">NAVIGATION SEQUENCE</div><div class="symbol-seq"><div class="symbol-slot"></div><div class="symbol-slot"></div><div class="symbol-slot"></div><div class="symbol-slot"></div></div>'+
+   '<div class="symbol-pad"><button class="symbol-btn" data-symbol="STAR">STAR</button><button class="symbol-btn" data-symbol="TRIANGLE">TRIANGLE</button><button class="symbol-btn" data-symbol="SPIRAL">SPIRAL</button><button class="symbol-btn" data-symbol="DIAMOND">DIAMOND</button></div>'+
+   '<div class="actions"><button id="navClear" class="secondary">CLEAR</button><button id="navVerify" class="primary">VERIFY ROUTE</button></div><div id="m4msg" class="msg">Awaiting navigation sequence...</div>'+
+   '<div id="fuelStage" style="display:none"><div class="alert"><strong>ROUTE CONFIRMED — LOW FUEL</strong><br>Current fuel reserves are insufficient. Find the emergency fuel cells and install the four cells that match the route symbols in the same order.</div><button id="fuelDone" class="primary" style="width:100%;margin-top:10px">FUEL CELLS INSTALLED</button></div></div>';
+ }
+ else {
+   html='<p>The Communications Array is offline. Mission 5 will use the circular decoder to determine LEFT / RIGHT turns and produce the final communications frequency.</p>'+
+   '<div class="note">This physical decoder/frequency mechanic is still being finalized, so the app does not invent a verification code yet. Use Parent / Game Master Controls for preview testing.</div>';
+ }
+ document.getElementById('mvContent').innerHTML=html;
+ bindMission(m.id,s);
 }
-document.getElementById("backBtn").onclick=()=>{
-  document.getElementById("missionView").classList.remove("active");
-  const title=document.getElementById("mvTitle").textContent;
-  if(title==="POWER CORE") openCoreStatus(); else document.getElementById("homeView").classList.add("active");
-};
-document.getElementById("coreBackBtn").onclick=showHome;
-document.getElementById("coreMissionBtn").onclick=()=>openMission(missions[0]);
+
+function bindMission(id,s){
+ if(s==='complete')return;
+ if(id===1){
+   const input=document.getElementById('coreSerialInput');
+   document.getElementById('coreSerialSubmit').onclick=function(){
+     const v=(input.value||'').replace(/\D/g,'');
+     if(v==='030787'){setMsg('m1msg','SERIAL VERIFIED • POWER CORE ACCEPTED',true);setTimeout(function(){completeMission(1)},500)}
+     else{setMsg('m1msg','SERIAL NOT RECOGNIZED • CHECK THE REPLACEMENT CORE',false);input.value=''}
+   };
+ }
+ if(id===2){
+   document.getElementById('routingVerify').onclick=function(){
+     const ok=String(document.getElementById('rReactor').value).trim()==='9' &&
+       String(document.getElementById('rNavigation').value).trim()==='11' &&
+       String(document.getElementById('rCommunications').value).trim()==='7' &&
+       String(document.getElementById('rLife').value).trim()==='12' &&
+       String(document.getElementById('rDefense').value).trim()==='6';
+     if(ok){setMsg('m2msg','ROUTING VERIFIED • POWER FLOW RESTORED',true);setTimeout(function(){completeMission(2)},550)}
+     else setMsg('m2msg','ROUTING ERROR • CHECK THE FIVE SYSTEM-TO-PORT CONNECTIONS',false);
+   };
+ }
+ if(id===3){
+   document.getElementById('coolantVerify').onclick=function(){
+     const v=(document.getElementById('coolantCode').value||'').replace(/\D/g,'');
+     // The approved numbered sheet uses six route digits. Because equivalent pipe pieces can swap positions on the branched route,
+     // verification accepts the correct six-number set while still rejecting numbered decoys.
+     const ok=v.length===6 && v.split('').sort().join('')==='123469';
+     if(ok){
+       setMsg('m3msg','COOLANT LAYOUT VERIFIED',true);
+       document.getElementById('coolantStage').style.display='block';
+     } else setMsg('m3msg','LAYOUT NOT RECOGNIZED • CHECK ONLY THE NUMBERS ON THE COMPLETED ROUTE',false);
+   };
+   document.getElementById('coolantDone').onclick=function(){completeMission(3)};
+ }
+ if(id===4){
+   let seq=[];
+   const slots=[].slice.call(document.querySelectorAll('.symbol-slot'));
+   function paint(){slots.forEach(function(el,i){el.textContent=seq[i]||''})}
+   [].slice.call(document.querySelectorAll('.symbol-btn')).forEach(function(b){b.onclick=function(){if(seq.length<4){seq.push(b.getAttribute('data-symbol'));paint()}}});
+   document.getElementById('navClear').onclick=function(){seq=[];paint();document.getElementById('fuelStage').style.display='none';setMsg('m4msg','Awaiting navigation sequence...',true)};
+   document.getElementById('navVerify').onclick=function(){
+     const ok=seq.join('|')==='STAR|TRIANGLE|SPIRAL|DIAMOND';
+     if(ok){
+       state.navVerified=true;save();
+       setMsg('m4msg','ROUTE VERIFIED • NAVIGATION SOLUTION ACCEPTED',true);
+       document.getElementById('fuelStage').style.display='block';
+     } else setMsg('m4msg','ROUTE NOT RECOGNIZED • TRACE START TO DESTINATION AGAIN',false);
+   };
+   document.getElementById('fuelDone').onclick=function(){
+     if(state.navVerified) completeMission(4);
+   };
+ }
+}
 
 function renderParent(){
-  const pg=document.getElementById("parentGrid");pg.innerHTML="";
-  missions.forEach(m=>{
-    const b=document.createElement("button");
-    b.textContent=m.id<=state.completed?`✓ Mission ${m.id} complete`:`Set progress through M${m.id}`;
-    b.onclick=()=>{state.completed=m.id;save();render();document.getElementById("parentModal").classList.remove("show")};
-    pg.appendChild(b);
-  });
-  const reset=document.createElement("button");reset.className="danger";reset.textContent="RESET GAME";
-  reset.onclick=()=>{state.completed=0;save();render();document.getElementById("parentModal").classList.remove("show")};
-  pg.appendChild(reset);
+ const pg=document.getElementById('parentGrid');pg.innerHTML='';
+ missions.forEach(function(m){
+   const b=document.createElement('button');
+   b.textContent=m.id<=state.completed?'✓ Mission '+m.id+' complete':'Set progress through M'+m.id;
+   b.onclick=function(){state.completed=m.id;if(m.id>=4)state.navVerified=true;save();render();document.getElementById('parentModal').classList.remove('show');show('engineView')};
+   pg.appendChild(b);
+ });
+ const reset=document.createElement('button');reset.className='danger';reset.textContent='RESET GAME';
+ reset.onclick=function(){state={completed:0,navVerified:false};save();render();document.getElementById('parentModal').classList.remove('show');show('engineView')};
+ pg.appendChild(reset);
 }
-document.getElementById("closeParent").onclick=()=>document.getElementById("parentModal").classList.remove("show");
-let holdTimer;
-const header=document.getElementById("secretHeader");
-["mousedown","touchstart"].forEach(evt=>header.addEventListener(evt,()=>{holdTimer=setTimeout(()=>document.getElementById("parentModal").classList.add("show"),2000)},{passive:true}));
-["mouseup","mouseleave","touchend","touchcancel"].forEach(evt=>header.addEventListener(evt,()=>clearTimeout(holdTimer),{passive:true}));
 
-launchBtn.onclick=()=>{
-  const modal=document.getElementById("launchModal"),num=document.getElementById("countdown"),txt=document.getElementById("launchText"),close=document.getElementById("closeLaunch");
-  modal.classList.add("show");close.style.display="none";let n=3;num.textContent=n;txt.textContent="Stand by...";
-  const timer=setInterval(()=>{n--;if(n>0){num.textContent=n}else{clearInterval(timer);num.textContent="LIFTOFF";num.style.fontSize="48px";txt.innerHTML="<strong>PROJECT: STARFALL CADETS</strong><br>Mission accomplished.";close.style.display="block"}},900)
+document.getElementById('openTerminal').onclick=function(){renderTerminal();show('terminalView')};
+document.getElementById('terminalBack').onclick=function(){show('engineView')};
+document.getElementById('backBtn').onclick=function(){renderTerminal();show('terminalView')};
+document.getElementById('closeParent').onclick=function(){document.getElementById('parentModal').classList.remove('show')};
+
+let holdTimer;
+const header=document.getElementById('secretHeader');
+['mousedown','touchstart'].forEach(function(evt){header.addEventListener(evt,function(){holdTimer=setTimeout(function(){document.getElementById('parentModal').classList.add('show')},2000)},{passive:true})});
+['mouseup','mouseleave','touchend','touchcancel'].forEach(function(evt){header.addEventListener(evt,function(){clearTimeout(holdTimer)},{passive:true})});
+
+document.getElementById('launchBtn').onclick=function(){
+ const modal=document.getElementById('launchModal'),num=document.getElementById('countdown'),txt=document.getElementById('launchText'),close=document.getElementById('closeLaunch');
+ modal.classList.add('show');close.style.display='none';num.style.fontSize='76px';let n=3;num.textContent=n;txt.textContent='Stand by...';
+ const timer=setInterval(function(){n--;if(n>0){num.textContent=n}else{clearInterval(timer);num.textContent='LIFTOFF';num.style.fontSize='48px';txt.innerHTML='<strong>PROJECT: STARFALL CADETS</strong><br>Mission accomplished.';close.style.display='block'}},900);
 };
-document.getElementById("closeLaunch").onclick=()=>{document.getElementById("launchModal").classList.remove("show");document.getElementById("countdown").style.fontSize="76px"};
+document.getElementById('closeLaunch').onclick=function(){document.getElementById('launchModal').classList.remove('show');show('engineView')};
 
 render();
-// Development mode: always load the newest terminal build.
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.getRegistrations().then(regs=>regs.forEach(r=>r.unregister())).catch(()=>{});
-  if ("caches" in window) caches.keys().then(keys=>keys.forEach(k=>caches.delete(k))).catch(()=>{});
+if('serviceWorker' in navigator){
+ navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister()})}).catch(function(){});
+ if('caches' in window)caches.keys().then(function(keys){keys.forEach(function(k){caches.delete(k)})}).catch(function(){});
 }
 </script>
 </body>
