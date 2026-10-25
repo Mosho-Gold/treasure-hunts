@@ -34,38 +34,38 @@ button{cursor:pointer}
 }
 .statusbar{display:flex;justify-content:space-between;gap:8px;margin-top:10px;padding-top:9px;border-top:1px solid #185073;font-size:10px;letter-spacing:1.2px;color:#84b5d1;font-weight:800}
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);margin-right:6px}
-.engine-shell{margin-top:12px;border:3px solid #176390;border-radius:18px;padding:12px;background:radial-gradient(circle at 50% 42%,#103b5c 0,#061a30 30%,#03111f 78%);box-shadow:inset 0 0 40px #25d7ff13,0 0 22px #0fd8ff12}
-.engine-title{text-align:center;font-size:11px;letter-spacing:3px;color:#79dff8;font-weight:900;margin:1px 0 10px}
-.engine-room{
-  position:relative;aspect-ratio:4/3;min-height:410px;border:2px solid #174c70;border-radius:16px;overflow:hidden;
-  background:
-   linear-gradient(90deg,transparent 49.7%,#1cb7eb20 50%,transparent 50.3%),
-   linear-gradient(transparent 49.7%,#1cb7eb14 50%,transparent 50.3%),
-   radial-gradient(circle at 50% 42%,#0b4064 0 8%,#0a2b47 9% 18%,transparent 19%),
-   linear-gradient(#06172a,#04111f);
+.engine-shell{margin-top:0}
+.engine-map-wrap{
+  position:relative;width:100%;aspect-ratio:1448/1086;overflow:hidden;
+  border:2px solid #176390;border-radius:18px;background:#03111f;
+  box-shadow:0 0 28px #0acfff20
 }
-.pipe{position:absolute;background:linear-gradient(90deg,#233f59,#46c9ef,#20394f);border:1px solid #5be5ff55;border-radius:999px;box-shadow:0 0 9px #28d6ff22}
-.p1{left:28%;top:22%;width:44%;height:3%}.p2{left:19%;top:48%;width:62%;height:3%}.p3{left:49%;top:18%;width:3%;height:62%}
-.core-chamber{
-  position:absolute;left:41%;top:17%;width:18%;height:38%;border:3px solid #45dfff;border-radius:22px;
-  background:linear-gradient(90deg,#0d2f4d,#25c9f1 35%,#a5f6ff 50%,#25c9f1 65%,#0d2f4d);
-  box-shadow:0 0 35px #30dcff66,inset 0 0 25px #fff5
+.engine-map-base{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block}
+.repair-overlay{
+  position:absolute;object-fit:fill;opacity:0;pointer-events:none;
+  transition:opacity .55s ease,filter .55s ease;
+  filter:brightness(1.25) drop-shadow(0 0 10px rgba(70,225,255,.8));
+  z-index:3
 }
-.core-chamber:after{content:"STARFALL";position:absolute;bottom:8%;left:0;right:0;text-align:center;color:#08344c;font-size:8px;font-weight:900;letter-spacing:2px}
-.system{
-  position:absolute;width:22%;min-height:22%;border:3px solid #ff5369;border-radius:13px;background:linear-gradient(145deg,#30131b,#130c14);
-  padding:9px;color:#fff;box-shadow:0 0 18px #ff41531c,inset 0 0 18px #ff41530d;transition:.35s
+.repair-overlay.visible{opacity:1;filter:brightness(1) drop-shadow(0 0 4px rgba(70,225,255,.25))}
+.repair-core{left:12.224%;top:26.519%;width:14.986%;height:20.074%}
+.repair-routing{left:72.928%;top:26.427%;width:15.055%;height:20.166%}
+.repair-cooling{left:12.293%;top:56.998%;width:14.917%;height:19.982%}
+.repair-nav{left:42.541%;top:59.300%;width:15.124%;height:20.074%}
+.repair-comms{left:72.859%;top:56.814%;width:14.986%;height:20.258%}
+.engine-terminal-btn{
+  position:absolute;right:1.5%;top:1.8%;z-index:8;
+  border:2px solid #31d7ff;background:rgba(4,31,55,.93);color:#e8fbff;
+  border-radius:10px;padding:10px 12px;font-size:11px;font-weight:900;letter-spacing:.7px;
+  box-shadow:0 0 15px #21d7ff55
 }
-.system:before{content:"";position:absolute;inset:6px;border:1px solid #ffffff0d;border-radius:8px;pointer-events:none}
-.system.fixed{border-color:#3fe1af;background:linear-gradient(145deg,#09312b,#071e25);box-shadow:0 0 22px #51efb52c,inset 0 0 18px #51efb512}
-.sys-core{left:5%;top:13%}.sys-routing{right:5%;top:13%}.sys-cooling{left:5%;bottom:8%}.sys-nav{left:39%;bottom:5%}.sys-comms{right:5%;bottom:8%}
-.sys-label{font-size:9px;letter-spacing:1.3px;font-weight:900;color:#ffd7dc;position:relative;z-index:2}
-.fixed .sys-label{color:#9ff4d5}
-.sys-icon{font-size:42px;text-align:center;padding:8px 0 3px;filter:grayscale(.35);position:relative;z-index:2}
-.sys-state{text-align:center;font-size:8px;letter-spacing:1px;font-weight:900;color:#ff8390;position:relative;z-index:2}
-.fixed .sys-state{color:#62efbd}
-.crack{position:absolute;left:50%;top:45%;width:4px;height:50px;background:#ff596b;transform:rotate(32deg);box-shadow:0 0 8px #ff485a}
-.fixed .crack{display:none}
+.engine-status-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;padding:10px 12px;border:1px solid #195275;border-radius:12px;background:#051426}
+.engine-status{font-size:10px;letter-spacing:1px;color:#8ec5de;font-weight:900;white-space:nowrap}
+@media(max-width:680px){
+ .engine-map-wrap{border-radius:10px}
+ .engine-terminal-btn{font-size:8px;padding:7px 8px;border-width:1px}
+ .engine-status-row{padding:8px}.engine-status{font-size:8px}
+}
 .engine-progress{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:11px;padding:10px;border:1px solid #195275;border-radius:12px;background:#051426}
 .progress-track{height:10px;flex:1;border-radius:999px;background:#0b263e;border:1px solid #194d6d;overflow:hidden}
 .progress-fill{height:100%;width:0;background:linear-gradient(90deg,#159bc9,#4ce6ff,#55efb2);box-shadow:0 0 10px #36dbff;transition:width .45s ease}
@@ -124,33 +124,24 @@ button{cursor:pointer}
 <body>
 <div class="app">
   <div id="engineView" class="view active">
-    <header class="topbar" id="secretHeader">
-      <div class="brand">PROJECT: STARFALL</div>
-      <h1>ENGINE RESTORATION</h1>
-      <div class="sub">NOVA • EMERGENCY REPAIR MODE</div>
-      <button class="terminal-btn" id="openTerminal">MISSION TERMINAL →</button>
-      <div class="statusbar"><span><span class="dot"></span>SHIP COMPUTER ONLINE</span><span id="shipStatus">5 SYSTEMS OFFLINE</span></div>
-    </header>
-
     <section class="engine-shell">
-      <div class="engine-title">MAIN ENGINE • DAMAGE OVERVIEW</div>
-      <div class="engine-room">
-        <div class="pipe p1"></div><div class="pipe p2"></div><div class="pipe p3"></div>
-        <div class="core-chamber"></div>
-
-        <div class="system sys-core" data-system="1"><div class="crack"></div><div class="sys-label">POWER CORE</div><div class="sys-icon">◉</div><div class="sys-state">OFFLINE</div></div>
-        <div class="system sys-routing" data-system="2"><div class="crack"></div><div class="sys-label">POWER ROUTING</div><div class="sys-icon">⌁</div><div class="sys-state">ROUTING FAILURE</div></div>
-        <div class="system sys-cooling" data-system="3"><div class="crack"></div><div class="sys-label">COOLING SYSTEM</div><div class="sys-icon">❄</div><div class="sys-state">TEMP CRITICAL</div></div>
-        <div class="system sys-nav" data-system="4"><div class="crack"></div><div class="sys-label">NAVIGATION / FUEL</div><div class="sys-icon">✦</div><div class="sys-state">SIGNAL LOST</div></div>
-        <div class="system sys-comms" data-system="5"><div class="crack"></div><div class="sys-label">COMMUNICATIONS</div><div class="sys-icon">◔</div><div class="sys-state">COMMS OFFLINE</div></div>
+      <div class="engine-map-wrap" id="secretHeader">
+        <img id="engineMapBase" class="engine-map-base" alt="Project Starfall damaged engine map">
+        <img class="repair-overlay repair-core" data-system="1" data-b64="./assets/starfall-core-fixed.b64" alt="">
+        <img class="repair-overlay repair-routing" data-system="2" data-b64="./assets/starfall-routing-fixed.b64" alt="">
+        <img class="repair-overlay repair-cooling" data-system="3" data-b64="./assets/starfall-cooling-fixed.b64" alt="">
+        <img class="repair-overlay repair-nav" data-system="4" data-b64="./assets/starfall-navigation-fixed.b64" alt="">
+        <img class="repair-overlay repair-comms" data-system="5" data-b64="./assets/starfall-comms-fixed.b64" alt="">
+        <button class="engine-terminal-btn" id="openTerminal">MISSION TERMINAL →</button>
       </div>
-      <div class="engine-progress">
+      <div class="engine-status-row">
+        <div class="engine-status"><span class="dot"></span><span id="shipStatus">5 SYSTEMS OFFLINE</span></div>
         <div class="progress-text" id="engineProgressText">0 / 5 RESTORED</div>
         <div class="progress-track"><div class="progress-fill" id="engineProgressFill"></div></div>
       </div>
     </section>
     <button class="launch" id="launchBtn">INITIATE LAUNCH SEQUENCE</button>
-    <div class="footer">SAME CREW • BRIGHTER WORLDS • PREVIEW MODE • BUILD 7</div>
+    <div class="footer">SAME CREW • BRIGHTER WORLDS • PREVIEW MODE • BUILD 8</div>
   </div>
 
   <div id="terminalView" class="view">
@@ -231,14 +222,22 @@ function completeMission(id){
  if(id>=4) state.navVerified=true;
  save();render();show('engineView');
 }
+async function loadB64Image(el,path){
+ try{
+   const r=await fetch(path,{cache:'no-store'});
+   if(!r.ok) throw new Error('asset');
+   const b64=(await r.text()).trim();
+   el.src='data:image/jpeg;base64,'+b64;
+ }catch(e){console.error('STARFALL asset failed',path,e)}
+}
+function loadEngineAssets(){
+ loadB64Image(document.getElementById('engineMapBase'),'./assets/starfall-engine-map.b64');
+ document.querySelectorAll('.repair-overlay[data-b64]').forEach(function(el){loadB64Image(el,el.getAttribute('data-b64'))});
+}
 function renderEngine(){
- document.querySelectorAll('.system').forEach(function(el){
+ document.querySelectorAll('.repair-overlay[data-system]').forEach(function(el){
    const id=Number(el.getAttribute('data-system'));
-   const fixed=id<=state.completed;
-   el.classList.toggle('fixed',fixed);
-   const st=el.querySelector('.sys-state');
-   if(fixed) st.textContent='SYSTEM ONLINE';
-   else st.textContent=id===1?'CORE OFFLINE':id===2?'ROUTING FAILURE':id===3?'TEMP CRITICAL':id===4?'SIGNAL LOST':'COMMS OFFLINE';
+   el.classList.toggle('visible',id<=state.completed);
  });
  const remaining=Math.max(0,5-state.completed);
  document.getElementById('shipStatus').textContent=remaining===0?'ALL SYSTEMS ONLINE':remaining+' SYSTEM'+(remaining===1?'':'S')+' OFFLINE';
@@ -404,6 +403,7 @@ document.getElementById('launchBtn').onclick=function(){
 document.getElementById('closeLaunch').onclick=function(){document.getElementById('launchModal').classList.remove('show');show('engineView')};
 
 render();
+loadEngineAssets();
 if('serviceWorker' in navigator){
  navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister()})}).catch(function(){});
  if('caches' in window)caches.keys().then(function(keys){keys.forEach(function(k){caches.delete(k)})}).catch(function(){});
