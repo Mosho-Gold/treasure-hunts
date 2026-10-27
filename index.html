@@ -78,39 +78,53 @@ button:not(:disabled):not(.locked):active{
 .fx-nav{left:42.541%;top:59.300%;width:15.124%;height:20.074%}
 .fx-comms{left:72.859%;top:56.814%;width:14.986%;height:20.258%}
 .repair-overlay.visible{opacity:1;filter:brightness(1) drop-shadow(0 0 5px rgba(78,228,255,.30));animation:repairedPulse 4.8s ease-in-out infinite}
-.engine-map-wrap:after{
-  content:"";
+.core-chamber-glow{
   position:absolute;
   left:49.9%;
-  top:39.9%;
-  width:10.2%;
-  height:24.8%;
+  top:39.7%;
+  width:10.8%;
+  height:25.5%;
   transform:translate(-50%,-50%);
-  border-radius:42% / 16%;
+  border-radius:44% / 18%;
   pointer-events:none;
-  z-index:2;
+  z-index:4;
   background:
-    radial-gradient(ellipse at center,rgba(190,250,255,.30) 0%,rgba(86,226,255,.22) 36%,rgba(45,180,230,.10) 62%,transparent 78%),
-    linear-gradient(90deg,transparent 0%,rgba(105,235,255,.11) 26%,rgba(190,250,255,.20) 50%,rgba(105,235,255,.11) 74%,transparent 100%);
-  box-shadow:0 0 14px rgba(74,218,255,.18),inset 0 0 16px rgba(170,245,255,.12);
-  filter:blur(.6px);
+    radial-gradient(ellipse at center,rgba(232,254,255,.50) 0%,rgba(115,236,255,.40) 30%,rgba(48,196,240,.20) 58%,transparent 79%),
+    linear-gradient(90deg,transparent 0%,rgba(102,236,255,.20) 25%,rgba(226,253,255,.42) 50%,rgba(102,236,255,.20) 75%,transparent 100%);
+  box-shadow:
+    0 0 16px rgba(60,220,255,.32),
+    0 0 30px rgba(38,188,238,.18),
+    inset 0 0 22px rgba(205,252,255,.24);
   mix-blend-mode:screen;
-  animation:centerCoreGlow 3.8s ease-in-out infinite;
+  animation:centerCoreGlow 2.9s ease-in-out infinite;
+}
+.core-chamber-glow:after{
+  content:"";
+  position:absolute;
+  left:18%;right:18%;top:8%;bottom:8%;
+  border-radius:45% / 16%;
+  background:linear-gradient(180deg,rgba(230,255,255,.05),rgba(130,240,255,.28),rgba(220,255,255,.08));
+  filter:blur(2px);
+  animation:coreEnergySweep 2.9s ease-in-out infinite;
 }
 @keyframes centerCoreGlow{
   0%,100%{
     opacity:.48;
-    transform:translate(-50%,-50%) scale(.985);
-    box-shadow:0 0 12px rgba(74,218,255,.16),inset 0 0 13px rgba(170,245,255,.10);
+    transform:translate(-50%,-50%) scale(.97);
+    filter:brightness(.96);
   }
   50%{
-    opacity:.82;
-    transform:translate(-50%,-50%) scale(1.015);
-    box-shadow:0 0 22px rgba(74,218,255,.28),inset 0 0 22px rgba(190,250,255,.19);
+    opacity:1;
+    transform:translate(-50%,-50%) scale(1.035);
+    filter:brightness(1.28);
   }
 }
+@keyframes coreEnergySweep{
+  0%,100%{opacity:.35;transform:scaleY(.92)}
+  50%{opacity:.9;transform:scaleY(1.05)}
+}
 @media(prefers-reduced-motion:reduce){
-  .engine-map-wrap:after{animation:none}
+  .core-chamber-glow,.core-chamber-glow:after{animation:none}
 }
 
 @keyframes smokeDrift{
@@ -132,6 +146,12 @@ button:not(:disabled):not(.locked):active{
 @media(prefers-reduced-motion:reduce){
   .damage-fx .smoke,.damage-fx .spark,.repair-overlay.visible{animation:none}
 }
+.engine-menu-btn{
+  position:absolute;left:1.5%;top:1.8%;z-index:9;
+  border:2px solid #31d7ff;background:rgba(4,31,55,.93);color:#e8fbff;
+  border-radius:10px;padding:10px 12px;font-size:11px;font-weight:900;letter-spacing:.7px;
+  box-shadow:0 0 15px #21d7ff55
+}
 .engine-terminal-btn{
   position:absolute;right:1.5%;top:1.8%;z-index:8;
   border:2px solid #31d7ff;background:rgba(4,31,55,.93);color:#e8fbff;
@@ -142,7 +162,7 @@ button:not(:disabled):not(.locked):active{
 .engine-status{font-size:10px;letter-spacing:1px;color:#8ec5de;font-weight:900;white-space:nowrap}
 @media(max-width:680px){
  .engine-map-wrap{border-radius:10px}
- .engine-terminal-btn{font-size:8px;padding:7px 8px;border-width:1px}
+ .engine-terminal-btn,.engine-menu-btn{font-size:8px;padding:7px 8px;border-width:1px}
  .engine-status-row{padding:8px}.engine-status{font-size:8px}
 }
 .engine-progress{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:11px;padding:10px;border:1px solid #195275;border-radius:12px;background:#051426}
@@ -206,6 +226,8 @@ button:not(:disabled):not(.locked):active{
     <section class="engine-shell">
       <div class="engine-map-wrap" id="secretHeader">
         <img id="engineMapBase" class="engine-map-base" alt="Project Starfall damaged engine map">
+        <div class="core-chamber-glow" aria-hidden="true"></div>
+        <button class="engine-menu-btn" id="openMenu">☰ MENU</button>
         <img class="repair-overlay repair-core" data-system="1" data-b64="./assets/starfall-core-fixed.b64" alt="">
         <img class="repair-overlay repair-routing" data-system="2" data-b64="./assets/starfall-routing-fixed.b64" alt="">
         <img class="repair-overlay repair-cooling" data-system="3" data-b64="./assets/starfall-cooling-fixed.b64" alt="">
@@ -225,7 +247,7 @@ button:not(:disabled):not(.locked):active{
       </div>
     </section>
     <button class="launch" id="launchBtn">INITIATE LAUNCH SEQUENCE</button>
-    <div class="footer">SAME CREW • BRIGHTER WORLDS • PREVIEW MODE • BUILD 15</div>
+    <div class="footer">SAME CREW • BRIGHTER WORLDS • PREVIEW MODE • BUILD 16</div>
   </div>
 
   <div id="terminalView" class="view">
@@ -473,6 +495,7 @@ function renderParent(){
  pg.appendChild(reset);
 }
 
+document.getElementById('openMenu').onclick=function(e){e.stopPropagation();renderParent();document.getElementById('parentModal').classList.add('show')};
 document.getElementById('openTerminal').onclick=function(){renderTerminal();show('terminalView')};
 document.getElementById('terminalBack').onclick=function(){show('engineView')};
 document.getElementById('backBtn').onclick=function(){renderTerminal();show('terminalView')};
