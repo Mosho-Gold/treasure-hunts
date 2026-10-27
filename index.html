@@ -141,7 +141,7 @@ button{cursor:pointer}
       </div>
     </section>
     <button class="launch" id="launchBtn">INITIATE LAUNCH SEQUENCE</button>
-    <div class="footer">SAME CREW • BRIGHTER WORLDS • PREVIEW MODE • BUILD 8</div>
+    <div class="footer">SAME CREW • BRIGHTER WORLDS • PREVIEW MODE • BUILD 9</div>
   </div>
 
   <div id="terminalView" class="view">
@@ -306,7 +306,7 @@ function openMission(m){
  else if(m.id===4){
    html='<p>Assemble the approved 24-piece Star Chart. Trace one safe route from START to DESTINATION and record the navigation symbols in the order you encounter them.</p>'+
    '<div class="input-panel"><div class="input-label">NAVIGATION SEQUENCE</div><div class="symbol-seq"><div class="symbol-slot"></div><div class="symbol-slot"></div><div class="symbol-slot"></div><div class="symbol-slot"></div></div>'+
-   '<div class="symbol-pad"><button class="symbol-btn" data-symbol="STAR">STAR</button><button class="symbol-btn" data-symbol="TRIANGLE">TRIANGLE</button><button class="symbol-btn" data-symbol="SPIRAL">SPIRAL</button><button class="symbol-btn" data-symbol="DIAMOND">DIAMOND</button></div>'+
+   '<div class="symbol-pad"><button class="symbol-btn" data-symbol="DIAMOND">DIAMOND</button><button class="symbol-btn" data-symbol="STAR">STAR</button><button class="symbol-btn" data-symbol="SPIRAL">SPIRAL</button><button class="symbol-btn" data-symbol="TRIANGLE">TRIANGLE</button></div>'+
    '<div class="actions"><button id="navClear" class="secondary">CLEAR</button><button id="navVerify" class="primary">VERIFY ROUTE</button></div><div id="m4msg" class="msg">Awaiting navigation sequence...</div>'+
    '<div id="fuelStage" style="display:none"><div class="alert"><strong>ROUTE CONFIRMED — LOW FUEL</strong><br>Current fuel reserves are insufficient. Find the emergency fuel cells and install the four cells that match the route symbols in the same order.</div><button id="fuelDone" class="primary" style="width:100%;margin-top:10px">FUEL CELLS INSTALLED</button></div></div>';
  }
