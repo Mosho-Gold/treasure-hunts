@@ -81,22 +81,33 @@ button:not(:disabled):not(.locked):active{
 .engine-map-wrap:after{
   content:"";
   position:absolute;
-  left:50%;
-  top:43.7%;
-  width:20%;
-  aspect-ratio:1;
+  left:49.9%;
+  top:39.9%;
+  width:10.2%;
+  height:24.8%;
   transform:translate(-50%,-50%);
-  border-radius:50%;
+  border-radius:42% / 16%;
   pointer-events:none;
   z-index:2;
-  background:radial-gradient(circle,rgba(130,238,255,.25) 0%,rgba(68,210,255,.16) 28%,rgba(41,167,220,.08) 48%,transparent 72%);
-  filter:blur(2px);
+  background:
+    radial-gradient(ellipse at center,rgba(190,250,255,.30) 0%,rgba(86,226,255,.22) 36%,rgba(45,180,230,.10) 62%,transparent 78%),
+    linear-gradient(90deg,transparent 0%,rgba(105,235,255,.11) 26%,rgba(190,250,255,.20) 50%,rgba(105,235,255,.11) 74%,transparent 100%);
+  box-shadow:0 0 14px rgba(74,218,255,.18),inset 0 0 16px rgba(170,245,255,.12);
+  filter:blur(.6px);
   mix-blend-mode:screen;
-  animation:centerCoreGlow 4.2s ease-in-out infinite;
+  animation:centerCoreGlow 3.8s ease-in-out infinite;
 }
 @keyframes centerCoreGlow{
-  0%,100%{opacity:.52;transform:translate(-50%,-50%) scale(.96)}
-  50%{opacity:.78;transform:translate(-50%,-50%) scale(1.04)}
+  0%,100%{
+    opacity:.48;
+    transform:translate(-50%,-50%) scale(.985);
+    box-shadow:0 0 12px rgba(74,218,255,.16),inset 0 0 13px rgba(170,245,255,.10);
+  }
+  50%{
+    opacity:.82;
+    transform:translate(-50%,-50%) scale(1.015);
+    box-shadow:0 0 22px rgba(74,218,255,.28),inset 0 0 22px rgba(190,250,255,.19);
+  }
 }
 @media(prefers-reduced-motion:reduce){
   .engine-map-wrap:after{animation:none}
@@ -214,7 +225,7 @@ button:not(:disabled):not(.locked):active{
       </div>
     </section>
     <button class="launch" id="launchBtn">INITIATE LAUNCH SEQUENCE</button>
-    <div class="footer">SAME CREW • BRIGHTER WORLDS • PREVIEW MODE • BUILD 14</div>
+    <div class="footer">SAME CREW • BRIGHTER WORLDS • PREVIEW MODE • BUILD 15</div>
   </div>
 
   <div id="terminalView" class="view">
