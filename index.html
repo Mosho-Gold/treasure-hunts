@@ -208,6 +208,17 @@ button:not(:disabled):not(.locked):active{
 .alert{margin-top:12px;border:2px solid #b54755;border-radius:12px;padding:12px;background:#2b1119;color:#ffd3d8}.alert strong{color:#ff7888}
 .successbox{margin-top:12px;border:2px solid #39c99a;border-radius:12px;padding:12px;background:#092b25;color:#b8f5df}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.brief-box{margin:0 0 14px;padding:14px;border:1px solid #236b91;border-radius:13px;background:linear-gradient(145deg,#08243d,#061a30);box-shadow:inset 0 0 18px #2bd8ff0d}
+.brief-title{font-size:10px;letter-spacing:2px;color:#77e8ff;font-weight:900;margin-bottom:7px}
+.brief-box p{margin:0 0 9px;color:#d4f3ff;font-size:13px;line-height:1.45}
+.brief-box ol{margin:8px 0 0;padding-left:21px;color:#bde6f6;font-size:12px;line-height:1.55}
+.brief-box li{margin:4px 0}
+.emergency-tag{display:inline-block;padding:5px 8px;border:1px solid #ff7183;border-radius:999px;background:#40141d;color:#ffb0ba;font-size:9px;font-weight:900;letter-spacing:1.6px;margin-bottom:8px}
+.emergency-card{border-color:#ff7183!important;box-shadow:0 0 42px #ff52632b!important}
+.intro-ui{display:grid;gap:8px;margin:13px 0}
+.intro-row{padding:10px;border:1px solid #1f6288;border-radius:10px;background:#061a30;color:#bfeaff;font-size:12px;line-height:1.4}
+.intro-row strong{color:#7cecff}
+
 
 .modal{position:fixed;inset:0;background:#020b16ee;display:none;align-items:center;justify-content:center;padding:18px;z-index:50}.modal.show{display:flex}
 .modal-card{width:min(440px,100%);border:2px solid #2cd7ff;border-radius:17px;background:#071b31;padding:17px;box-shadow:0 0 38px #20cfff2b}.modal h3{margin:0 0 5px}.modal p{font-size:12px;color:#9cc9df}
@@ -247,7 +258,7 @@ button:not(:disabled):not(.locked):active{
       </div>
     </section>
     <button class="launch" id="launchBtn">INITIATE LAUNCH SEQUENCE</button>
-    <div class="footer">SAME CREW • BRIGHTER WORLDS • PREVIEW MODE • BUILD 17</div>
+    <div class="footer">SAME CREW • BRIGHTER WORLDS • BUILD 18</div>
   </div>
 
   <div id="terminalView" class="view">
@@ -278,10 +289,52 @@ button:not(:disabled):not(.locked):active{
   </div>
 </div>
 
+<div class="modal" id="introModal">
+  <div class="modal-card">
+    <div class="mv-kicker">NOVA // SHIP AI</div>
+    <h3>CREW, WE HAVE A PROBLEM.</h3>
+    <p>Our ship has been damaged. Five critical systems must be repaired before we can launch.</p>
+    <div class="intro-ui">
+      <div class="intro-row"><strong>ENGINE MAP</strong><br>Shows which ship systems are damaged and which repairs are online.</div>
+      <div class="intro-row"><strong>MISSION TERMINAL</strong><br>Open this to receive your next mission briefing.</div>
+      <div class="intro-row"><strong>MISSION ANSWER</strong><br>Complete the physical challenge, then return to the terminal and enter the code or solution you discovered.</div>
+    </div>
+    <p><strong>NOVA:</strong> Open the Mission Terminal and begin Mission 1: Power Core Recovery.</p>
+    <button class="primary" id="beginGame" style="width:100%;margin-top:8px">BEGIN RESTORATION</button>
+  </div>
+</div>
+
+<div class="modal" id="fuelModal">
+  <div class="modal-card emergency-card">
+    <div class="emergency-tag">⚠ EMERGENCY MISSION</div>
+    <div class="mv-kicker">NOVA // FUEL WARNING</div>
+    <h3>FUEL RESERVES CRITICAL</h3>
+    <p><strong>Navigation is online, but the ship does not have enough fuel to continue.</strong> Complete the emergency refueling procedure before Communications can be unlocked.</p>
+    <div class="brief-box">
+      <div class="brief-title">EMERGENCY FUEL BRIEFING</div>
+      <p>Use ordinary household supplies: water, a bucket or bowl, and a clear bottle.</p>
+      <ol>
+        <li>Fill the bucket or bowl with water — this is your emergency fuel.</li>
+        <li>Every crew member must take part in passing the fuel down the line without spilling it.</li>
+        <li>At the end of the relay, pour the recovered fuel into the clear bottle.</li>
+        <li>As the fuel level rises, the hidden floating safety code will rise into view.</li>
+        <li>Enter the four-digit Fuel Safety Code below.</li>
+      </ol>
+    </div>
+    <div class="input-panel" id="fuelInputPanel">
+      <div class="input-label">FUEL SAFETY CODE</div>
+      <div class="code-row"><input id="fuelCodeInput" class="code-input" inputmode="numeric" maxlength="4" placeholder="••••"><button id="fuelVerify" class="primary">VERIFY</button></div>
+      <div id="fuelMsg" class="msg">Awaiting fuel safety code...</div>
+    </div>
+    <div id="fuelSuccess" class="successbox" style="display:none"><strong>FUEL RESERVES RESTORED</strong><br>Emergency fuel level verified. Communications access is now unlocked.</div>
+    <button class="primary" id="fuelContinue" style="display:none;width:100%;margin-top:12px">CONTINUE TO MISSION TERMINAL</button>
+  </div>
+</div>
+
 <div class="modal" id="parentModal">
   <div class="modal-card">
     <h3>PARENT / GAME MASTER CONTROLS</h3>
-    <p>Preview, recover progress, or reset the game. Hold the PROJECT: STARFALL engine header for 2 seconds to reopen.</p>
+    <p>Preview, recover progress, replay NOVA’s introduction, or reset the game.</p>
     <div class="parent-grid" id="parentGrid"></div>
     <button class="secondary" id="closeParent" style="width:100%;margin-top:10px">CLOSE</button>
   </div>
@@ -298,12 +351,13 @@ button:not(:disabled):not(.locked):active{
 </div>
 
 <script>
-const PREVIEW_ALL_MISSIONS=true;
+const PREVIEW_ALL_MISSIONS=false;
+const FUEL_CODE='4827';
 const missions=[
- {id:1,title:'POWER CORE',desc:'Recover and verify the replacement core'},
+ {id:1,title:'POWER CORE',desc:'Cross the laser field and verify the replacement core'},
  {id:2,title:'POWER ROUTING',desc:'Solve the routing logic and restore power flow'},
  {id:3,title:'COOLING SYSTEM',desc:'Rebuild the coolant route and transfer coolant'},
- {id:4,title:'NAVIGATION / FUEL',desc:'Rebuild the star chart, verify the route, then restore fuel'},
+ {id:4,title:'NAVIGATION ARRAY',desc:'Rebuild the Star Chart and verify the safe route'},
  {id:5,title:'COMMUNICATIONS',desc:'Restore the orbital signal'}
 ];
 
@@ -313,12 +367,15 @@ try{parsed=JSON.parse(raw||'{}')}catch(e){parsed={}}
 if(typeof parsed==='number') parsed={completed:parsed};
 let state={
  completed:Number(parsed.completed)||0,
- navVerified:!!parsed.navVerified
+ navVerified:!!parsed.navVerified,
+ fuelVerified:parsed.fuelVerified===undefined ? (Number(parsed.completed)>=5) : !!parsed.fuelVerified,
+ introSeen:!!parsed.introSeen
 };
 function save(){localStorage.setItem('starfallProgress',JSON.stringify(state))}
 function show(id){['engineView','terminalView','missionView'].forEach(function(v){document.getElementById(v).classList.toggle('active',v===id)})}
 function missionState(id){
  if(id<=state.completed)return 'complete';
+ if(id===5 && state.completed>=4 && !state.fuelVerified)return 'locked';
  if(PREVIEW_ALL_MISSIONS)return 'current';
  if(id===state.completed+1)return 'current';
  return 'locked';
@@ -328,6 +385,16 @@ function completeMission(id){
  if(id>=4) state.navVerified=true;
  save();render();show('engineView');
 }
+function showIntro(){
+ document.getElementById('introModal').classList.add('show');
+}
+function showFuelEmergency(){
+ if(state.fuelVerified)return;
+ document.getElementById('fuelModal').classList.add('show');
+ const input=document.getElementById('fuelCodeInput');
+ if(input){input.value='';setMsg('fuelMsg','Awaiting fuel safety code...',true)}
+}
+
 async function loadB64Image(el,path){
  try{
    const r=await fetch(path,{cache:'no-store'});
@@ -361,18 +428,20 @@ function renderTerminal(){
    const s=missionState(m.id);
    const b=document.createElement('button');
    b.className='mission '+s;
-   b.innerHTML='<div class="mnum">MISSION '+m.id+'</div><span class="state">'+(s==='complete'?'ONLINE':s==='locked'?'LOCKED':'ACTIVE')+'</span><h3>'+m.title+'</h3><div class="desc">'+m.desc+'</div>';
+   const stateText=s==='complete'?'ONLINE':s==='locked'?'LOCKED':'ACTIVE';
+   b.innerHTML='<div class="mnum">MISSION '+m.id+'</div><span class="state">'+stateText+'</span><h3>'+m.title+'</h3><div class="desc">'+m.desc+'</div>';
    b.onclick=function(){if(s!=='locked')openMission(m)};
    grid.appendChild(b);
  });
  document.getElementById('terminalProgressText').textContent=state.completed+' / 5 SYSTEMS RESTORED';
  document.getElementById('terminalProgressFill').style.width=(state.completed*20)+'%';
  const msg=document.getElementById('novaMessage');
- if(state.completed===0) msg.innerHTML='<strong>Crew, the ship is damaged.</strong><br>Begin with the Power Core. Complete the physical challenge, then verify the repair here.';
- else if(state.completed===1) msg.innerHTML='<strong>Power Core online.</strong><br>Power is not reaching the ship systems. Restore Power Routing.';
- else if(state.completed===2) msg.innerHTML='<strong>Power flow restored.</strong><br>Engine temperature is rising. The Cooling System must be repaired.';
- else if(state.completed===3) msg.innerHTML='<strong>Cooling stable.</strong><br>The Navigation Array is still damaged. Rebuild the Star Chart.';
- else if(state.completed===4) msg.innerHTML='<strong>Navigation and fuel restored.</strong><br>One system remains: Communications.';
+ if(state.completed===0) msg.innerHTML='<strong>Crew, the ship is damaged.</strong><br>Open Mission 1 for your Power Core briefing.';
+ else if(state.completed===1) msg.innerHTML='<strong>Power Core online.</strong><br>Power is not reaching the ship systems. Open Mission 2.';
+ else if(state.completed===2) msg.innerHTML='<strong>Power flow restored.</strong><br>Engine temperature is rising. Open Mission 3.';
+ else if(state.completed===3) msg.innerHTML='<strong>Cooling stable.</strong><br>The Navigation Array is still damaged. Open Mission 4.';
+ else if(state.completed===4 && !state.fuelVerified) msg.innerHTML='<strong>Navigation restored — emergency fuel warning.</strong><br>Complete the emergency refueling procedure before Mission 5 can unlock.';
+ else if(state.completed===4) msg.innerHTML='<strong>Fuel reserves restored.</strong><br>Mission 5: Communications is now available.';
  else msg.innerHTML='<strong>All critical systems restored.</strong><br>Return to the engine and initiate launch.';
 }
 function render(){renderEngine();renderTerminal();renderParent()}
@@ -381,26 +450,32 @@ function setMsg(id,text,good){
  el.className='msg '+(good?'good':'bad'); el.textContent=text;
 }
 
+function briefHTML(id){
+ if(id===1)return '<div class="brief-box"><div class="brief-title">NOVA BRIEFING • POWER CORE RECOVERY</div><p>The ship\'s Power Core is offline. Your crew must cross the laser security field and recover the replacement core.</p><ol><li>Every crew member must cross the laser field.</li><li>If anyone touches a laser, reset that attempt.</li><li>Only after the whole crew is safely across may you recover the replacement Power Core.</li><li>Find the serial number printed on the Core and enter it below.</li></ol></div>';
+ if(id===2)return '<div class="brief-box"><div class="brief-title">NOVA BRIEFING • POWER ROUTING</div><p>The new core has power, but the ship cannot distribute it. Repair the routing network.</p><ol><li>Use the Symbol Equations to recover the missing routing information.</li><li>Use the Diagnostic Clues to determine which port belongs to each ship system.</li><li>Draw the correct system-to-port connections on the physical puzzle.</li><li>Enter the five final port values below.</li></ol></div>';
+ if(id===3)return '<div class="brief-box"><div class="brief-title">NOVA BRIEFING • COOLING EMERGENCY</div><p>The engines are overheating. Rebuild the damaged coolant line before the reactor temperature becomes critical.</p><ol><li>Find the scattered pipe pieces.</li><li>Build a continuous coolant route from the tank, through the pumps, to all three reactors.</li><li>Ignore damaged and incorrect decoy pipes.</li><li>Read the six small maintenance numbers on the finished route from start to finish.</li><li>Enter the Coolant Layout Number below, then complete the coolant-transfer challenge.</li></ol></div>';
+ if(id===4)return '<div class="brief-box"><div class="brief-title">NOVA BRIEFING • NAVIGATION ARRAY</div><p>The Navigation Array cannot calculate a safe course. Reconstruct the damaged Star Chart.</p><ol><li>Assemble the approved 24-piece Star Chart puzzle.</li><li>Trace a safe route from START to DESTINATION.</li><li>Avoid the hazardous sectors.</li><li>Record the navigation symbols you encounter in order.</li><li>Enter that symbol sequence below to verify the route.</li></ol></div>';
+ return '<div class="brief-box"><div class="brief-title">NOVA BRIEFING • COMMUNICATIONS</div><p>The Communications Array is offline. Restore the decoder so the ship can transmit its final launch signal.</p><ol><li>Use the circular decoder and the mission clues.</li><li>Determine the required LEFT and RIGHT rotations.</li><li>Record the symbols revealed by the decoder window.</li><li>Convert the result into the final communications frequency.</li></ol></div>';
+}
+
 function openMission(m){
  show('missionView');
  document.getElementById('mvKicker').textContent='PROJECT: STARFALL • MISSION '+m.id;
  document.getElementById('mvTitle').textContent=m.title;
  const s=missionState(m.id);
  document.getElementById('mvStatus').textContent=s==='complete'?'SYSTEM STATUS: ONLINE':'SYSTEM STATUS: MISSION ACTIVE';
- let html='';
+ let html=briefHTML(m.id);
 
  if(s==='complete'){
-   html='<div class="successbox"><strong>SYSTEM ONLINE</strong><br>This repair has been verified and recorded by NOVA.</div>';
+   html+='<div class="successbox"><strong>SYSTEM ONLINE</strong><br>This repair has been verified and recorded by NOVA.</div>';
  }
  else if(m.id===1){
-   html='<p><strong>NOVA:</strong> Recover the replacement Power Core after every crew member crosses the laser field safely.</p>'+
-   '<div class="input-panel"><div class="input-label">REPLACEMENT CORE • SERIAL NUMBER</div><div class="code-row">'+
+   html+='<div class="input-panel"><div class="input-label">MISSION ANSWER • REPLACEMENT CORE SERIAL</div><div class="code-row">'+
    '<input id="coreSerialInput" class="code-input" inputmode="numeric" maxlength="6" placeholder="••••••"><button id="coreSerialSubmit" class="primary">VERIFY</button></div>'+
    '<div id="m1msg" class="msg">Awaiting replacement core serial...</div></div>';
  }
  else if(m.id===2){
-   html='<p>Complete the approved Symbol Equations and Diagnostic Clues. Then enter the final port value for each system.</p>'+
-   '<div class="input-panel"><div class="input-label">POWER ROUTING • PORT VALUES</div>'+
+   html+='<div class="input-panel"><div class="input-label">MISSION ANSWER • POWER ROUTING PORT VALUES</div>'+
    '<div class="routing-grid"><label>Reactor</label><input id="rReactor" inputmode="numeric"></div>'+
    '<div class="routing-grid"><label>Navigation</label><input id="rNavigation" inputmode="numeric"></div>'+
    '<div class="routing-grid"><label>Communications</label><input id="rCommunications" inputmode="numeric"></div>'+
@@ -409,20 +484,16 @@ function openMission(m){
    '<div class="actions"><button id="routingVerify" class="primary">VERIFY ROUTING</button></div><div id="m2msg" class="msg">Awaiting routing solution...</div></div>';
  }
  else if(m.id===3){
-   html='<p>Rebuild the approved cooling route with the recovered pipe pieces. Read the small maintenance numbers on the completed route and enter the six-digit Coolant Layout Number.</p>'+
-   '<div class="input-panel"><div class="input-label">COOLANT LAYOUT NUMBER</div><div class="code-row"><input id="coolantCode" class="code-input" inputmode="numeric" maxlength="6" placeholder="••••••"><button id="coolantVerify" class="primary">VERIFY</button></div>'+
+   html+='<div class="input-panel"><div class="input-label">MISSION ANSWER • COOLANT LAYOUT NUMBER</div><div class="code-row"><input id="coolantCode" class="code-input" inputmode="numeric" maxlength="6" placeholder="••••••"><button id="coolantVerify" class="primary">VERIFY</button></div>'+
    '<div id="m3msg" class="msg">Awaiting coolant layout number...</div><div id="coolantStage" style="display:none"><div class="successbox"><strong>ROUTE VERIFIED</strong><br>Coolant line integrity confirmed. Complete the physical coolant-transfer challenge.</div><button id="coolantDone" class="primary" style="width:100%;margin-top:10px">COOLANT TRANSFER COMPLETE</button></div></div>';
  }
  else if(m.id===4){
-   html='<p>Assemble the approved 24-piece Star Chart. Trace one safe route from START to DESTINATION and record the navigation symbols in the order you encounter them.</p>'+
-   '<div class="input-panel"><div class="input-label">NAVIGATION SEQUENCE</div><div class="symbol-seq"><div class="symbol-slot"></div><div class="symbol-slot"></div><div class="symbol-slot"></div><div class="symbol-slot"></div></div>'+
+   html+='<div class="input-panel"><div class="input-label">MISSION ANSWER • NAVIGATION SEQUENCE</div><div class="symbol-seq"><div class="symbol-slot"></div><div class="symbol-slot"></div><div class="symbol-slot"></div><div class="symbol-slot"></div></div>'+
    '<div class="symbol-pad"><button class="symbol-btn" data-symbol="DIAMOND">DIAMOND</button><button class="symbol-btn" data-symbol="STAR">STAR</button><button class="symbol-btn" data-symbol="SPIRAL">SPIRAL</button><button class="symbol-btn" data-symbol="TRIANGLE">TRIANGLE</button></div>'+
-   '<div class="actions"><button id="navClear" class="secondary">CLEAR</button><button id="navVerify" class="primary">VERIFY ROUTE</button></div><div id="m4msg" class="msg">Awaiting navigation sequence...</div>'+
-   '<div id="fuelStage" style="display:none"><div class="alert"><strong>ROUTE CONFIRMED — LOW FUEL</strong><br>Current fuel reserves are insufficient. Find the emergency fuel cells and install the four cells that match the route symbols in the same order.</div><button id="fuelDone" class="primary" style="width:100%;margin-top:10px">FUEL CELLS INSTALLED</button></div></div>';
+   '<div class="actions"><button id="navClear" class="secondary">CLEAR</button><button id="navVerify" class="primary">VERIFY ROUTE</button></div><div id="m4msg" class="msg">Awaiting navigation sequence...</div></div>';
  }
  else {
-   html='<p>The Communications Array is offline. Mission 5 will use the circular decoder to determine LEFT / RIGHT turns and produce the final communications frequency.</p>'+
-   '<div class="note">This physical decoder/frequency mechanic is still being finalized, so the app does not invent a verification code yet. Use Parent / Game Master Controls for preview testing.</div>';
+   html+='<div class="note">The physical decoder and final communications frequency are still being finalized. The briefing is in place, but no answer is being invented until Mission 5 is locked.</div>';
  }
  document.getElementById('mvContent').innerHTML=html;
  bindMission(m.id,s);
@@ -452,8 +523,6 @@ function bindMission(id,s){
  if(id===3){
    document.getElementById('coolantVerify').onclick=function(){
      const v=(document.getElementById('coolantCode').value||'').replace(/\D/g,'');
-     // The approved numbered sheet uses six route digits. Because equivalent pipe pieces can swap positions on the branched route,
-     // verification accepts the correct six-number set while still rejecting numbered decoys.
      const ok=v.length===6 && v.split('').sort().join('')==='123469';
      if(ok){
        setMsg('m3msg','COOLANT LAYOUT VERIFIED',true);
@@ -467,17 +536,17 @@ function bindMission(id,s){
    const slots=[].slice.call(document.querySelectorAll('.symbol-slot'));
    function paint(){slots.forEach(function(el,i){el.textContent=seq[i]||''})}
    [].slice.call(document.querySelectorAll('.symbol-btn')).forEach(function(b){b.onclick=function(){if(seq.length<4){seq.push(b.getAttribute('data-symbol'));paint()}}});
-   document.getElementById('navClear').onclick=function(){seq=[];paint();document.getElementById('fuelStage').style.display='none';setMsg('m4msg','Awaiting navigation sequence...',true)};
+   document.getElementById('navClear').onclick=function(){seq=[];paint();setMsg('m4msg','Awaiting navigation sequence...',true)};
    document.getElementById('navVerify').onclick=function(){
      const ok=seq.join('|')==='STAR|TRIANGLE|SPIRAL|DIAMOND';
      if(ok){
-       state.navVerified=true;save();
-       setMsg('m4msg','ROUTE VERIFIED • NAVIGATION SOLUTION ACCEPTED',true);
-       document.getElementById('fuelStage').style.display='block';
+       state.navVerified=true;
+       state.completed=Math.max(state.completed,4);
+       state.fuelVerified=false;
+       save();render();
+       setMsg('m4msg','ROUTE VERIFIED • NAVIGATION ARRAY RESTORED',true);
+       setTimeout(function(){show('engineView');showFuelEmergency()},650);
      } else setMsg('m4msg','ROUTE NOT RECOGNIZED • TRACE START TO DESTINATION AGAIN',false);
-   };
-   document.getElementById('fuelDone').onclick=function(){
-     if(state.navVerified) completeMission(4);
    };
  }
 }
@@ -487,14 +556,56 @@ function renderParent(){
  missions.forEach(function(m){
    const b=document.createElement('button');
    b.textContent=m.id<=state.completed?'✓ Mission '+m.id+' complete':'Set progress through M'+m.id;
-   b.onclick=function(){state.completed=m.id;if(m.id>=4)state.navVerified=true;save();render();document.getElementById('parentModal').classList.remove('show');show('engineView')};
+   b.onclick=function(){
+     state.completed=m.id;
+     state.navVerified=m.id>=4;
+     state.fuelVerified=m.id>=5;
+     state.introSeen=true;
+     save();render();
+     document.getElementById('parentModal').classList.remove('show');
+     show('engineView');
+     if(m.id===4)showFuelEmergency();
+   };
    pg.appendChild(b);
  });
+ const intro=document.createElement('button');intro.textContent='REPLAY NOVA INTRO';
+ intro.onclick=function(){document.getElementById('parentModal').classList.remove('show');showIntro()};
+ pg.appendChild(intro);
  const reset=document.createElement('button');reset.className='danger';reset.textContent='RESET GAME';
- reset.onclick=function(){state={completed:0,navVerified:false};save();render();document.getElementById('parentModal').classList.remove('show');show('engineView')};
+ reset.onclick=function(){
+   state={completed:0,navVerified:false,fuelVerified:false,introSeen:false};
+   save();render();
+   document.getElementById('parentModal').classList.remove('show');
+   show('engineView');showIntro();
+ };
  pg.appendChild(reset);
 }
 
+document.getElementById('beginGame').onclick=function(){
+ state.introSeen=true;save();document.getElementById('introModal').classList.remove('show');show('engineView');
+ if(state.completed>=4 && !state.fuelVerified)setTimeout(showFuelEmergency,250);
+};
+document.getElementById('fuelVerify').onclick=function(){
+ const input=document.getElementById('fuelCodeInput');
+ const v=(input.value||'').replace(/\D/g,'');
+ if(v===FUEL_CODE){
+   state.fuelVerified=true;save();render();
+   setMsg('fuelMsg','FUEL SAFETY CODE VERIFIED',true);
+   document.getElementById('fuelSuccess').style.display='block';
+   document.getElementById('fuelContinue').style.display='block';
+   document.getElementById('fuelInputPanel').style.display='none';
+ }else{
+   setMsg('fuelMsg','CODE NOT RECOGNIZED • CHECK THE FLOATING SAFETY CODE',false);
+   input.value='';
+ }
+};
+document.getElementById('fuelContinue').onclick=function(){
+ document.getElementById('fuelModal').classList.remove('show');
+ document.getElementById('fuelInputPanel').style.display='block';
+ document.getElementById('fuelSuccess').style.display='none';
+ document.getElementById('fuelContinue').style.display='none';
+ renderTerminal();show('terminalView');
+};
 document.getElementById('openMenu').onclick=function(e){e.stopPropagation();renderParent();document.getElementById('parentModal').classList.add('show')};
 document.getElementById('openTerminal').onclick=function(){renderTerminal();show('terminalView')};
 document.getElementById('terminalBack').onclick=function(){show('engineView')};
@@ -515,6 +626,8 @@ document.getElementById('closeLaunch').onclick=function(){document.getElementByI
 
 render();
 loadEngineAssets();
+if(!state.introSeen)showIntro();
+else if(state.completed>=4 && !state.fuelVerified)showFuelEmergency();
 if('serviceWorker' in navigator){
  navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister()})}).catch(function(){});
  if('caches' in window)caches.keys().then(function(keys){keys.forEach(function(k){caches.delete(k)})}).catch(function(){});
