@@ -218,16 +218,23 @@ button:not(:disabled):not(.locked):active{
 .intro-ui{display:grid;gap:8px;margin:13px 0}
 .intro-row{padding:10px;border:1px solid #1f6288;border-radius:10px;background:#061a30;color:#bfeaff;font-size:12px;line-height:1.4}
 .intro-row strong{color:#7cecff}
-.intro-card{width:min(720px,100%);padding:0;overflow:hidden}
+.intro-card{
+  width:min(700px,calc(100vw - 28px))!important;
+  height:min(500px,calc(100vh - 28px));
+  padding:0!important;
+  overflow:hidden;
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr) auto;
+}
 .intro-head{padding:12px 16px;background:linear-gradient(90deg,#0a3558,#082441);border-bottom:2px solid #2bd8ff}
 .intro-head .brand{font-size:10px}.intro-head h3{margin:4px 0 0;font-size:18px}
-.intro-transmission{display:grid;grid-template-columns:170px 1fr;gap:14px;padding:16px;align-items:stretch}
-.intro-nova-frame{min-height:210px;border:2px solid #2bd8ff;border-radius:13px;overflow:hidden;background:#03172d;box-shadow:0 0 18px #2bd8ff33}
+.intro-transmission{display:grid;grid-template-columns:170px 1fr;gap:14px;padding:16px;align-items:stretch;min-height:0}
+.intro-nova-frame{min-height:0;height:100%;border:2px solid #2bd8ff;border-radius:13px;overflow:hidden;background:#03172d;box-shadow:0 0 18px #2bd8ff33}
 .intro-nova-frame img{width:100%;height:100%;object-fit:cover;object-position:center 10%;display:block}
-.intro-message{position:relative;border:2px solid #2d7196;border-radius:14px;background:#edfaff;color:#082542;padding:18px;min-height:210px;display:flex;flex-direction:column;justify-content:center}
+.intro-message{position:relative;border:2px solid #2d7196;border-radius:14px;background:#edfaff;color:#082542;padding:18px;min-height:0;overflow:auto;display:flex;flex-direction:column;justify-content:center}
 .intro-message:before{content:"";position:absolute;left:-15px;top:42%;width:26px;height:26px;background:#edfaff;border-left:2px solid #2d7196;border-bottom:2px solid #2d7196;transform:rotate(45deg)}
 .intro-step-title{position:relative;z-index:1;font-size:11px;letter-spacing:1.8px;font-weight:900;color:#0b6f9e;margin-bottom:9px}
-.intro-text{position:relative;z-index:1;font-size:20px;line-height:1.35;font-weight:800}
+.intro-text{position:relative;z-index:1;font-size:18px;line-height:1.38;font-weight:800}
 .intro-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:0 16px 16px}
 .intro-dots{display:flex;gap:6px;align-items:center}.intro-dot{width:7px;height:7px;border-radius:50%;background:#174d6b;border:1px solid #2a7598}.intro-dot.active{background:#65eaff;box-shadow:0 0 9px #31d7ff}
 .intro-actions{display:flex;gap:8px}
@@ -249,7 +256,7 @@ button:not(:disabled):not(.locked):active{
 .answer-panel .input-panel{margin-top:0}
 .sheet-online{grid-column:1/-1}
 @media(max-width:720px){
- .intro-transmission{grid-template-columns:105px 1fr;padding:11px;gap:10px}.intro-nova-frame{min-height:160px}.intro-message{min-height:160px;padding:13px}.intro-text{font-size:16px}
+ .intro-card{height:min(470px,calc(100vh - 20px))}.intro-transmission{grid-template-columns:105px 1fr;padding:11px;gap:10px}.intro-nova-frame{min-height:0}.intro-message{min-height:0;padding:13px}.intro-text{font-size:15px}
  .mission-sheet{grid-template-columns:1fr}.success-panel,.answer-panel,.sheet-online{grid-column:1}
  .nova-sheet-body{grid-template-columns:105px 1fr;min-height:220px}.mission-nova-frame{min-height:190px}.nova-speech{font-size:12px}
 }
@@ -294,7 +301,7 @@ button:not(:disabled):not(.locked):active{
       </div>
     </section>
     <button class="launch" id="launchBtn">INITIATE LAUNCH SEQUENCE</button>
-    <div class="footer">SAME CREW • BRIGHTER WORLDS • BUILD 19</div>
+    <div class="footer">SAME CREW • BRIGHTER WORLDS • BUILD 20</div>
   </div>
 
   <div id="terminalView" class="view">
@@ -349,7 +356,8 @@ button:not(:disabled):not(.locked):active{
 </div>
 
 <div class="modal" id="fuelModal">
-  <div class="modal-card emergency-card" style="width:min(760px,100%)">
+  <div class="modal-card emergency-card" style="width:min(760px,100%);position:relative">
+    <button class="secondary" id="fuelClose" style="position:absolute;right:12px;top:12px;z-index:3;padding:7px 10px">✕ CLOSE</button>
     <div class="emergency-tag">⚠ EMERGENCY MISSION</div>
     <div class="mv-kicker">PROJECT: STARFALL • NOVA TRANSMISSION</div>
     <h3>FUEL RESERVES CRITICAL</h3>
@@ -513,6 +521,13 @@ function renderTerminal(){
    b.onclick=function(){if(s!=='locked')openMission(m)};
    grid.appendChild(b);
  });
+ if(state.completed===4 && !state.fuelVerified){
+   const fuel=document.createElement('button');
+   fuel.className='mission current';
+   fuel.innerHTML='<div class="mnum">EMERGENCY MISSION</div><span class="state">REQUIRED</span><h3>FUEL RESERVES</h3><div class="desc">Complete the emergency fuel transfer and enter the four-digit safety code.</div>';
+   fuel.onclick=function(){showFuelEmergency()};
+   grid.appendChild(fuel);
+ }
  document.getElementById('terminalProgressText').textContent=state.completed+' / 5 SYSTEMS RESTORED';
  document.getElementById('terminalProgressFill').style.width=(state.completed*20)+'%';
  const msg=document.getElementById('novaMessage');
@@ -520,7 +535,7 @@ function renderTerminal(){
  else if(state.completed===1) msg.innerHTML='<strong>Power Core online.</strong><br>Power is not reaching the ship systems. Open Mission 2.';
  else if(state.completed===2) msg.innerHTML='<strong>Power flow restored.</strong><br>Engine temperature is rising. Open Mission 3.';
  else if(state.completed===3) msg.innerHTML='<strong>Cooling stable.</strong><br>The Navigation Array is still damaged. Open Mission 4.';
- else if(state.completed===4 && !state.fuelVerified) msg.innerHTML='<strong>Navigation restored — emergency fuel warning.</strong><br>Complete the emergency refueling procedure before Mission 5 can unlock.';
+ else if(state.completed===4 && !state.fuelVerified) msg.innerHTML='<strong>Navigation restored — emergency fuel warning.</strong><br>Mission 5 is locked until refueling is complete. Open the Emergency Fuel mission below whenever your crew is ready.';
  else if(state.completed===4) msg.innerHTML='<strong>Fuel reserves restored.</strong><br>Mission 5: Communications is now available.';
  else msg.innerHTML='<strong>All critical systems restored.</strong><br>Return to the engine and initiate launch.';
 }
@@ -534,11 +549,11 @@ function missionBriefData(id){
  if(id===1)return {
    briefing:'Crew, I have detected the Power Core nearby. Unfortunately, emergency security systems activated during impact. A laser field now blocks the path. Cross the laser field without touching the beams. Take your time — precision is more useful than speed. The Power Core may only be removed when every crew member has crossed safely.',
    rules:[
-    'Set up a laser field using string, ribbon, or crepe paper.',
-    'The children must cross the laser field without touching the beams.',
-    'One child may cross at a time, or the group may cross carefully together.',
-    'If a child touches a beam, the attempt resets and they must try again.',
-    'Every crew member must cross safely before the Power Core can be collected.'
+    'Cross the laser field without touching any of the beams.',
+    'Crew members may cross one at a time, or carefully work together.',
+    'If anyone touches a beam, that attempt resets and the crew must try again.',
+    'Every crew member must reach the other side safely.',
+    'Only after the entire crew is across may you collect the replacement Power Core.'
    ],
    success:'When all children have crossed safely, recover the replacement Power Core. Find the serial number on the Core, then enter it below to verify the replacement.'
  };
@@ -728,6 +743,10 @@ document.getElementById('introNext').onclick=function(){
  document.getElementById('introModal').classList.remove('show');
  renderTerminal();show('terminalView');
  if(state.completed>=4 && !state.fuelVerified)setTimeout(showFuelEmergency,250);
+};
+document.getElementById('fuelClose').onclick=function(){
+ document.getElementById('fuelModal').classList.remove('show');
+ show('engineView');
 };
 document.getElementById('fuelVerify').onclick=function(){
  const input=document.getElementById('fuelCodeInput');
