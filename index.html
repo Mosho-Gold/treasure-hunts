@@ -218,6 +218,42 @@ button:not(:disabled):not(.locked):active{
 .intro-ui{display:grid;gap:8px;margin:13px 0}
 .intro-row{padding:10px;border:1px solid #1f6288;border-radius:10px;background:#061a30;color:#bfeaff;font-size:12px;line-height:1.4}
 .intro-row strong{color:#7cecff}
+.intro-card{width:min(720px,100%);padding:0;overflow:hidden}
+.intro-head{padding:12px 16px;background:linear-gradient(90deg,#0a3558,#082441);border-bottom:2px solid #2bd8ff}
+.intro-head .brand{font-size:10px}.intro-head h3{margin:4px 0 0;font-size:18px}
+.intro-transmission{display:grid;grid-template-columns:170px 1fr;gap:14px;padding:16px;align-items:stretch}
+.intro-nova-frame{min-height:210px;border:2px solid #2bd8ff;border-radius:13px;overflow:hidden;background:#03172d;box-shadow:0 0 18px #2bd8ff33}
+.intro-nova-frame img{width:100%;height:100%;object-fit:cover;object-position:center 10%;display:block}
+.intro-message{position:relative;border:2px solid #2d7196;border-radius:14px;background:#edfaff;color:#082542;padding:18px;min-height:210px;display:flex;flex-direction:column;justify-content:center}
+.intro-message:before{content:"";position:absolute;left:-15px;top:42%;width:26px;height:26px;background:#edfaff;border-left:2px solid #2d7196;border-bottom:2px solid #2d7196;transform:rotate(45deg)}
+.intro-step-title{position:relative;z-index:1;font-size:11px;letter-spacing:1.8px;font-weight:900;color:#0b6f9e;margin-bottom:9px}
+.intro-text{position:relative;z-index:1;font-size:20px;line-height:1.35;font-weight:800}
+.intro-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:0 16px 16px}
+.intro-dots{display:flex;gap:6px;align-items:center}.intro-dot{width:7px;height:7px;border-radius:50%;background:#174d6b;border:1px solid #2a7598}.intro-dot.active{background:#65eaff;box-shadow:0 0 9px #31d7ff}
+.intro-actions{display:flex;gap:8px}
+
+.mission-sheet{display:grid;grid-template-columns:1.05fr 1fr;gap:12px;align-items:stretch}
+.sheet-panel{border:2px solid #1d6188;border-radius:14px;background:#f5fbff;color:#09233d;overflow:hidden}
+.sheet-panel-title{padding:9px 12px;background:linear-gradient(90deg,#0c355a,#0b4d73);color:#fff;font-size:13px;font-weight:900;letter-spacing:.8px;border-bottom:2px solid #2bd8ff}
+.nova-sheet-body{display:grid;grid-template-columns:135px 1fr;gap:12px;padding:12px;min-height:265px;background:linear-gradient(145deg,#061a31,#082744);color:#e7faff}
+.mission-nova-frame{border:2px solid #2bd8ff;border-radius:12px;overflow:hidden;min-height:230px;background:#03172d;box-shadow:0 0 15px #2bd8ff2b}
+.mission-nova-frame img{width:100%;height:100%;object-fit:cover;object-position:center 10%;display:block}
+.nova-speech{align-self:center;position:relative;border:2px solid #54c9e8;border-radius:13px;background:#0a2947;padding:13px;font-size:13px;line-height:1.5;color:#e5faff}
+.nova-speech:before{content:"";position:absolute;left:-11px;top:42%;width:18px;height:18px;background:#0a2947;border-left:2px solid #54c9e8;border-bottom:2px solid #54c9e8;transform:rotate(45deg)}
+.rules-body{padding:11px 14px 13px}.rule-row{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start;padding:8px 0;border-bottom:1px solid #cbdce8}.rule-row:last-child{border-bottom:0}
+.rule-num{width:30px;height:30px;border-radius:8px;background:#0c4d77;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;box-shadow:inset 0 0 0 2px #2caed5}
+.rule-text{font-size:12.5px;line-height:1.42;color:#15334d;padding-top:4px}
+.success-panel{grid-column:1/-1;border:2px solid #1d6188;border-radius:14px;background:#f5fbff;color:#09233d;overflow:hidden}
+.success-body{padding:12px 14px;font-size:12.5px;line-height:1.45}
+.answer-panel{grid-column:1/-1;margin-top:0}
+.answer-panel .input-panel{margin-top:0}
+.sheet-online{grid-column:1/-1}
+@media(max-width:720px){
+ .intro-transmission{grid-template-columns:105px 1fr;padding:11px;gap:10px}.intro-nova-frame{min-height:160px}.intro-message{min-height:160px;padding:13px}.intro-text{font-size:16px}
+ .mission-sheet{grid-template-columns:1fr}.success-panel,.answer-panel,.sheet-online{grid-column:1}
+ .nova-sheet-body{grid-template-columns:105px 1fr;min-height:220px}.mission-nova-frame{min-height:190px}.nova-speech{font-size:12px}
+}
+
 
 
 .modal{position:fixed;inset:0;background:#020b16ee;display:none;align-items:center;justify-content:center;padding:18px;z-index:50}.modal.show{display:flex}
@@ -258,7 +294,7 @@ button:not(:disabled):not(.locked):active{
       </div>
     </section>
     <button class="launch" id="launchBtn">INITIATE LAUNCH SEQUENCE</button>
-    <div class="footer">SAME CREW • BRIGHTER WORLDS • BUILD 18</div>
+    <div class="footer">SAME CREW • BRIGHTER WORLDS • BUILD 19</div>
   </div>
 
   <div id="terminalView" class="view">
@@ -290,41 +326,61 @@ button:not(:disabled):not(.locked):active{
 </div>
 
 <div class="modal" id="introModal">
-  <div class="modal-card">
-    <div class="mv-kicker">NOVA // SHIP AI</div>
-    <h3>CREW, WE HAVE A PROBLEM.</h3>
-    <p>Our ship has been damaged. Five critical systems must be repaired before we can launch.</p>
-    <div class="intro-ui">
-      <div class="intro-row"><strong>ENGINE MAP</strong><br>Shows which ship systems are damaged and which repairs are online.</div>
-      <div class="intro-row"><strong>MISSION TERMINAL</strong><br>Open this to receive your next mission briefing.</div>
-      <div class="intro-row"><strong>MISSION ANSWER</strong><br>Complete the physical challenge, then return to the terminal and enter the code or solution you discovered.</div>
+  <div class="modal-card intro-card">
+    <div class="intro-head">
+      <div class="brand">PROJECT: STARFALL • NOVA TRANSMISSION</div>
+      <h3 id="introHeading">EMERGENCY ACTIVATION</h3>
     </div>
-    <p><strong>NOVA:</strong> Open the Mission Terminal and begin Mission 1: Power Core Recovery.</p>
-    <button class="primary" id="beginGame" style="width:100%;margin-top:8px">BEGIN RESTORATION</button>
+    <div class="intro-transmission">
+      <div class="intro-nova-frame"><img id="introNova" alt="NOVA hologram"></div>
+      <div class="intro-message">
+        <div class="intro-step-title" id="introStepTitle">NOVA // EMERGENCY ACTIVATION</div>
+        <div class="intro-text" id="introText"></div>
+      </div>
+    </div>
+    <div class="intro-footer">
+      <div class="intro-dots" id="introDots"></div>
+      <div class="intro-actions">
+        <button class="secondary" id="introPrev" style="display:none">← BACK</button>
+        <button class="primary" id="introNext">NEXT →</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <div class="modal" id="fuelModal">
-  <div class="modal-card emergency-card">
+  <div class="modal-card emergency-card" style="width:min(760px,100%)">
     <div class="emergency-tag">⚠ EMERGENCY MISSION</div>
-    <div class="mv-kicker">NOVA // FUEL WARNING</div>
+    <div class="mv-kicker">PROJECT: STARFALL • NOVA TRANSMISSION</div>
     <h3>FUEL RESERVES CRITICAL</h3>
-    <p><strong>Navigation is online, but the ship does not have enough fuel to continue.</strong> Complete the emergency refueling procedure before Communications can be unlocked.</p>
-    <div class="brief-box">
-      <div class="brief-title">EMERGENCY FUEL BRIEFING</div>
-      <p>Use ordinary household supplies: water, a bucket or bowl, and a clear bottle.</p>
-      <ol>
-        <li>Fill the bucket or bowl with water — this is your emergency fuel.</li>
-        <li>Every crew member must take part in passing the fuel down the line without spilling it.</li>
-        <li>At the end of the relay, pour the recovered fuel into the clear bottle.</li>
-        <li>As the fuel level rises, the hidden floating safety code will rise into view.</li>
-        <li>Enter the four-digit Fuel Safety Code below.</li>
-      </ol>
-    </div>
-    <div class="input-panel" id="fuelInputPanel">
-      <div class="input-label">FUEL SAFETY CODE</div>
-      <div class="code-row"><input id="fuelCodeInput" class="code-input" inputmode="numeric" maxlength="4" placeholder="••••"><button id="fuelVerify" class="primary">VERIFY</button></div>
-      <div id="fuelMsg" class="msg">Awaiting fuel safety code...</div>
+    <div class="mission-sheet">
+      <div class="sheet-panel">
+        <div class="sheet-panel-title">NOVA BRIEFING</div>
+        <div class="nova-sheet-body">
+          <div class="mission-nova-frame"><img class="mission-nova-img" alt="NOVA hologram"></div>
+          <div class="nova-speech">Crew, Navigation is online — but our fuel reserves are critically low. We cannot continue until the emergency tank is refilled. Work together and recover enough fuel to reveal the tank's hidden safety code.</div>
+        </div>
+      </div>
+      <div class="sheet-panel">
+        <div class="sheet-panel-title">MISSION RULES</div>
+        <div class="rules-body">
+          <div class="rule-row"><div class="rule-num">1</div><div class="rule-text">Use water as emergency fuel. Start with a bucket or large bowl.</div></div>
+          <div class="rule-row"><div class="rule-num">2</div><div class="rule-text">Every crew member must take part in passing the fuel down the line without spilling it.</div></div>
+          <div class="rule-row"><div class="rule-num">3</div><div class="rule-text">Pour the recovered fuel into a clear bottle or container.</div></div>
+          <div class="rule-row"><div class="rule-num">4</div><div class="rule-text">As the fuel level rises, the hidden floating safety code will rise into view.</div></div>
+        </div>
+      </div>
+      <div class="success-panel">
+        <div class="sheet-panel-title">MISSION SUCCESS</div>
+        <div class="success-body">Read the four-digit Fuel Safety Code revealed inside the tank and enter it below. Mission 5 remains locked until the code is verified.</div>
+      </div>
+      <div class="answer-panel" id="fuelInputPanel">
+        <div class="input-panel">
+          <div class="input-label">MISSION ANSWER • FUEL SAFETY CODE</div>
+          <div class="code-row"><input id="fuelCodeInput" class="code-input" inputmode="numeric" maxlength="4" placeholder="••••"><button id="fuelVerify" class="primary">VERIFY</button></div>
+          <div id="fuelMsg" class="msg">Awaiting fuel safety code...</div>
+        </div>
+      </div>
     </div>
     <div id="fuelSuccess" class="successbox" style="display:none"><strong>FUEL RESERVES RESTORED</strong><br>Emergency fuel level verified. Communications access is now unlocked.</div>
     <button class="primary" id="fuelContinue" style="display:none;width:100%;margin-top:12px">CONTINUE TO MISSION TERMINAL</button>
@@ -385,12 +441,36 @@ function completeMission(id){
  if(id>=4) state.navVerified=true;
  save();render();show('engineView');
 }
+const introMessages=[
+ {heading:'EMERGENCY ACTIVATION',title:'NOVA // EMERGENCY ACTIVATION',text:'Emergency systems online… Scanning… Multiple life signs detected. That is fortunate.'},
+ {heading:'NOVA INTRODUCTION',title:'NOVA // SHIP AI',text:'I am NOVA, the ship’s Navigation and Operations Virtual Assistant.'},
+ {heading:'NEW CREW',title:'NOVA // CREW ASSIGNMENT',text:'Our ship has crash-landed. You are now the emergency repair crew.'},
+ {heading:'ENGINE MAP',title:'NOVA // DAMAGE REPORT',text:'Five major systems are damaged. We will repair them one at a time. The Engine Map shows which systems are still offline and which repairs are online.'},
+ {heading:'MISSION TERMINAL',title:'NOVA // YOUR FIRST MISSION',text:'Open the Mission Terminal to receive each briefing. Complete the physical challenge, then enter the answer or code you discover. Begin with Mission 1: Power Core Recovery.'}
+];
+let introIndex=0;
+function novaImageSrc(){
+ const img=document.querySelector('.nova-avatar img');
+ return img?img.src:'';
+}
+function renderIntro(){
+ const m=introMessages[introIndex];
+ document.getElementById('introHeading').textContent=m.heading;
+ document.getElementById('introStepTitle').textContent=m.title;
+ document.getElementById('introText').textContent=m.text;
+ document.getElementById('introNova').src=novaImageSrc();
+ document.getElementById('introPrev').style.display=introIndex===0?'none':'inline-block';
+ document.getElementById('introNext').textContent=introIndex===introMessages.length-1?'OPEN MISSION TERMINAL →':'NEXT →';
+ const dots=document.getElementById('introDots');dots.innerHTML='';
+ introMessages.forEach(function(_,i){const d=document.createElement('span');d.className='intro-dot'+(i===introIndex?' active':'');dots.appendChild(d)});
+}
 function showIntro(){
- document.getElementById('introModal').classList.add('show');
+ introIndex=0;renderIntro();document.getElementById('introModal').classList.add('show');
 }
 function showFuelEmergency(){
  if(state.fuelVerified)return;
  document.getElementById('fuelModal').classList.add('show');
+ document.querySelectorAll('#fuelModal .mission-nova-img').forEach(function(img){img.src=novaImageSrc()});
  const input=document.getElementById('fuelCodeInput');
  if(input){input.value='';setMsg('fuelMsg','Awaiting fuel safety code...',true)}
 }
@@ -450,14 +530,73 @@ function setMsg(id,text,good){
  el.className='msg '+(good?'good':'bad'); el.textContent=text;
 }
 
-function briefHTML(id){
- if(id===1)return '<div class="brief-box"><div class="brief-title">NOVA BRIEFING • POWER CORE RECOVERY</div><p>The ship\'s Power Core is offline. Your crew must cross the laser security field and recover the replacement core.</p><ol><li>Every crew member must cross the laser field.</li><li>If anyone touches a laser, reset that attempt.</li><li>Only after the whole crew is safely across may you recover the replacement Power Core.</li><li>Find the serial number printed on the Core and enter it below.</li></ol></div>';
- if(id===2)return '<div class="brief-box"><div class="brief-title">NOVA BRIEFING • POWER ROUTING</div><p>The new core has power, but the ship cannot distribute it. Repair the routing network.</p><ol><li>Use the Symbol Equations to recover the missing routing information.</li><li>Use the Diagnostic Clues to determine which port belongs to each ship system.</li><li>Draw the correct system-to-port connections on the physical puzzle.</li><li>Enter the five final port values below.</li></ol></div>';
- if(id===3)return '<div class="brief-box"><div class="brief-title">NOVA BRIEFING • COOLING EMERGENCY</div><p>The engines are overheating. Rebuild the damaged coolant line before the reactor temperature becomes critical.</p><ol><li>Find the scattered pipe pieces.</li><li>Build a continuous coolant route from the tank, through the pumps, to all three reactors.</li><li>Ignore damaged and incorrect decoy pipes.</li><li>Read the six small maintenance numbers on the finished route from start to finish.</li><li>Enter the Coolant Layout Number below, then complete the coolant-transfer challenge.</li></ol></div>';
- if(id===4)return '<div class="brief-box"><div class="brief-title">NOVA BRIEFING • NAVIGATION ARRAY</div><p>The Navigation Array cannot calculate a safe course. Reconstruct the damaged Star Chart.</p><ol><li>Assemble the approved 24-piece Star Chart puzzle.</li><li>Trace a safe route from START to DESTINATION.</li><li>Avoid the hazardous sectors.</li><li>Record the navigation symbols you encounter in order.</li><li>Enter that symbol sequence below to verify the route.</li></ol></div>';
- return '<div class="brief-box"><div class="brief-title">NOVA BRIEFING • COMMUNICATIONS</div><p>The Communications Array is offline. Restore the decoder so the ship can transmit its final launch signal.</p><ol><li>Use the circular decoder and the mission clues.</li><li>Determine the required LEFT and RIGHT rotations.</li><li>Record the symbols revealed by the decoder window.</li><li>Convert the result into the final communications frequency.</li></ol></div>';
+function missionBriefData(id){
+ if(id===1)return {
+   briefing:'Crew, I have detected the Power Core nearby. Unfortunately, emergency security systems activated during impact. A laser field now blocks the path. Cross the laser field without touching the beams. Take your time — precision is more useful than speed. The Power Core may only be removed when every crew member has crossed safely.',
+   rules:[
+    'Set up a laser field using string, ribbon, or crepe paper.',
+    'The children must cross the laser field without touching the beams.',
+    'One child may cross at a time, or the group may cross carefully together.',
+    'If a child touches a beam, the attempt resets and they must try again.',
+    'Every crew member must cross safely before the Power Core can be collected.'
+   ],
+   success:'When all children have crossed safely, recover the replacement Power Core. Find the serial number on the Core, then enter it below to verify the replacement.'
+ };
+ if(id===2)return {
+   briefing:'Crew, the Power Core is online, but power is not reaching the ship systems. The routing network was damaged in the crash. Rebuild the connections so power can flow through the ship again.',
+   rules:[
+    'Use the Symbol Equations page to recover the missing routing information.',
+    'Study the Diagnostic Clues carefully.',
+    'Determine which numbered port belongs to each ship system.',
+    'Draw the correct system-to-port connections on the Power Routing puzzle.',
+    'Enter the five final port values below.'
+   ],
+   success:'When all five system connections are solved, enter the final port value for Reactor, Navigation, Communications, Life Support, and Defense.'
+ };
+ if(id===3)return {
+   briefing:'Crew, the engine temperature is critical. The coolant line has broken into multiple sections. Find the usable pipe pieces and rebuild a continuous route before the reactors overheat.',
+   rules:[
+    'Find the scattered pipe pieces.',
+    'Build the coolant route from the tank through Pump 1 and Pump 2 to all three reactors.',
+    'Some pieces are damaged or decoys and do not belong in the final route.',
+    'When the route is complete, read the small maintenance numbers on the correct pipes from start to finish.',
+    'Enter the six-digit Coolant Layout Number below.'
+   ],
+   success:'After the layout number is verified, complete the physical coolant-transfer challenge. The Cooling System will come online when the transfer is complete.'
+ };
+ if(id===4)return {
+   briefing:'Crew, the Navigation Array cannot calculate a safe course. The Star Chart was damaged during the crash. Rebuild it and find a route through space without entering a hazardous sector.',
+   rules:[
+    'Assemble the approved 24-piece Star Chart puzzle.',
+    'Trace a safe route from START to DESTINATION.',
+    'Avoid the hazardous sectors.',
+    'Record the navigation symbols you encounter in order.',
+    'Enter the symbol sequence below to verify the route.'
+   ],
+   success:'When the route is verified, the Navigation Array will come online. Stay alert — the ship may still detect another problem before Communications can be accessed.'
+ };
+ return {
+   briefing:'Crew, the Communications Array is offline. Restore the decoder so the ship can transmit its final launch signal.',
+   rules:[
+    'Use the circular decoder and the mission clues.',
+    'Determine the required LEFT and RIGHT rotations.',
+    'Record the symbols revealed by the decoder window.',
+    'Convert the result into the final communications frequency.',
+    'Enter the final frequency into the Mission Terminal.'
+   ],
+   success:'When the communications frequency is verified, the final ship system will be restored and the crew can begin the launch sequence.'
+ };
 }
-
+function briefHTML(id){
+ const d=missionBriefData(id);
+ let rules='';
+ d.rules.forEach(function(rule,i){rules+='<div class="rule-row"><div class="rule-num">'+(i+1)+'</div><div class="rule-text">'+rule+'</div></div>'});
+ return '<div class="mission-sheet">'+
+   '<div class="sheet-panel"><div class="sheet-panel-title">NOVA BRIEFING</div><div class="nova-sheet-body">'+
+   '<div class="mission-nova-frame"><img class="mission-nova-img" alt="NOVA hologram"></div><div class="nova-speech">'+d.briefing+'</div></div></div>'+
+   '<div class="sheet-panel"><div class="sheet-panel-title">MISSION RULES</div><div class="rules-body">'+rules+'</div></div>'+
+   '<div class="success-panel"><div class="sheet-panel-title">MISSION SUCCESS</div><div class="success-body">'+d.success+'</div></div>';
+}
 function openMission(m){
  show('missionView');
  document.getElementById('mvKicker').textContent='PROJECT: STARFALL • MISSION '+m.id;
@@ -467,35 +606,36 @@ function openMission(m){
  let html=briefHTML(m.id);
 
  if(s==='complete'){
-   html+='<div class="successbox"><strong>SYSTEM ONLINE</strong><br>This repair has been verified and recorded by NOVA.</div>';
+   html+='<div class="sheet-online"><div class="successbox"><strong>SYSTEM ONLINE</strong><br>This repair has been verified and recorded by NOVA.</div></div></div>';
  }
  else if(m.id===1){
-   html+='<div class="input-panel"><div class="input-label">MISSION ANSWER • REPLACEMENT CORE SERIAL</div><div class="code-row">'+
+   html+='<div class="answer-panel"><div class="input-panel"><div class="input-label">MISSION ANSWER • REPLACEMENT CORE SERIAL</div><div class="code-row">'+
    '<input id="coreSerialInput" class="code-input" inputmode="numeric" maxlength="6" placeholder="••••••"><button id="coreSerialSubmit" class="primary">VERIFY</button></div>'+
-   '<div id="m1msg" class="msg">Awaiting replacement core serial...</div></div>';
+   '<div id="m1msg" class="msg">Awaiting replacement core serial...</div></div></div></div>';
  }
  else if(m.id===2){
-   html+='<div class="input-panel"><div class="input-label">MISSION ANSWER • POWER ROUTING PORT VALUES</div>'+
+   html+='<div class="answer-panel"><div class="input-panel"><div class="input-label">MISSION ANSWER • POWER ROUTING PORT VALUES</div>'+
    '<div class="routing-grid"><label>Reactor</label><input id="rReactor" inputmode="numeric"></div>'+
    '<div class="routing-grid"><label>Navigation</label><input id="rNavigation" inputmode="numeric"></div>'+
    '<div class="routing-grid"><label>Communications</label><input id="rCommunications" inputmode="numeric"></div>'+
    '<div class="routing-grid"><label>Life Support</label><input id="rLife" inputmode="numeric"></div>'+
    '<div class="routing-grid"><label>Defense</label><input id="rDefense" inputmode="numeric"></div>'+
-   '<div class="actions"><button id="routingVerify" class="primary">VERIFY ROUTING</button></div><div id="m2msg" class="msg">Awaiting routing solution...</div></div>';
+   '<div class="actions"><button id="routingVerify" class="primary">VERIFY ROUTING</button></div><div id="m2msg" class="msg">Awaiting routing solution...</div></div></div></div>';
  }
  else if(m.id===3){
-   html+='<div class="input-panel"><div class="input-label">MISSION ANSWER • COOLANT LAYOUT NUMBER</div><div class="code-row"><input id="coolantCode" class="code-input" inputmode="numeric" maxlength="6" placeholder="••••••"><button id="coolantVerify" class="primary">VERIFY</button></div>'+
-   '<div id="m3msg" class="msg">Awaiting coolant layout number...</div><div id="coolantStage" style="display:none"><div class="successbox"><strong>ROUTE VERIFIED</strong><br>Coolant line integrity confirmed. Complete the physical coolant-transfer challenge.</div><button id="coolantDone" class="primary" style="width:100%;margin-top:10px">COOLANT TRANSFER COMPLETE</button></div></div>';
+   html+='<div class="answer-panel"><div class="input-panel"><div class="input-label">MISSION ANSWER • COOLANT LAYOUT NUMBER</div><div class="code-row"><input id="coolantCode" class="code-input" inputmode="numeric" maxlength="6" placeholder="••••••"><button id="coolantVerify" class="primary">VERIFY</button></div>'+
+   '<div id="m3msg" class="msg">Awaiting coolant layout number...</div><div id="coolantStage" style="display:none"><div class="successbox"><strong>ROUTE VERIFIED</strong><br>Coolant line integrity confirmed. Complete the physical coolant-transfer challenge.</div><button id="coolantDone" class="primary" style="width:100%;margin-top:10px">COOLANT TRANSFER COMPLETE</button></div></div></div></div>';
  }
  else if(m.id===4){
-   html+='<div class="input-panel"><div class="input-label">MISSION ANSWER • NAVIGATION SEQUENCE</div><div class="symbol-seq"><div class="symbol-slot"></div><div class="symbol-slot"></div><div class="symbol-slot"></div><div class="symbol-slot"></div></div>'+
+   html+='<div class="answer-panel"><div class="input-panel"><div class="input-label">MISSION ANSWER • NAVIGATION SEQUENCE</div><div class="symbol-seq"><div class="symbol-slot"></div><div class="symbol-slot"></div><div class="symbol-slot"></div><div class="symbol-slot"></div></div>'+
    '<div class="symbol-pad"><button class="symbol-btn" data-symbol="DIAMOND">DIAMOND</button><button class="symbol-btn" data-symbol="STAR">STAR</button><button class="symbol-btn" data-symbol="SPIRAL">SPIRAL</button><button class="symbol-btn" data-symbol="TRIANGLE">TRIANGLE</button></div>'+
-   '<div class="actions"><button id="navClear" class="secondary">CLEAR</button><button id="navVerify" class="primary">VERIFY ROUTE</button></div><div id="m4msg" class="msg">Awaiting navigation sequence...</div></div>';
+   '<div class="actions"><button id="navClear" class="secondary">CLEAR</button><button id="navVerify" class="primary">VERIFY ROUTE</button></div><div id="m4msg" class="msg">Awaiting navigation sequence...</div></div></div></div>';
  }
  else {
-   html+='<div class="note">The physical decoder and final communications frequency are still being finalized. The briefing is in place, but no answer is being invented until Mission 5 is locked.</div>';
+   html+='<div class="answer-panel"><div class="note">The physical decoder and final communications frequency are still being finalized. The briefing is in place, but no answer is being invented until Mission 5 is locked.</div></div></div>';
  }
  document.getElementById('mvContent').innerHTML=html;
+ const ni=document.querySelector('#mvContent .mission-nova-img');if(ni)ni.src=novaImageSrc();
  bindMission(m.id,s);
 }
 
@@ -581,8 +721,12 @@ function renderParent(){
  pg.appendChild(reset);
 }
 
-document.getElementById('beginGame').onclick=function(){
- state.introSeen=true;save();document.getElementById('introModal').classList.remove('show');show('engineView');
+document.getElementById('introPrev').onclick=function(){if(introIndex>0){introIndex--;renderIntro()}};
+document.getElementById('introNext').onclick=function(){
+ if(introIndex<introMessages.length-1){introIndex++;renderIntro();return}
+ state.introSeen=true;save();
+ document.getElementById('introModal').classList.remove('show');
+ renderTerminal();show('terminalView');
  if(state.completed>=4 && !state.fuelVerified)setTimeout(showFuelEmergency,250);
 };
 document.getElementById('fuelVerify').onclick=function(){
