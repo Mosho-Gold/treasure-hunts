@@ -55,23 +55,33 @@ button:not(:disabled):not(.locked):active{
 }
 .engine-map-base{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block}
 .coolant-activation{
-  position:absolute;left:12.9%;top:57.8%;width:16.8%;z-index:6;pointer-events:none;
-  text-align:center;color:#b8f6ff;
-  background:rgba(3,31,55,.62);
-  border:1px solid rgba(72,221,255,.42);
-  border-radius:6px;
-  padding:3px 4px 4px;
-  box-shadow:inset 0 0 8px rgba(49,215,255,.12),0 0 6px rgba(49,215,255,.10);
-  text-shadow:0 0 4px rgba(49,215,255,.45);
-  font-weight:800;letter-spacing:.6px;line-height:1.08;
+  position:absolute;left:2.35%;top:55.45%;width:8.7%;z-index:6;pointer-events:none;
+  text-align:center;color:#9cecff;
+  background:linear-gradient(180deg,rgba(7,28,48,.96),rgba(4,17,31,.96));
+  border:1px solid rgba(67,211,244,.72);
+  border-radius:4px;
+  padding:2px 3px 3px;
+  box-shadow:
+    inset 0 0 0 1px rgba(141,241,255,.12),
+    inset 0 0 8px rgba(49,215,255,.08),
+    0 1px 2px rgba(0,0,0,.48);
+  text-shadow:0 0 3px rgba(49,215,255,.38);
+  font-weight:800;letter-spacing:.35px;line-height:1.02;
 }
+.coolant-activation:before,
+.coolant-activation:after{
+  content:"";position:absolute;top:3px;width:2px;height:2px;border-radius:50%;
+  background:#6a8798;box-shadow:0 0 1px rgba(255,255,255,.35);
+}
+.coolant-activation:before{left:3px}
+.coolant-activation:after{right:3px}
 .coolant-activation span{
-  display:block;font-size:clamp(6px,.74vw,10px);
-  opacity:.92;letter-spacing:.8px;
+  display:block;font-size:clamp(4px,.43vw,6px);
+  opacity:.82;letter-spacing:.45px;white-space:nowrap;
 }
 .coolant-activation b{
-  display:block;margin-top:2px;font-size:clamp(10px,1.18vw,15px);
-  font-weight:800;letter-spacing:2.4px;color:#d8fbff;
+  display:block;margin-top:1px;font-size:clamp(6px,.62vw,9px);
+  font-weight:700;letter-spacing:1.15px;color:#baf4ff;white-space:nowrap;
 }
 .repair-overlay{
   position:absolute;object-fit:fill;opacity:0;pointer-events:none;
