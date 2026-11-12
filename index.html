@@ -54,56 +54,19 @@ button:not(:disabled):not(.locked):active{
   box-shadow:0 0 28px #0acfff20
 }
 .engine-map-base{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block}
-.coolant-activation{
-  position:absolute;left:1.55%;top:54.05%;width:8.45%;height:3.55%;z-index:6;pointer-events:none;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;color:#a9efff;
-  background:
-    linear-gradient(180deg,#17344a 0%,#0b2134 48%,#071727 100%);
-  border:1px solid #4e7f99;
-  border-radius:5px;
-  padding:2px 4px;
-  box-shadow:
-    inset 0 1px 0 rgba(210,246,255,.22),
-    inset 0 -2px 0 rgba(0,0,0,.34),
-    inset 0 0 0 2px rgba(8,21,34,.72),
-    0 2px 3px rgba(0,0,0,.45);
-  text-shadow:0 0 3px rgba(77,218,255,.34);
-  font-weight:800;letter-spacing:.28px;line-height:1;
+.engine-scene-art{
+  position:absolute;inset:0;width:100%;height:100%;z-index:6;
+  pointer-events:none;overflow:visible;
 }
-.coolant-activation:before,
-.coolant-activation:after{
-  content:"";position:absolute;top:3px;width:3px;height:3px;border-radius:50%;
-  background:radial-gradient(circle at 35% 35%,#d7e7ed 0 18%,#708592 35%,#263b47 72%);
-  box-shadow:0 0 1px rgba(0,0,0,.65);
-}
-.coolant-activation:before{left:4px}
-.coolant-activation:after{right:4px}
-.coolant-activation span{
-  display:block;font-size:clamp(4px,.38vw,5.5px);
-  opacity:.88;letter-spacing:.4px;white-space:nowrap;
-}
-.coolant-activation b{
-  display:block;margin-top:1px;font-size:clamp(6px,.52vw,8px);
-  font-weight:700;letter-spacing:.9px;color:#c2f5ff;white-space:nowrap;
-}
-.system-status-plate{
-  position:absolute;z-index:7;pointer-events:none;opacity:0;
-  display:flex;align-items:center;justify-content:center;text-align:center;
-  color:#d9fff1;background:linear-gradient(180deg,rgba(7,68,58,.97),rgba(3,38,34,.98));
-  border:1px solid rgba(96,238,190,.9);border-radius:5px;
-  box-shadow:inset 0 0 0 1px rgba(185,255,229,.12),0 0 7px rgba(72,235,184,.24);
-  text-shadow:0 0 4px rgba(98,244,199,.42);
-  font-weight:900;letter-spacing:.45px;line-height:1.04;
+.engine-scene-art .status-screen{
+  opacity:0;
   transition:opacity .35s ease;
 }
-.system-status-plate.visible{opacity:1}
-.status-core{left:2.15%;top:34.1%;width:6.65%;height:10.4%;font-size:clamp(5px,.58vw,8px)}
-.status-routing{left:90.65%;top:34.2%;width:6.45%;height:10.2%;font-size:clamp(5px,.56vw,8px)}
-.status-cooling{left:2.35%;top:60.2%;width:7.25%;height:11.2%;font-size:clamp(5px,.56vw,8px)}
-.status-nav{left:34.1%;top:66.4%;width:7.05%;height:11.4%;font-size:clamp(5px,.56vw,8px)}
-.status-comms{left:89.05%;top:60.4%;width:7.45%;height:11.0%;font-size:clamp(5px,.56vw,8px)}
-.system-status-plate span{display:block;padding:2px 3px}
+.engine-scene-art .status-screen.visible{opacity:1}
+.engine-scene-art text{
+  font-family:Arial,Helvetica,sans-serif;
+  user-select:none;
+}
 .repair-overlay{
   position:absolute;object-fit:fill;opacity:0;pointer-events:none;
   transition:opacity .55s ease,filter .55s ease;
@@ -330,12 +293,109 @@ button:not(:disabled):not(.locked):active{
     <section class="engine-shell">
       <div class="engine-map-wrap" id="secretHeader">
         <img id="engineMapBase" class="engine-map-base" alt="Project Starfall damaged engine map">
-        <div class="coolant-activation" id="coolantActivation" aria-hidden="true"><span>COOLANT ACTIVATION</span><b>○ △ ★ □ ☾ ◇</b></div>
-        <div class="system-status-plate status-core" data-status-system="1"><span>CORE<br>ONLINE</span></div>
-        <div class="system-status-plate status-routing" data-status-system="2"><span>ROUTING<br>ONLINE</span></div>
-        <div class="system-status-plate status-cooling" data-status-system="3"><span>TEMP<br>STABLE</span></div>
-        <div class="system-status-plate status-nav" data-status-system="4"><span>SIGNAL<br>LOCKED</span></div>
-        <div class="system-status-plate status-comms" data-status-system="5"><span>COMMS<br>ONLINE</span></div>
+        <svg class="engine-scene-art" viewBox="0 0 1448 1086" aria-hidden="true">
+          <defs>
+            <linearGradient id="plaqueMetal" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#54758a"/>
+              <stop offset=".18" stop-color="#27475c"/>
+              <stop offset=".58" stop-color="#132c40"/>
+              <stop offset="1" stop-color="#081b2c"/>
+            </linearGradient>
+            <linearGradient id="plaqueGlass" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#0b314c"/>
+              <stop offset=".55" stop-color="#071f34"/>
+              <stop offset="1" stop-color="#041423"/>
+            </linearGradient>
+            <linearGradient id="onlineGlass" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#0b5b52"/>
+              <stop offset=".45" stop-color="#073d39"/>
+              <stop offset="1" stop-color="#032621"/>
+            </linearGradient>
+            <pattern id="scanlines" width="4" height="6" patternUnits="userSpaceOnUse">
+              <rect width="4" height="1" fill="#9affdd" opacity=".10"/>
+            </pattern>
+            <filter id="cyanGlow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="2.1" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="greenGlow" x="-25%" y="-25%" width="150%" height="150%">
+              <feGaussianBlur stdDeviation="1.8" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- Physical coolant activation plaque mounted above TEMP CRITICAL -->
+          <g id="coolantPlaque">
+            <rect x="31" y="579" width="118" height="39" rx="7" fill="#06111b" opacity=".42"/>
+            <rect x="33" y="576" width="114" height="39" rx="7" fill="url(#plaqueMetal)" stroke="#8aa7b8" stroke-width="2"/>
+            <rect x="39" y="581" width="102" height="29" rx="4" fill="url(#plaqueGlass)" stroke="#25cbed" stroke-width="1.4"/>
+            <circle cx="40" cy="582" r="2.3" fill="#c3d3dc" stroke="#263d49" stroke-width="1"/>
+            <circle cx="140" cy="582" r="2.3" fill="#c3d3dc" stroke="#263d49" stroke-width="1"/>
+            <circle cx="40" cy="608" r="2.3" fill="#c3d3dc" stroke="#263d49" stroke-width="1"/>
+            <circle cx="140" cy="608" r="2.3" fill="#c3d3dc" stroke="#263d49" stroke-width="1"/>
+            <text x="90" y="591.5" text-anchor="middle" font-size="7.2" font-weight="800" letter-spacing=".7" fill="#82eaff">COOLANT ACTIVATION</text>
+            <text x="90" y="604.5" text-anchor="middle" font-size="11" font-weight="800" letter-spacing="2" fill="#bdf8ff" filter="url(#cyanGlow)">○ △ ★ □ ☾ ◇</text>
+          </g>
+
+          <!-- Repaired system display art: original housings remain visible underneath -->
+          <g class="status-screen" data-status-system="1">
+            <rect x="35" y="358" width="79" height="107" rx="10" fill="url(#onlineGlass)" stroke="#5bf2b8" stroke-width="2.2"/>
+            <rect x="39" y="362" width="71" height="99" rx="7" fill="url(#scanlines)" opacity=".8"/>
+            <g stroke="#78ffd0" stroke-width="2.4" fill="none" filter="url(#greenGlow)">
+              <circle cx="74.5" cy="385" r="10"/>
+              <ellipse cx="74.5" cy="385" rx="18" ry="6"/>
+              <ellipse cx="74.5" cy="385" rx="7" ry="17" transform="rotate(55 74.5 385)"/>
+            </g>
+            <circle cx="74.5" cy="385" r="3" fill="#9affdc"/>
+            <text x="74.5" y="425" text-anchor="middle" font-size="13" font-weight="900" fill="#e5fff5">CORE</text>
+            <text x="74.5" y="441" text-anchor="middle" font-size="13" font-weight="900" fill="#86f7c8" filter="url(#greenGlow)">ONLINE</text>
+          </g>
+
+          <g class="status-screen" data-status-system="2">
+            <rect x="1304" y="355" width="96" height="116" rx="10" fill="url(#onlineGlass)" stroke="#5bf2b8" stroke-width="2.2"/>
+            <rect x="1308" y="359" width="88" height="108" rx="7" fill="url(#scanlines)" opacity=".8"/>
+            <g stroke="#78ffd0" stroke-width="3" fill="none" filter="url(#greenGlow)">
+              <path d="M1321 393 L1338 379 L1353 391 L1377 372"/>
+              <circle cx="1321" cy="393" r="4"/><circle cx="1338" cy="379" r="4"/><circle cx="1353" cy="391" r="4"/><circle cx="1377" cy="372" r="4"/>
+            </g>
+            <text x="1352" y="423" text-anchor="middle" font-size="12" font-weight="900" fill="#e5fff5">ROUTING</text>
+            <text x="1352" y="439" text-anchor="middle" font-size="12" font-weight="900" fill="#86f7c8" filter="url(#greenGlow)">ONLINE</text>
+          </g>
+
+          <g class="status-screen" data-status-system="3">
+            <rect x="41" y="633" width="94" height="109" rx="10" fill="url(#onlineGlass)" stroke="#5bf2b8" stroke-width="2.2"/>
+            <rect x="45" y="637" width="86" height="101" rx="7" fill="url(#scanlines)" opacity=".8"/>
+            <g stroke="#78ffd0" stroke-width="2.6" filter="url(#greenGlow)">
+              <path d="M88 654 V688 M71 671 H105 M76 659 L100 683 M100 659 L76 683"/>
+              <path d="M88 654 l-5 7 M88 654 l5 7 M88 688 l-5-7 M88 688 l5-7"/>
+              <path d="M71 671 l7-5 M71 671 l7 5 M105 671 l-7-5 M105 671 l-7 5"/>
+            </g>
+            <text x="88" y="711" text-anchor="middle" font-size="13" font-weight="900" fill="#e5fff5">TEMP</text>
+            <text x="88" y="728" text-anchor="middle" font-size="13" font-weight="900" fill="#86f7c8" filter="url(#greenGlow)">STABLE</text>
+          </g>
+
+          <g class="status-screen" data-status-system="4">
+            <rect x="504" y="682" width="78" height="115" rx="10" fill="url(#onlineGlass)" stroke="#5bf2b8" stroke-width="2.2"/>
+            <rect x="508" y="686" width="70" height="107" rx="7" fill="url(#scanlines)" opacity=".8"/>
+            <g stroke="#78ffd0" stroke-width="2.3" fill="none" filter="url(#greenGlow)">
+              <circle cx="543" cy="712" r="14"/><circle cx="543" cy="712" r="5"/>
+              <path d="M543 692 V732 M523 712 H563"/>
+            </g>
+            <text x="543" y="755" text-anchor="middle" font-size="11.2" font-weight="900" fill="#e5fff5">SIGNAL</text>
+            <text x="543" y="771" text-anchor="middle" font-size="11.2" font-weight="900" fill="#86f7c8" filter="url(#greenGlow)">LOCKED</text>
+          </g>
+
+          <g class="status-screen" data-status-system="5">
+            <rect x="1300" y="635" width="98" height="105" rx="10" fill="url(#onlineGlass)" stroke="#5bf2b8" stroke-width="2.2"/>
+            <rect x="1304" y="639" width="90" height="97" rx="7" fill="url(#scanlines)" opacity=".8"/>
+            <g stroke="#78ffd0" stroke-width="2.7" fill="none" filter="url(#greenGlow)">
+              <path d="M1349 681 V662 M1342 681 H1356 L1349 669 Z" fill="#78ffd0"/>
+              <path d="M1338 665 Q1349 653 1360 665 M1331 658 Q1349 640 1367 658"/>
+            </g>
+            <text x="1349" y="708" text-anchor="middle" font-size="12.2" font-weight="900" fill="#e5fff5">COMMS</text>
+            <text x="1349" y="724" text-anchor="middle" font-size="12.2" font-weight="900" fill="#86f7c8" filter="url(#greenGlow)">ONLINE</text>
+          </g>
+        </svg>
         <div class="core-chamber-glow" aria-hidden="true"></div>
         <button class="engine-menu-btn" id="openMenu">☰ MENU</button>
         <img class="repair-overlay repair-core" data-system="1" data-b64="./assets/starfall-core-fixed.b64" alt="">
@@ -562,7 +622,7 @@ function renderEngine(){
    const id=Number(el.getAttribute('data-fx'));
    el.classList.toggle('hidden',id<=state.completed);
  });
- document.querySelectorAll('.system-status-plate[data-status-system]').forEach(function(el){
+ document.querySelectorAll('.engine-scene-art .status-screen[data-status-system]').forEach(function(el){
    const id=Number(el.getAttribute('data-status-system'));
    el.classList.toggle('visible',id<=state.completed);
  });
