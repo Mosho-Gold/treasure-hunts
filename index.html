@@ -54,6 +54,15 @@ button:not(:disabled):not(.locked):active{
   box-shadow:0 0 28px #0acfff20
 }
 .engine-map-base{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block}
+.coolant-activation{
+  position:absolute;left:14.6%;top:65.1%;width:11.8%;z-index:6;pointer-events:none;
+  text-align:center;color:rgba(126,232,255,.58);opacity:.56;mix-blend-mode:screen;
+  text-shadow:0 0 5px rgba(49,215,255,.24);transition:opacity .35s ease;
+  font-weight:800;letter-spacing:.7px;line-height:1.15;
+}
+.coolant-activation span{display:block;font-size:clamp(4px,.58vw,8px);opacity:.72}
+.coolant-activation b{display:block;margin-top:2px;font-size:clamp(6px,.86vw,11px);font-weight:700;letter-spacing:2px}
+.coolant-activation.hidden{opacity:0}
 .repair-overlay{
   position:absolute;object-fit:fill;opacity:0;pointer-events:none;
   transition:opacity .55s ease,filter .55s ease;
@@ -280,6 +289,7 @@ button:not(:disabled):not(.locked):active{
     <section class="engine-shell">
       <div class="engine-map-wrap" id="secretHeader">
         <img id="engineMapBase" class="engine-map-base" alt="Project Starfall damaged engine map">
+        <div class="coolant-activation" id="coolantActivation" aria-hidden="true"><span>COOLANT ACTIVATION</span><b>○ △ ★ □ ☾ ◇</b></div>
         <div class="core-chamber-glow" aria-hidden="true"></div>
         <button class="engine-menu-btn" id="openMenu">☰ MENU</button>
         <img class="repair-overlay repair-core" data-system="1" data-b64="./assets/starfall-core-fixed.b64" alt="">
@@ -417,12 +427,14 @@ button:not(:disabled):not(.locked):active{
 <script>
 const PREVIEW_ALL_MISSIONS=false;
 const FUEL_CODE='4827';
+const COOLANT_CODE='429163';
+const COMMS_CHANNEL='EDEN';
 const missions=[
  {id:1,title:'POWER CORE',desc:'Cross the laser field and verify the replacement core'},
  {id:2,title:'POWER ROUTING',desc:'Solve the routing logic and restore power flow'},
- {id:3,title:'COOLING SYSTEM',desc:'Rebuild the coolant route and transfer coolant'},
+ {id:3,title:'COOLING SYSTEM',desc:'Rebuild the coolant route and recover the activation code'},
  {id:4,title:'NAVIGATION ARRAY',desc:'Rebuild the Star Chart and verify the safe route'},
- {id:5,title:'COMMUNICATIONS',desc:'Restore the orbital signal'}
+ {id:5,title:'COMMUNICATIONS',desc:'Repair the decoder and identify the communication channel'}
 ];
 
 let raw=localStorage.getItem('starfallProgress');
@@ -504,6 +516,8 @@ function renderEngine(){
    const id=Number(el.getAttribute('data-fx'));
    el.classList.toggle('hidden',id<=state.completed);
  });
+ const coolantActivation=document.getElementById('coolantActivation');
+ if(coolantActivation) coolantActivation.classList.toggle('hidden',state.completed>=3);
  const remaining=Math.max(0,5-state.completed);
  document.getElementById('shipStatus').textContent=remaining===0?'ALL SYSTEMS ONLINE':remaining+' SYSTEM'+(remaining===1?'':'S')+' OFFLINE';
  document.getElementById('engineProgressText').textContent=state.completed+' / 5 RESTORED';
@@ -573,11 +587,11 @@ function missionBriefData(id){
    rules:[
     'Find the scattered pipe pieces.',
     'Build the coolant route from the tank through Pump 1 and Pump 2 to all three reactors.',
-    'Some pieces are damaged or decoys and do not belong in the final route.',
-    'When the route is complete, read the small maintenance numbers on the correct pipes from start to finish.',
+    'Use the pipe connections to determine which pieces belong in the completed route.',
+    'When the route is complete, use the maintenance markings to recover the six-digit Coolant Layout Number.',
     'Enter the six-digit Coolant Layout Number below.'
    ],
-   success:'After the layout number is verified, complete the physical coolant-transfer challenge. The Cooling System will come online when the transfer is complete.'
+   success:'When the correct Coolant Layout Number is verified, the Cooling System will come back online.'
  };
  if(id===4)return {
    briefing:'Crew, the Navigation Array cannot calculate a safe course. The Star Chart was damaged during the crash. Rebuild it and find a route through space without entering a hazardous sector.',
@@ -591,15 +605,15 @@ function missionBriefData(id){
    success:'When the route is verified, the Navigation Array will come online. Stay alert — the ship may still detect another problem before Communications can be accessed.'
  };
  return {
-   briefing:'Crew, the Communications Array is offline. Restore the decoder so the ship can transmit its final launch signal.',
+   briefing:'Crew, the Communications Array is still offline. The crash damaged the Decoder Array and scrambled the signal. Recover the Signal Chips and rebuild the decoder so we can restore the transmission link and contact home.',
    rules:[
-    'Use the circular decoder and the mission clues.',
-    'Determine the required LEFT and RIGHT rotations.',
-    'Record the symbols revealed by the decoder window.',
-    'Convert the result into the final communications frequency.',
-    'Enter the final frequency into the Mission Terminal.'
+    'Recover the Signal Chips.',
+    'Match the edge markers and rebuild all seven positions in the Decoder.',
+    'Starting at START, read the blue letters clockwise.',
+    'Follow the recovered instruction and determine the communication channel.',
+    'Enter the four-letter communication channel in the Mission Terminal.'
    ],
-   success:'When the communications frequency is verified, the final ship system will be restored and the crew can begin the launch sequence.'
+   success:'When the correct communication channel is entered, NOVA can establish contact with home. The Communications Array will come online after the transmission is received.'
  };
 }
 function briefHTML(id){
@@ -639,7 +653,7 @@ function openMission(m){
  }
  else if(m.id===3){
    html+='<div class="answer-panel"><div class="input-panel"><div class="input-label">MISSION ANSWER • COOLANT LAYOUT NUMBER</div><div class="code-row"><input id="coolantCode" class="code-input" inputmode="numeric" maxlength="6" placeholder="••••••"><button id="coolantVerify" class="primary">VERIFY</button></div>'+
-   '<div id="m3msg" class="msg">Awaiting coolant layout number...</div><div id="coolantStage" style="display:none"><div class="successbox"><strong>ROUTE VERIFIED</strong><br>Coolant line integrity confirmed. Complete the physical coolant-transfer challenge.</div><button id="coolantDone" class="primary" style="width:100%;margin-top:10px">COOLANT TRANSFER COMPLETE</button></div></div></div></div>';
+   '<div id="m3msg" class="msg">Awaiting coolant layout number...</div></div></div></div>';
  }
  else if(m.id===4){
    html+='<div class="answer-panel"><div class="input-panel"><div class="input-label">MISSION ANSWER • NAVIGATION SEQUENCE</div><div class="symbol-seq"><div class="symbol-slot"></div><div class="symbol-slot"></div><div class="symbol-slot"></div><div class="symbol-slot"></div></div>'+
@@ -647,7 +661,12 @@ function openMission(m){
    '<div class="actions"><button id="navClear" class="secondary">CLEAR</button><button id="navVerify" class="primary">VERIFY ROUTE</button></div><div id="m4msg" class="msg">Awaiting navigation sequence...</div></div></div></div>';
  }
  else {
-   html+='<div class="answer-panel"><div class="note">The physical decoder and final communications frequency are still being finalized. The briefing is in place, but no answer is being invented until Mission 5 is locked.</div></div></div>';
+   html+='<div class="answer-panel"><div class="input-panel"><div class="input-label">MISSION ANSWER • COMMUNICATION CHANNEL</div>'+
+   '<div class="symbol-seq"><div class="symbol-slot"></div><div class="symbol-slot"></div><div class="symbol-slot"></div><div class="symbol-slot"></div></div>'+
+   '<div class="symbol-pad"><button class="symbol-btn" data-letter="A">A</button><button class="symbol-btn" data-letter="D">D</button><button class="symbol-btn" data-letter="E">E</button><button class="symbol-btn" data-letter="F">F</button><button class="symbol-btn" data-letter="L">L</button><button class="symbol-btn" data-letter="N">N</button><button class="symbol-btn" data-letter="R">R</button><button class="symbol-btn" data-letter="S">S</button><button class="symbol-btn" data-letter="U">U</button></div>'+
+   '<div class="actions"><button id="commsClear" class="secondary">CLEAR</button><button id="commsVerify" class="primary">VERIFY CHANNEL</button></div><div id="m5msg" class="msg">Awaiting communication channel...</div>'+
+   '<div id="edenTransmission" style="display:none"><div class="successbox"><strong>COMMUNICATION CHANNEL FOUND: EDEN</strong><br><br><strong>INCOMING TRANSMISSION — EDEN // HOME</strong><br>Signal received. STARFALL, we hear you. Communications link restored.</div><button id="commsAcknowledge" class="primary" style="width:100%;margin-top:10px">ACKNOWLEDGE TRANSMISSION</button></div>'+
+   '</div></div></div>';
  }
  document.getElementById('mvContent').innerHTML=html;
  const ni=document.querySelector('#mvContent .mission-nova-img');if(ni)ni.src=novaImageSrc();
@@ -678,13 +697,11 @@ function bindMission(id,s){
  if(id===3){
    document.getElementById('coolantVerify').onclick=function(){
      const v=(document.getElementById('coolantCode').value||'').replace(/\D/g,'');
-     const ok=v.length===6 && v.split('').sort().join('')==='123469';
-     if(ok){
-       setMsg('m3msg','COOLANT LAYOUT VERIFIED',true);
-       document.getElementById('coolantStage').style.display='block';
-     } else setMsg('m3msg','LAYOUT NOT RECOGNIZED • CHECK ONLY THE NUMBERS ON THE COMPLETED ROUTE',false);
+     if(v===COOLANT_CODE){
+       setMsg('m3msg','COOLANT LAYOUT VERIFIED • COOLING SYSTEM RESTORED',true);
+       setTimeout(function(){completeMission(3)},550);
+     } else setMsg('m3msg','LAYOUT NOT RECOGNIZED • CHECK THE SYMBOL-MARKED NUMBERS ON THE COMPLETED ROUTE',false);
    };
-   document.getElementById('coolantDone').onclick=function(){completeMission(3)};
  }
  if(id===4){
    let seq=[];
@@ -704,6 +721,26 @@ function bindMission(id,s){
      } else setMsg('m4msg','ROUTE NOT RECOGNIZED • TRACE START TO DESTINATION AGAIN',false);
    };
  }
+ if(id===5){
+   let seq=[];
+   const slots=[].slice.call(document.querySelectorAll('#mvContent .symbol-slot'));
+   function paintComms(){slots.forEach(function(el,i){el.textContent=seq[i]||''})}
+   [].slice.call(document.querySelectorAll('#mvContent .symbol-btn[data-letter]')).forEach(function(b){
+     b.onclick=function(){if(seq.length<4){seq.push(b.getAttribute('data-letter'));paintComms()}};
+   });
+   document.getElementById('commsClear').onclick=function(){
+     seq=[];paintComms();setMsg('m5msg','Awaiting communication channel...',true);
+     document.getElementById('edenTransmission').style.display='none';
+   };
+   document.getElementById('commsVerify').onclick=function(){
+     if(seq.join('')===COMMS_CHANNEL){
+       setMsg('m5msg','CHANNEL VERIFIED • EDEN',true);
+       document.getElementById('edenTransmission').style.display='block';
+     } else setMsg('m5msg','CHANNEL NOT RECOGNIZED • CHECK THE DECODER AND RECOVERED INSTRUCTION',false);
+   };
+   document.getElementById('commsAcknowledge').onclick=function(){completeMission(5)};
+ }
+
 }
 
 function renderParent(){
