@@ -54,6 +54,14 @@ button:not(:disabled):not(.locked):active{
   box-shadow:0 0 28px #0acfff20
 }
 .engine-map-base{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block}
+.status-canvas{
+  position:absolute;z-index:7;pointer-events:none;opacity:0;
+  transition:opacity .35s ease;
+}
+.status-canvas.visible{opacity:1}
+.core-status-canvas{
+  left:0.6906%;top:30.3867%;width:8.6326%;height:14.2726%;
+}
 .engine-scene-art{
   position:absolute;inset:0;width:100%;height:100%;z-index:6;
   pointer-events:none;overflow:visible;
@@ -293,6 +301,7 @@ button:not(:disabled):not(.locked):active{
     <section class="engine-shell">
       <div class="engine-map-wrap" id="secretHeader">
         <img id="engineMapBase" class="engine-map-base" alt="Project Starfall damaged engine map">
+        <canvas id="coreStatusCanvas" class="status-canvas core-status-canvas" width="125" height="155" aria-hidden="true"></canvas>
         <svg class="engine-scene-art" viewBox="0 0 1448 1086" aria-hidden="true">
           <defs>
             <linearGradient id="onlineGlass" x1="0" y1="0" x2="0" y2="1">
@@ -604,8 +613,89 @@ async function loadB64Image(el,path){
    el.src='data:image/jpeg;base64,'+b64;
  }catch(e){console.error('STARFALL asset failed',path,e)}
 }
+function roundRectPath(ctx,x,y,w,h,r){
+ ctx.beginPath();
+ ctx.moveTo(x+r,y);
+ ctx.arcTo(x+w,y,x+w,y+h,r);
+ ctx.arcTo(x+w,y+h,x,y+h,r);
+ ctx.arcTo(x,y+h,x,y,r);
+ ctx.arcTo(x,y,x+w,y,r);
+ ctx.closePath();
+}
+function paintCoreStatusCanvas(){
+ const base=document.getElementById('engineMapBase');
+ const canvas=document.getElementById('coreStatusCanvas');
+ if(!base||!canvas||!base.complete||!base.naturalWidth)return;
+ const ctx=canvas.getContext('2d',{willReadFrequently:true});
+ ctx.clearRect(0,0,125,155);
+
+ // Copy the exact existing sign, including its original metal housing.
+ ctx.drawImage(base,10,330,125,155,0,0,125,155);
+
+ // Turn the original red illuminated parts green while preserving texture/shading.
+ const data=ctx.getImageData(0,0,125,155);
+ const p=data.data;
+ for(let i=0;i<p.length;i+=4){
+   const r=p[i],g=p[i+1],b=p[i+2];
+   if(r>70 && r>g*1.18 && r>b*1.08){
+     const lum=Math.max(r,g,b);
+     p[i]=Math.round(lum*.18);
+     p[i+1]=lum;
+     p[i+2]=Math.round(lum*.52);
+   }
+ }
+ ctx.putImageData(data,0,0);
+
+ // Replace only the message area inside the same glass screen.
+ ctx.save();
+ roundRectPath(ctx,29,35,70,94,5);
+ ctx.clip();
+ const glass=ctx.createLinearGradient(0,35,0,129);
+ glass.addColorStop(0,'rgba(2,52,36,.98)');
+ glass.addColorStop(.55,'rgba(2,35,27,.98)');
+ glass.addColorStop(1,'rgba(1,24,20,.98)');
+ ctx.fillStyle=glass;
+ ctx.fillRect(29,35,70,94);
+ ctx.strokeStyle='rgba(145,255,205,.10)';
+ ctx.lineWidth=1;
+ for(let y=41;y<126;y+=7){ctx.beginPath();ctx.moveTo(31,y);ctx.lineTo(97,y);ctx.stroke();}
+ ctx.restore();
+
+ ctx.save();
+ ctx.textAlign='center';
+ ctx.textBaseline='middle';
+ ctx.shadowColor='rgba(96,255,175,.75)';
+ ctx.shadowBlur=5;
+ ctx.strokeStyle='#d7ffea';
+ ctx.fillStyle='#eafff3';
+ ctx.lineWidth=2;
+
+ // Repaired core icon.
+ ctx.beginPath();ctx.arc(64,53,12,0,Math.PI*2);ctx.stroke();
+ ctx.beginPath();
+ ctx.moveTo(66,40);ctx.lineTo(56,54);ctx.lineTo(63,54);
+ ctx.lineTo(59,66);ctx.lineTo(73,49);ctx.lineTo(66,49);
+ ctx.closePath();ctx.fill();
+
+ ctx.shadowBlur=3;
+ ctx.font='900 15px Arial, sans-serif';
+ ctx.fillText('CORE',64,87);
+ ctx.fillText('ONLINE',64,106);
+
+ // Bottom status bars, same visual language as the old warning bars.
+ ctx.fillStyle='#63ff9e';
+ ctx.shadowBlur=4;
+ [40,55,70,85].forEach(function(x){
+   ctx.beginPath();
+   ctx.moveTo(x,119);ctx.lineTo(x+11,119);ctx.lineTo(x+5,128);ctx.lineTo(x-6,128);
+   ctx.closePath();ctx.fill();
+ });
+ ctx.restore();
+}
 function loadEngineAssets(){
- loadB64Image(document.getElementById('engineMapBase'),'./assets/starfall-engine-map.b64');
+ const base=document.getElementById('engineMapBase');
+ base.addEventListener('load',paintCoreStatusCanvas,{once:true});
+ loadB64Image(base,'./assets/starfall-engine-map.b64');
  document.querySelectorAll('.repair-overlay[data-b64]').forEach(function(el){loadB64Image(el,el.getAttribute('data-b64'))});
 }
 function renderEngine(){
@@ -619,8 +709,11 @@ function renderEngine(){
  });
  document.querySelectorAll('.engine-scene-art .status-screen[data-status-system]').forEach(function(el){
    const id=Number(el.getAttribute('data-status-system'));
+   if(id===1){el.classList.remove('visible');return;}
    el.classList.toggle('visible',id<=state.completed);
  });
+ const coreCanvas=document.getElementById('coreStatusCanvas');
+ if(coreCanvas)coreCanvas.classList.toggle('visible',state.completed>=1);
  const remaining=Math.max(0,5-state.completed);
  document.getElementById('shipStatus').textContent=remaining===0?'ALL SYSTEMS ONLINE':remaining+' SYSTEM'+(remaining===1?'':'S')+' OFFLINE';
  document.getElementById('engineProgressText').textContent=state.completed+' / 5 RESTORED';
