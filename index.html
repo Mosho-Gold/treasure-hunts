@@ -55,33 +55,37 @@ button:not(:disabled):not(.locked):active{
 }
 .engine-map-base{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block}
 .coolant-activation{
-  position:absolute;left:2.35%;top:55.45%;width:8.7%;z-index:6;pointer-events:none;
-  text-align:center;color:#9cecff;
-  background:linear-gradient(180deg,rgba(7,28,48,.96),rgba(4,17,31,.96));
-  border:1px solid rgba(67,211,244,.72);
-  border-radius:4px;
-  padding:2px 3px 3px;
+  position:absolute;left:1.55%;top:54.05%;width:8.45%;height:3.55%;z-index:6;pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;color:#a9efff;
+  background:
+    linear-gradient(180deg,#17344a 0%,#0b2134 48%,#071727 100%);
+  border:1px solid #4e7f99;
+  border-radius:5px;
+  padding:2px 4px;
   box-shadow:
-    inset 0 0 0 1px rgba(141,241,255,.12),
-    inset 0 0 8px rgba(49,215,255,.08),
-    0 1px 2px rgba(0,0,0,.48);
-  text-shadow:0 0 3px rgba(49,215,255,.38);
-  font-weight:800;letter-spacing:.35px;line-height:1.02;
+    inset 0 1px 0 rgba(210,246,255,.22),
+    inset 0 -2px 0 rgba(0,0,0,.34),
+    inset 0 0 0 2px rgba(8,21,34,.72),
+    0 2px 3px rgba(0,0,0,.45);
+  text-shadow:0 0 3px rgba(77,218,255,.34);
+  font-weight:800;letter-spacing:.28px;line-height:1;
 }
 .coolant-activation:before,
 .coolant-activation:after{
-  content:"";position:absolute;top:3px;width:2px;height:2px;border-radius:50%;
-  background:#6a8798;box-shadow:0 0 1px rgba(255,255,255,.35);
+  content:"";position:absolute;top:3px;width:3px;height:3px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#d7e7ed 0 18%,#708592 35%,#263b47 72%);
+  box-shadow:0 0 1px rgba(0,0,0,.65);
 }
-.coolant-activation:before{left:3px}
-.coolant-activation:after{right:3px}
+.coolant-activation:before{left:4px}
+.coolant-activation:after{right:4px}
 .coolant-activation span{
-  display:block;font-size:clamp(4px,.43vw,6px);
-  opacity:.82;letter-spacing:.45px;white-space:nowrap;
+  display:block;font-size:clamp(4px,.38vw,5.5px);
+  opacity:.88;letter-spacing:.4px;white-space:nowrap;
 }
 .coolant-activation b{
-  display:block;margin-top:1px;font-size:clamp(6px,.62vw,9px);
-  font-weight:700;letter-spacing:1.15px;color:#baf4ff;white-space:nowrap;
+  display:block;margin-top:1px;font-size:clamp(6px,.52vw,8px);
+  font-weight:700;letter-spacing:.9px;color:#c2f5ff;white-space:nowrap;
 }
 .system-status-plate{
   position:absolute;z-index:7;pointer-events:none;opacity:0;
