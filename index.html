@@ -55,18 +55,23 @@ button:not(:disabled):not(.locked):active{
 }
 .engine-map-base{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block}
 .coolant-activation{
-  position:absolute;left:13.6%;top:58.7%;width:15.3%;z-index:6;pointer-events:none;
-  text-align:center;color:rgba(139,238,255,.82);opacity:.82;mix-blend-mode:screen;
-  text-shadow:0 0 6px rgba(49,215,255,.38);
-  font-weight:800;letter-spacing:.65px;line-height:1.12;
+  position:absolute;left:12.9%;top:57.8%;width:16.8%;z-index:6;pointer-events:none;
+  text-align:center;color:#b8f6ff;
+  background:rgba(3,31,55,.62);
+  border:1px solid rgba(72,221,255,.42);
+  border-radius:6px;
+  padding:3px 4px 4px;
+  box-shadow:inset 0 0 8px rgba(49,215,255,.12),0 0 6px rgba(49,215,255,.10);
+  text-shadow:0 0 4px rgba(49,215,255,.45);
+  font-weight:800;letter-spacing:.6px;line-height:1.08;
 }
 .coolant-activation span{
-  display:block;font-size:clamp(5px,.66vw,9px);opacity:.82;
-  letter-spacing:1px;
+  display:block;font-size:clamp(6px,.74vw,10px);
+  opacity:.92;letter-spacing:.8px;
 }
 .coolant-activation b{
-  display:block;margin-top:2px;font-size:clamp(8px,1vw,13px);
-  font-weight:700;letter-spacing:2.2px;
+  display:block;margin-top:2px;font-size:clamp(10px,1.18vw,15px);
+  font-weight:800;letter-spacing:2.4px;color:#d8fbff;
 }
 .repair-overlay{
   position:absolute;object-fit:fill;opacity:0;pointer-events:none;
