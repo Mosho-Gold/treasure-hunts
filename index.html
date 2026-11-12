@@ -83,6 +83,23 @@ button:not(:disabled):not(.locked):active{
   display:block;margin-top:1px;font-size:clamp(6px,.62vw,9px);
   font-weight:700;letter-spacing:1.15px;color:#baf4ff;white-space:nowrap;
 }
+.system-status-plate{
+  position:absolute;z-index:7;pointer-events:none;opacity:0;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  color:#d9fff1;background:linear-gradient(180deg,rgba(7,68,58,.97),rgba(3,38,34,.98));
+  border:1px solid rgba(96,238,190,.9);border-radius:5px;
+  box-shadow:inset 0 0 0 1px rgba(185,255,229,.12),0 0 7px rgba(72,235,184,.24);
+  text-shadow:0 0 4px rgba(98,244,199,.42);
+  font-weight:900;letter-spacing:.45px;line-height:1.04;
+  transition:opacity .35s ease;
+}
+.system-status-plate.visible{opacity:1}
+.status-core{left:2.15%;top:34.1%;width:6.65%;height:10.4%;font-size:clamp(5px,.58vw,8px)}
+.status-routing{left:90.65%;top:34.2%;width:6.45%;height:10.2%;font-size:clamp(5px,.56vw,8px)}
+.status-cooling{left:2.35%;top:60.2%;width:7.25%;height:11.2%;font-size:clamp(5px,.56vw,8px)}
+.status-nav{left:34.1%;top:66.4%;width:7.05%;height:11.4%;font-size:clamp(5px,.56vw,8px)}
+.status-comms{left:89.05%;top:60.4%;width:7.45%;height:11.0%;font-size:clamp(5px,.56vw,8px)}
+.system-status-plate span{display:block;padding:2px 3px}
 .repair-overlay{
   position:absolute;object-fit:fill;opacity:0;pointer-events:none;
   transition:opacity .55s ease,filter .55s ease;
@@ -310,6 +327,11 @@ button:not(:disabled):not(.locked):active{
       <div class="engine-map-wrap" id="secretHeader">
         <img id="engineMapBase" class="engine-map-base" alt="Project Starfall damaged engine map">
         <div class="coolant-activation" id="coolantActivation" aria-hidden="true"><span>COOLANT ACTIVATION</span><b>○ △ ★ □ ☾ ◇</b></div>
+        <div class="system-status-plate status-core" data-status-system="1"><span>CORE<br>ONLINE</span></div>
+        <div class="system-status-plate status-routing" data-status-system="2"><span>ROUTING<br>ONLINE</span></div>
+        <div class="system-status-plate status-cooling" data-status-system="3"><span>TEMP<br>STABLE</span></div>
+        <div class="system-status-plate status-nav" data-status-system="4"><span>SIGNAL<br>LOCKED</span></div>
+        <div class="system-status-plate status-comms" data-status-system="5"><span>COMMS<br>ONLINE</span></div>
         <div class="core-chamber-glow" aria-hidden="true"></div>
         <button class="engine-menu-btn" id="openMenu">☰ MENU</button>
         <img class="repair-overlay repair-core" data-system="1" data-b64="./assets/starfall-core-fixed.b64" alt="">
@@ -535,6 +557,10 @@ function renderEngine(){
  document.querySelectorAll('.damage-fx[data-fx]').forEach(function(el){
    const id=Number(el.getAttribute('data-fx'));
    el.classList.toggle('hidden',id<=state.completed);
+ });
+ document.querySelectorAll('.system-status-plate[data-status-system]').forEach(function(el){
+   const id=Number(el.getAttribute('data-status-system'));
+   el.classList.toggle('visible',id<=state.completed);
  });
  const remaining=Math.max(0,5-state.completed);
  document.getElementById('shipStatus').textContent=remaining===0?'ALL SYSTEMS ONLINE':remaining+' SYSTEM'+(remaining===1?'':'S')+' OFFLINE';
