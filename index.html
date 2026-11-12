@@ -55,14 +55,19 @@ button:not(:disabled):not(.locked):active{
 }
 .engine-map-base{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block}
 .coolant-activation{
-  position:absolute;left:14.6%;top:65.1%;width:11.8%;z-index:6;pointer-events:none;
-  text-align:center;color:rgba(126,232,255,.58);opacity:.56;mix-blend-mode:screen;
-  text-shadow:0 0 5px rgba(49,215,255,.24);transition:opacity .35s ease;
-  font-weight:800;letter-spacing:.7px;line-height:1.15;
+  position:absolute;left:13.6%;top:58.7%;width:15.3%;z-index:6;pointer-events:none;
+  text-align:center;color:rgba(139,238,255,.82);opacity:.82;mix-blend-mode:screen;
+  text-shadow:0 0 6px rgba(49,215,255,.38);
+  font-weight:800;letter-spacing:.65px;line-height:1.12;
 }
-.coolant-activation span{display:block;font-size:clamp(4px,.58vw,8px);opacity:.72}
-.coolant-activation b{display:block;margin-top:2px;font-size:clamp(6px,.86vw,11px);font-weight:700;letter-spacing:2px}
-.coolant-activation.hidden{opacity:0}
+.coolant-activation span{
+  display:block;font-size:clamp(5px,.66vw,9px);opacity:.82;
+  letter-spacing:1px;
+}
+.coolant-activation b{
+  display:block;margin-top:2px;font-size:clamp(8px,1vw,13px);
+  font-weight:700;letter-spacing:2.2px;
+}
 .repair-overlay{
   position:absolute;object-fit:fill;opacity:0;pointer-events:none;
   transition:opacity .55s ease,filter .55s ease;
@@ -516,8 +521,6 @@ function renderEngine(){
    const id=Number(el.getAttribute('data-fx'));
    el.classList.toggle('hidden',id<=state.completed);
  });
- const coolantActivation=document.getElementById('coolantActivation');
- if(coolantActivation) coolantActivation.classList.toggle('hidden',state.completed>=3);
  const remaining=Math.max(0,5-state.completed);
  document.getElementById('shipStatus').textContent=remaining===0?'ALL SYSTEMS ONLINE':remaining+' SYSTEM'+(remaining===1?'':'S')+' OFFLINE';
  document.getElementById('engineProgressText').textContent=state.completed+' / 5 RESTORED';
