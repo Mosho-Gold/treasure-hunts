@@ -648,15 +648,15 @@ button:not(:disabled):not(.locked):active{
       <div class="sheet-panel">
         <div class="sheet-panel-title">MISSION RULES</div>
         <div class="rules-body">
-          <div class="rule-row"><div class="rule-num">1</div><div class="rule-text">Use water as emergency fuel. Start with a bucket or large bowl.</div></div>
-          <div class="rule-row"><div class="rule-num">2</div><div class="rule-text">Every crew member must take part in passing the fuel down the line without spilling it.</div></div>
-          <div class="rule-row"><div class="rule-num">3</div><div class="rule-text">Pour the recovered fuel into a clear bottle or container.</div></div>
-          <div class="rule-row"><div class="rule-num">4</div><div class="rule-text">As the fuel level rises, the hidden floating safety code will rise into view.</div></div>
+          <div class="rule-row"><div class="rule-num">1</div><div class="rule-text">Form a crew line from the Emergency Fuel Supply to the reserve container.</div></div>
+          <div class="rule-row"><div class="rule-num">2</div><div class="rule-text">Space yourselves along the route so every crew member can take part.</div></div>
+          <div class="rule-row"><div class="rule-num">3</div><div class="rule-text">Collect the emergency fuel from the Fuel Supply and pass it down the entire crew line.</div></div>
+          <div class="rule-row"><div class="rule-num">4</div><div class="rule-text">Pour it into the reserve container. Repeat the transfer until the container is full, then take the Fuel Chip.</div></div>
         </div>
       </div>
       <div class="success-panel">
         <div class="sheet-panel-title">MISSION SUCCESS</div>
-        <div class="success-body">Read the four-digit Fuel Safety Code revealed inside the tank and enter it below. Mission 5 remains locked until the code is verified.</div>
+        <div class="success-body">Read the four-digit Fuel Safety Code on the Fuel Chip and enter it below. Mission 5 remains locked until the code is verified.</div>
       </div>
       <div class="answer-panel" id="fuelInputPanel">
         <div class="input-panel">
@@ -1186,7 +1186,7 @@ document.getElementById('fuelVerify').onclick=function(){
    document.getElementById('fuelContinue').style.display='block';
    document.getElementById('fuelInputPanel').style.display='none';
  }else{
-   setMsg('fuelMsg','CODE NOT RECOGNIZED • CHECK THE FLOATING SAFETY CODE',false);
+   setMsg('fuelMsg','CODE NOT RECOGNIZED • CHECK THE FUEL CHIP',false);
    input.value='';
  }
 };
