@@ -31,7 +31,7 @@ create index if not exists starfall_access_devices_code_idx
 
 -- Helper for creating customer codes from the SQL editor or an admin integration.
 -- Example:
--- select public.starfall_create_access_code('STAR-7K4P-2NM8', 'Etsy order 1234', 3, null);
+-- select public.starfall_create_access_code('731864', 'Etsy order 1234', 3, null);
 create or replace function public.starfall_create_access_code(
   raw_code text,
   code_label text default null,
