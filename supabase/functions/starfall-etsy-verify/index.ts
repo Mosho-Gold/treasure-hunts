@@ -49,10 +49,9 @@ function adminClient() {
   return createClient(url, secret, { auth: { persistSession: false, autoRefreshToken: false } })
 }
 
-async function getEtsyAccessToken() {
+async function getEtsyAccessToken(refreshToken: string) {
   const keystring = Deno.env.get('ETSY_KEYSTRING') || ''
-  const refreshToken = Deno.env.get('ETSY_REFRESH_TOKEN') || ''
-  if (!keystring || !refreshToken) throw new Error('Etsy OAuth secrets are not configured')
+  if (!keystring || !refreshToken) throw new Error('Etsy OAuth configuration is unavailable')
 
   const body = new URLSearchParams({
     grant_type: 'refresh_token',
@@ -70,13 +69,12 @@ async function getEtsyAccessToken() {
   return String(data.access_token || '')
 }
 
-async function fetchEtsyReceipt(receiptId: string) {
+async function fetchEtsyReceipt(receiptId: string, shopId: string, refreshToken: string) {
   const keystring = Deno.env.get('ETSY_KEYSTRING') || ''
   const sharedSecret = Deno.env.get('ETSY_SHARED_SECRET') || ''
-  const shopId = Deno.env.get('ETSY_SHOP_ID') || ''
-  if (!keystring || !sharedSecret || !shopId) throw new Error('Etsy app secrets are not configured')
+  if (!keystring || !sharedSecret || !shopId || !refreshToken) throw new Error('Etsy app configuration is unavailable')
 
-  const token = await getEtsyAccessToken()
+  const token = await getEtsyAccessToken(refreshToken)
   const headers = {
     'x-api-key': keystring + ':' + sharedSecret,
     'Authorization': 'Bearer ' + token,
@@ -131,8 +129,18 @@ Deno.serve(async (req) => {
   const receiptId = cleanReceiptId(body?.orderNumber)
   if (!receiptId) return json(req, { ok: false, error: 'INVALID_ORDER_NUMBER' }, 400)
 
+  const { data: etsyConfig, error: configError } = await db
+    .from('starfall_etsy_config')
+    .select('refresh_token,shop_id,starfall_listing_id')
+    .eq('id',1)
+    .maybeSingle()
+
+  if (configError || !etsyConfig?.refresh_token || !etsyConfig?.shop_id) {
+    return json(req, { ok: false, error: 'ETSY_NOT_CONNECTED' }, 503)
+  }
+
   let receipt: any
-  try { receipt = await fetchEtsyReceipt(receiptId) }
+  try { receipt = await fetchEtsyReceipt(receiptId, String(etsyConfig.shop_id), String(etsyConfig.refresh_token)) }
   catch (e) { console.error(e); return json(req, { ok: false, error: 'ETSY_LOOKUP_FAILED' }, 502) }
 
   if (!receipt) return json(req, { ok: false, error: 'ORDER_NOT_FOUND' }, 404)
@@ -142,8 +150,8 @@ Deno.serve(async (req) => {
     return json(req, { ok: false, error: status === 'canceled' ? 'ORDER_CANCELED' : 'ORDER_NOT_PAID' }, 403)
   }
 
-  const starfallListingId = String(Deno.env.get('STARFALL_LISTING_ID') || '')
-  if (!starfallListingId) return json(req, { ok: false, error: 'SERVER_NOT_CONFIGURED' }, 500)
+  const starfallListingId = String(etsyConfig.starfall_listing_id || '')
+  if (!starfallListingId) return json(req, { ok: false, error: 'STARFALL_LISTING_NOT_CONFIGURED' }, 503)
 
   const transactions = Array.isArray(receipt.transactions) ? receipt.transactions : []
   const ownsStarfall = transactions.some((t: any) => String(t?.listing_id || '') === starfallListingId)
