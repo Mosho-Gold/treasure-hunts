@@ -861,6 +861,22 @@ function renderParent(){
      if(m.id===4)showFuelEmergency();
    };
    pg.appendChild(b);
+   if(m.id===4){
+     const fuelSkip=document.createElement('button');
+     fuelSkip.textContent=(state.completed===4 && state.fuelVerified)
+       ? '✓ Fuel complete — Mission 5 ready'
+       : 'Set progress: Fuel complete → Mission 5 ready';
+     fuelSkip.onclick=function(){
+       state.completed=4;
+       state.navVerified=true;
+       state.fuelVerified=true;
+       state.introSeen=true;
+       save();render();
+       document.getElementById('parentModal').classList.remove('show');
+       renderTerminal();show('terminalView');
+     };
+     pg.appendChild(fuelSkip);
+   }
  });
  const intro=document.createElement('button');intro.textContent='REPLAY NOVA INTRO';
  intro.onclick=function(){document.getElementById('parentModal').classList.remove('show');showIntro()};
