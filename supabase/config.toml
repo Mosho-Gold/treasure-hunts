@@ -1,2 +1,5 @@
 [functions.starfall-access]
 verify_jwt = false
+
+[functions.starfall-etsy-verify]
+verify_jwt = false
