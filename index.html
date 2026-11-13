@@ -332,17 +332,15 @@ button:not(:disabled):not(.locked):active{
             <circle cx="10.4" cy="606.8" r="2.4" fill="#b9c9d1" stroke="#243b47" stroke-width="1"/>
             <circle cx="144.8" cy="606.8" r="2.4" fill="#b9c9d1" stroke="#243b47" stroke-width="1"/>
             <text x="77.6" y="589.4" text-anchor="middle" font-size="7.7" font-weight="800" letter-spacing=".74" fill="#8de9fb">COOLANT ACTIVATION</text>
-            <g fill="none" stroke="#c2f7ff" stroke-width="1.7" filter="url(#cyanGlow)">
-              <circle cx="32" cy="601.8" r="5.4"/>
-              <path d="M47 606.3 L53 596.8 L59 606.3 Z"/>
-              <rect x="77.3" y="596.5" width="10.8" height="10.8" rx=".8"/>
-              <path d="M111.5 596.6
-                       A5.8 5.8 0 1 0 111.5 607
-                       A4.4 4.4 0 1 1 111.5 596.6 Z"
-                    fill="#c2f7ff" stroke="none"/>
-              <path d="M128 601.9 L133.4 596.5 L138.8 601.9 L133.4 607.3 Z"/>
+            <g stroke="#c2f7ff" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round" filter="url(#cyanGlow)">
+              <!-- six clean, evenly spaced coolant sequence icons -->
+              <circle cx="28" cy="601.2" r="4.6" fill="none"/>
+              <path d="M48 596.6 L53.2 605.7 L42.8 605.7 Z" fill="none"/>
+              <path d="M68 596.3 L69.5 599.4 L73 599.9 L70.5 602.3 L71.1 605.8 L68 604.1 L64.9 605.8 L65.5 602.3 L63 599.9 L66.5 599.4 Z" fill="#c2f7ff" stroke="none"/>
+              <rect x="83.4" y="596.6" width="9.2" height="9.2" rx=".35" fill="none"/>
+              <path d="M111.4 596.8 A4.7 4.7 0 1 0 111.4 605.6 A3.55 3.55 0 1 1 111.4 596.8 Z" fill="#c2f7ff" stroke="none"/>
+              <path d="M128 596.6 L132.6 601.2 L128 605.8 L123.4 601.2 Z" fill="none"/>
             </g>
-            <text x="69" y="605.1" text-anchor="middle" font-size="13.2" font-weight="900" fill="#c2f7ff" filter="url(#cyanGlow)">★</text>
           </g>
           <!-- Mission-complete states: only the existing red glass changes -->
           <g class="status-screen" data-status-system="1">
