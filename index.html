@@ -573,7 +573,7 @@ button:not(:disabled):not(.locked):active{
     <div class="launcher-kicker">PROJECT: STARFALL</div>
     <div class="access-title">CREW ACCESS</div>
     <p class="access-copy">Enter the access code included with your STARFALL game to activate this device.</p>
-    <input id="accessCodeInput" class="access-input" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="24" placeholder="XXXX-XXXX-XXXX" aria-label="STARFALL access code">
+    <input id="accessCodeInput" class="access-input" autocomplete="off" autocapitalize="characters" spellcheck="false" inputmode="numeric" maxlength="6" placeholder="000000" aria-label="STARFALL 6-digit access code">
     <div id="accessMessage" class="access-message">AWAITING ACCESS CODE</div>
     <button class="primary" id="accessActivate" style="width:100%;margin-top:5px">ACTIVATE STARFALL</button>
     <div class="access-help">One purchase code can be activated on a limited number of devices. Reopening STARFALL on an activated device does not use another activation.</div>
@@ -1208,7 +1208,7 @@ document.getElementById('ackHomeTransmission').onclick=function(){
 document.getElementById('accessActivate').onclick=async function(){
  const button=this;
  const code=(document.getElementById('accessCodeInput').value||'').trim();
- if(code.replace(/[^a-z0-9]/gi,'').length<8){setAccessMessage('CHECK THE ACCESS CODE AND TRY AGAIN','bad');return}
+ if(!/^\d{6}$/.test(code)){setAccessMessage('ENTER YOUR 6-DIGIT ACCESS CODE','bad');return}
  button.disabled=true;
  setAccessMessage('VERIFYING ACCESS...','');
  try{
