@@ -1,0 +1,2 @@
+[functions.starfall-access]
+verify_jwt = false
