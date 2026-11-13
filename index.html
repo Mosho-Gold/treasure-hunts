@@ -78,6 +78,7 @@ button:not(:disabled):not(.locked):active{
   user-select:none;
 }
 .repair-overlay{
+  display:none!important;
   position:absolute;object-fit:fill;opacity:0;pointer-events:none;
   transition:opacity .55s ease,filter .55s ease;
   filter:brightness(1.25) drop-shadow(0 0 10px rgba(70,225,255,.8));
@@ -408,11 +409,6 @@ button:not(:disabled):not(.locked):active{
         </svg>
         <div class="core-chamber-glow" aria-hidden="true"></div>
         <button class="engine-menu-btn" id="openMenu">☰ MENU</button>
-        <img class="repair-overlay repair-core" data-system="1" data-b64="./assets/starfall-core-fixed.b64" alt="">
-        <img class="repair-overlay repair-routing" data-system="2" data-b64="./assets/starfall-routing-fixed.b64" alt="">
-        <img class="repair-overlay repair-cooling" data-system="3" data-b64="./assets/starfall-cooling-fixed.b64" alt="">
-        <img class="repair-overlay repair-nav" data-system="4" data-b64="./assets/starfall-navigation-fixed.b64" alt="">
-        <img class="repair-overlay repair-comms" data-system="5" data-b64="./assets/starfall-comms-fixed.b64" alt="">
         <div class="damage-fx fx-core" data-fx="1"><span class="smoke"></span><span class="smoke s2"></span><span class="spark"></span><span class="spark s2"></span><span class="spark s3"></span></div>
         <div class="damage-fx fx-routing" data-fx="2"><span class="smoke"></span><span class="smoke s2"></span><span class="spark"></span><span class="spark s2"></span><span class="spark s3"></span></div>
         <div class="damage-fx fx-cooling" data-fx="3"><span class="smoke"></span><span class="smoke s2"></span><span class="spark"></span><span class="spark s2"></span><span class="spark s3"></span></div>
@@ -761,13 +757,8 @@ function loadEngineAssets(){
  const base=document.getElementById('engineMapBase');
  base.addEventListener('load',paintAllStatusCanvases,{once:true});
  loadB64Image(base,'./assets/starfall-engine-map.b64');
- document.querySelectorAll('.repair-overlay[data-b64]').forEach(function(el){loadB64Image(el,el.getAttribute('data-b64'))});
 }
 function renderEngine(){
- document.querySelectorAll('.repair-overlay[data-system]').forEach(function(el){
-   const id=Number(el.getAttribute('data-system'));
-   el.classList.toggle('visible',id<=state.completed);
- });
  document.querySelectorAll('.damage-fx[data-fx]').forEach(function(el){
    const id=Number(el.getAttribute('data-fx'));
    el.classList.toggle('hidden',id<=state.completed);
