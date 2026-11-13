@@ -658,30 +658,15 @@ function drawStatusIcon(ctx,type,cx,cy,scale){
  ctx.restore();
 }
 const STATUS_SCREENS=[
- {x:30,y:362,w:85,h:113,frame:{x:26,y:350,w:93,h:130},icon:'core',lines:['CORE','ONLINE'],fontSize:16},
- {x:1326,y:367,w:85,h:112,icon:'routing',lines:['ROUTING','ONLINE'],fontSize:13},
- {x:40,y:647,w:93,h:108,icon:'cooling',lines:['TEMP','STABLE'],fontSize:15},
- {x:512,y:697,w:80,h:118,icon:'nav',lines:['SIGNAL','LOCKED'],fontSize:13},
- {x:1319,y:646,w:93,h:110,icon:'comms',lines:['COMMS','ONLINE'],fontSize:14}
+ {x:29,y:362,w:89,h:116,icon:'core',lines:['CORE','ONLINE'],fontSize:15},
+ {x:1328,y:357,w:91,h:121,icon:'routing',lines:['ROUTING','ONLINE'],fontSize:12},
+ {x:30,y:641,w:101,h:122,icon:'cooling',lines:['TEMP','STABLE'],fontSize:15},
+ {x:509,y:693,w:87,h:121,icon:'nav',lines:['SIGNAL','LOCKED'],fontSize:12},
+ {x:1321,y:638,w:96,h:124,icon:'comms',lines:['COMMS','ONLINE'],fontSize:13}
 ];
 function paintStatusIntoMap(ctx,cfg){
- // Recolor the existing red screen glow around the glass without replacing its housing.
- const pad=6;
- const fr=cfg.frame||{x:Math.max(0,cfg.x-pad),y:Math.max(0,cfg.y-pad),w:cfg.w+pad*2,h:cfg.h+pad*2};
- const rx=fr.x, ry=fr.y, rw=fr.w, rh=fr.h;
- const data=ctx.getImageData(rx,ry,rw,rh), p=data.data;
- for(let i=0;i<p.length;i+=4){
-   const r=p[i],g=p[i+1],b=p[i+2];
-   if(r>70 && r>g*1.16 && r>b*1.06){
-     const lum=Math.max(r,g,b);
-     p[i]=Math.round(lum*.14);
-     p[i+1]=Math.min(255,Math.round(lum*1.08));
-     p[i+2]=Math.round(lum*.42);
-   }
- }
- ctx.putImageData(data,rx,ry);
-
- // Repaint only the glass face inside the original screen.
+ // Repaint only the measured glass face inside the original screen.
+ // The surrounding metal housing remains the untouched approved Engine Map.
  ctx.save();
  roundRectPath(ctx,cfg.x,cfg.y,cfg.w,cfg.h,5);
  ctx.clip();
@@ -691,6 +676,10 @@ function paintStatusIntoMap(ctx,cfg){
  glass.addColorStop(1,'rgba(1,25,20,.98)');
  ctx.fillStyle=glass;
  ctx.fillRect(cfg.x,cfg.y,cfg.w,cfg.h);
+ ctx.strokeStyle='rgba(105,255,174,.92)';
+ ctx.lineWidth=2;
+ roundRectPath(ctx,cfg.x+1,cfg.y+1,cfg.w-2,cfg.h-2,5);
+ ctx.stroke();
  ctx.strokeStyle='rgba(160,255,215,.10)';
  ctx.lineWidth=1;
  for(let y=cfg.y+5;y<cfg.y+cfg.h-3;y+=7){
