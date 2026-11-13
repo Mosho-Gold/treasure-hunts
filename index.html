@@ -336,6 +336,26 @@ button:not(:disabled):not(.locked):active{
 .modal-card{width:min(440px,100%);border:2px solid #2cd7ff;border-radius:17px;background:#071b31;padding:17px;box-shadow:0 0 38px #20cfff2b}.modal h3{margin:0 0 5px}.modal p{font-size:12px;color:#9cc9df}
 .parent-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.parent-grid button{border:1px solid #296787;background:#0d2c44;color:#d8f6ff;border-radius:10px;padding:11px;font-weight:800}.parent-grid .danger{border-color:#874151;color:#ffc4cb}
 .countdown{font-size:76px;color:#82efff;text-shadow:0 0 24px #38dcff;margin:10px 0;text-align:center}
+.contact-card{width:min(680px,100%);padding:0!important;overflow:hidden}
+.contact-head{padding:12px 16px;background:linear-gradient(90deg,#0a3558,#082441);border-bottom:2px solid #2bd8ff}
+.contact-head .brand{font-size:10px}
+.contact-body{display:grid;grid-template-columns:145px 1fr;gap:14px;padding:16px}
+.contact-nova{border:2px solid #2bd8ff;border-radius:13px;overflow:hidden;background:#03172d;box-shadow:0 0 18px #2bd8ff33;min-height:220px}
+.contact-nova img{width:100%;height:100%;object-fit:cover;object-position:center 10%;display:block}
+.contact-speech{position:relative;align-self:stretch;border:2px solid #2d7196;border-radius:14px;background:linear-gradient(180deg,#f7fdff,#edfaff);color:#0b2846;padding:18px 20px;display:flex;flex-direction:column;justify-content:center;line-height:1.55}
+.contact-speech:before{content:"";position:absolute;left:-12px;top:44%;width:20px;height:20px;background:#f3fcff;border-left:2px solid #2d7196;border-bottom:2px solid #2d7196;transform:rotate(45deg)}
+.contact-label{font-size:10px;font-weight:900;letter-spacing:2px;color:#0874a4;margin-bottom:14px}
+.contact-main{font-size:18px;font-weight:700}
+.contact-actions{padding:0 16px 16px}
+.home-card{width:min(680px,100%);padding:0!important;overflow:hidden;border-color:#58efb0!important;box-shadow:0 0 42px rgba(88,239,176,.18)!important}
+.home-head{padding:14px 18px;background:linear-gradient(90deg,#0b3d45,#0a2f3c);border-bottom:2px solid #58efb0}
+.home-kicker{font-size:10px;font-weight:900;letter-spacing:2.4px;color:#9affd4}
+.home-body{padding:24px;background:linear-gradient(180deg,#f7fffb,#eafff5);color:#0b3028}
+.home-signal{font-size:11px;font-weight:900;letter-spacing:1.8px;color:#208763;margin-bottom:14px}
+.home-message{font-size:20px;line-height:1.55;font-weight:700;margin:0}
+.home-signoff{margin-top:18px;font-size:12px;font-weight:900;letter-spacing:1.4px;color:#397464}
+.home-actions{padding:0 18px 18px;background:#eafff5}
+@media(max-width:620px){.contact-body{grid-template-columns:105px 1fr;padding:11px;gap:10px}.contact-main{font-size:15px}.contact-nova{min-height:190px}.home-message{font-size:17px}}
 @media(max-width:680px){
  .app{padding:8px}.topbar{padding-right:132px}.topbar h1{font-size:18px}.terminal-btn{font-size:10px;padding:10px 9px}
  .engine-room{min-height:390px}.system{width:25%;min-height:21%;padding:6px}.sys-core{left:2%}.sys-routing{right:2%}.sys-cooling{left:2%}.sys-comms{right:2%}.sys-nav{left:37.5%;width:25%}
@@ -577,6 +597,40 @@ button:not(:disabled):not(.locked):active{
     <p>Preview, recover progress, replay NOVA’s introduction, or reset the game.</p>
     <div class="parent-grid" id="parentGrid"></div>
     <button class="secondary" id="closeParent" style="width:100%;margin-top:10px">CLOSE</button>
+  </div>
+</div>
+
+<div class="modal" id="contactNovaModal">
+  <div class="modal-card contact-card">
+    <div class="contact-head">
+      <div class="brand">PROJECT: STARFALL • NOVA TRANSMISSION</div>
+    </div>
+    <div class="contact-body">
+      <div class="contact-nova"><img id="contactNovaImg" alt="NOVA hologram"></div>
+      <div class="contact-speech">
+        <div class="contact-label">NOVA // COMMUNICATIONS ONLINE</div>
+        <div class="contact-main">Crew, we did it. The Communications Array is online and I have established contact with home.<br><br>An incoming transmission is waiting for us.</div>
+      </div>
+    </div>
+    <div class="contact-actions">
+      <button class="primary" id="viewHomeTransmission" style="width:100%">VIEW INCOMING TRANSMISSION →</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="homeTransmissionModal">
+  <div class="modal-card home-card">
+    <div class="home-head">
+      <div class="home-kicker">INCOMING TRANSMISSION • EDEN // HOME</div>
+    </div>
+    <div class="home-body">
+      <div class="home-signal">SIGNAL LOCKED • CONNECTION STABLE</div>
+      <p class="home-message">STARFALL, we hear you. Your signal is coming through clearly.<br><br>We knew you would find a way home. Finish your final checks and prepare for launch. We’ll be waiting.</p>
+      <div class="home-signoff">— EDEN CONTROL</div>
+    </div>
+    <div class="home-actions">
+      <button class="primary" id="ackHomeTransmission" style="width:100%">ACKNOWLEDGE TRANSMISSION</button>
+    </div>
   </div>
 </div>
 
@@ -836,7 +890,6 @@ function openMission(m){
    '<div class="symbol-seq"><div class="symbol-slot"></div><div class="symbol-slot"></div><div class="symbol-slot"></div><div class="symbol-slot"></div></div>'+
    '<div class="symbol-pad"><button class="symbol-btn" data-letter="A">A</button><button class="symbol-btn" data-letter="D">D</button><button class="symbol-btn" data-letter="E">E</button><button class="symbol-btn" data-letter="F">F</button><button class="symbol-btn" data-letter="L">L</button><button class="symbol-btn" data-letter="N">N</button><button class="symbol-btn" data-letter="R">R</button><button class="symbol-btn" data-letter="S">S</button><button class="symbol-btn" data-letter="U">U</button></div>'+
    '<div class="actions"><button id="commsClear" class="secondary">CLEAR</button><button id="commsVerify" class="primary">VERIFY CHANNEL</button></div><div id="m5msg" class="msg">Awaiting communication channel...</div>'+
-   '<div id="edenTransmission" style="display:none"><div class="successbox"><strong>COMMUNICATION CHANNEL FOUND: EDEN</strong><br><br><strong>INCOMING TRANSMISSION — EDEN // HOME</strong><br>Signal received. STARFALL, we hear you. Communications link restored.</div><button id="commsAcknowledge" class="primary" style="width:100%;margin-top:10px">ACKNOWLEDGE TRANSMISSION</button></div>'+
    '</div></div></div>';
  }
  document.getElementById('mvContent').innerHTML=html;
@@ -901,15 +954,14 @@ function bindMission(id,s){
    });
    document.getElementById('commsClear').onclick=function(){
      seq=[];paintComms();setMsg('m5msg','Awaiting communication channel...',true);
-     document.getElementById('edenTransmission').style.display='none';
    };
    document.getElementById('commsVerify').onclick=function(){
      if(seq.join('')===COMMS_CHANNEL){
        setMsg('m5msg','CHANNEL VERIFIED • EDEN',true);
-       document.getElementById('edenTransmission').style.display='block';
+       document.getElementById('contactNovaImg').src=novaImageSrc();
+       document.getElementById('contactNovaModal').classList.add('show');
      } else setMsg('m5msg','CHANNEL NOT RECOGNIZED • CHECK THE DECODER AND RECOVERED INSTRUCTION',false);
    };
-   document.getElementById('commsAcknowledge').onclick=function(){completeMission(5)};
  }
 
 }
@@ -992,6 +1044,14 @@ document.getElementById('fuelContinue').onclick=function(){
  document.getElementById('fuelSuccess').style.display='none';
  document.getElementById('fuelContinue').style.display='none';
  renderTerminal();show('terminalView');
+};
+document.getElementById('viewHomeTransmission').onclick=function(){
+ document.getElementById('contactNovaModal').classList.remove('show');
+ document.getElementById('homeTransmissionModal').classList.add('show');
+};
+document.getElementById('ackHomeTransmission').onclick=function(){
+ document.getElementById('homeTransmissionModal').classList.remove('show');
+ completeMission(5);
 };
 document.getElementById('openMenu').onclick=function(e){e.stopPropagation();renderParent();document.getElementById('parentModal').classList.add('show')};
 document.getElementById('openTerminal').onclick=function(){renderTerminal();show('terminalView')};
