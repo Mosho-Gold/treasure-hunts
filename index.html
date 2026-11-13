@@ -68,11 +68,16 @@ button:not(:disabled):not(.locked):active{
   user-select:none;
 }
 .repair-overlay{
-  display:none!important;
-  position:absolute;object-fit:fill;opacity:0;pointer-events:none;
+  display:block;
+  position:absolute;
+  object-fit:fill;
+  opacity:0;
+  pointer-events:none;
   transition:opacity .55s ease,filter .55s ease;
-  filter:brightness(1.25) drop-shadow(0 0 10px rgba(70,225,255,.8));
-  z-index:3
+  filter:brightness(1.18) drop-shadow(0 0 9px rgba(70,225,255,.7));
+  z-index:3;
+  -webkit-mask-image:radial-gradient(ellipse at center,#000 0%,#000 74%,rgba(0,0,0,.92) 82%,rgba(0,0,0,.55) 91%,transparent 100%);
+  mask-image:radial-gradient(ellipse at center,#000 0%,#000 74%,rgba(0,0,0,.92) 82%,rgba(0,0,0,.55) 91%,transparent 100%);
 }
 .repair-overlay.visible{opacity:1;filter:brightness(1) drop-shadow(0 0 4px rgba(70,225,255,.25))}
 .repair-core{left:12.224%;top:26.519%;width:14.986%;height:20.074%}
@@ -344,6 +349,11 @@ button:not(:disabled):not(.locked):active{
     <section class="engine-shell">
       <div class="engine-map-wrap" id="secretHeader">
         <img id="engineMapBase" class="engine-map-base" alt="Project Starfall damaged engine map">
+        <img id="repairCore" class="repair-overlay repair-core" data-repair="1" alt="" aria-hidden="true">
+        <img id="repairRouting" class="repair-overlay repair-routing" data-repair="2" alt="" aria-hidden="true">
+        <img id="repairCooling" class="repair-overlay repair-cooling" data-repair="3" alt="" aria-hidden="true">
+        <img id="repairNav" class="repair-overlay repair-nav" data-repair="4" alt="" aria-hidden="true">
+        <img id="repairComms" class="repair-overlay repair-comms" data-repair="5" alt="" aria-hidden="true">
         <svg class="engine-scene-art" viewBox="0 0 1448 1086" aria-hidden="true">
           <defs>
             <linearGradient id="onlineGlass" x1="0" y1="0" x2="0" y2="1">
@@ -661,11 +671,20 @@ async function loadB64Image(el,path){
 }
 function loadEngineAssets(){
  loadB64Image(document.getElementById('engineMapBase'),'./assets/starfall-engine-map.b64');
+ loadB64Image(document.getElementById('repairCore'),'./assets/starfall-core-fixed.b64');
+ loadB64Image(document.getElementById('repairRouting'),'./assets/starfall-routing-fixed.b64');
+ loadB64Image(document.getElementById('repairCooling'),'./assets/starfall-cooling-fixed.b64');
+ loadB64Image(document.getElementById('repairNav'),'./assets/starfall-navigation-fixed.b64');
+ loadB64Image(document.getElementById('repairComms'),'./assets/starfall-comms-fixed.b64');
 }
 function renderEngine(){
  document.querySelectorAll('.damage-fx[data-fx]').forEach(function(el){
    const id=Number(el.getAttribute('data-fx'));
    el.classList.toggle('hidden',id<=state.completed);
+ });
+ document.querySelectorAll('.repair-overlay[data-repair]').forEach(function(el){
+   const id=Number(el.getAttribute('data-repair'));
+   el.classList.toggle('visible',id<=state.completed);
  });
  document.querySelectorAll('.engine-scene-art .status-screen[data-status-system]').forEach(function(el){
    el.classList.remove('visible');
