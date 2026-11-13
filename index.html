@@ -59,9 +59,11 @@ button:not(:disabled):not(.locked):active{
   transition:opacity .35s ease;
 }
 .status-canvas.visible{opacity:1}
-.core-status-canvas{
-  left:0.6906%;top:30.3867%;width:8.6326%;height:14.2726%;
-}
+.core-status-canvas{left:0%;top:29.466%;width:10.359%;height:16.575%}
+.routing-status-canvas{left:88.743%;top:29.466%;width:10.359%;height:16.575%}
+.cooling-status-canvas{left:0%;top:55.249%;width:11.050%;height:16.575%}
+.nav-status-canvas{left:32.804%;top:59.853%;width:10.359%;height:16.575%}
+.comms-status-canvas{left:88.398%;top:55.249%;width:11.050%;height:16.575%}
 .engine-scene-art{
   position:absolute;inset:0;width:100%;height:100%;z-index:6;
   pointer-events:none;overflow:visible;
@@ -301,7 +303,11 @@ button:not(:disabled):not(.locked):active{
     <section class="engine-shell">
       <div class="engine-map-wrap" id="secretHeader">
         <img id="engineMapBase" class="engine-map-base" alt="Project Starfall damaged engine map">
-        <canvas id="coreStatusCanvas" class="status-canvas core-status-canvas" width="125" height="155" aria-hidden="true"></canvas>
+        <canvas id="coreStatusCanvas" class="status-canvas core-status-canvas" width="150" height="180" aria-hidden="true"></canvas>
+        <canvas id="routingStatusCanvas" class="status-canvas routing-status-canvas" width="150" height="180" aria-hidden="true"></canvas>
+        <canvas id="coolingStatusCanvas" class="status-canvas cooling-status-canvas" width="160" height="180" aria-hidden="true"></canvas>
+        <canvas id="navStatusCanvas" class="status-canvas nav-status-canvas" width="150" height="180" aria-hidden="true"></canvas>
+        <canvas id="commsStatusCanvas" class="status-canvas comms-status-canvas" width="160" height="180" aria-hidden="true"></canvas>
         <svg class="engine-scene-art" viewBox="0 0 1448 1086" aria-hidden="true">
           <defs>
             <linearGradient id="onlineGlass" x1="0" y1="0" x2="0" y2="1">
@@ -622,79 +628,138 @@ function roundRectPath(ctx,x,y,w,h,r){
  ctx.arcTo(x,y,x+w,y,r);
  ctx.closePath();
 }
-function paintCoreStatusCanvas(){
+function drawStatusIcon(ctx,type,cx,cy){
+ ctx.save();
+ ctx.strokeStyle='#d7ffea';
+ ctx.fillStyle='#d7ffea';
+ ctx.lineWidth=2.2;
+ ctx.lineCap='round';
+ ctx.lineJoin='round';
+ ctx.shadowColor='rgba(96,255,175,.78)';
+ ctx.shadowBlur=5;
+ if(type==='core'){
+   ctx.beginPath();ctx.arc(cx,cy,12,0,Math.PI*2);ctx.stroke();
+   ctx.beginPath();
+   ctx.moveTo(cx+2,cy-13);ctx.lineTo(cx-8,cy+1);ctx.lineTo(cx-1,cy+1);
+   ctx.lineTo(cx-5,cy+13);ctx.lineTo(cx+9,cy-4);ctx.lineTo(cx+2,cy-4);
+   ctx.closePath();ctx.fill();
+ }else if(type==='routing'){
+   ctx.beginPath();
+   ctx.moveTo(cx-18,cy+7);ctx.lineTo(cx-7,cy-5);ctx.lineTo(cx+3,cy+2);ctx.lineTo(cx+18,cy-12);
+   ctx.stroke();
+   [[cx-18,cy+7],[cx-7,cy-5],[cx+3,cy+2],[cx+18,cy-12]].forEach(function(p){
+     ctx.beginPath();ctx.arc(p[0],p[1],3,0,Math.PI*2);ctx.fill();
+   });
+ }else if(type==='cooling'){
+   for(let a=0;a<Math.PI;a+=Math.PI/3){
+     const dx=Math.cos(a)*14,dy=Math.sin(a)*14;
+     ctx.beginPath();ctx.moveTo(cx-dx,cy-dy);ctx.lineTo(cx+dx,cy+dy);ctx.stroke();
+   }
+   for(let a=0;a<Math.PI*2;a+=Math.PI/3){
+     const x=cx+Math.cos(a)*10,y=cy+Math.sin(a)*10;
+     const bx=Math.cos(a+Math.PI/3)*5,by=Math.sin(a+Math.PI/3)*5;
+     ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-bx,y-by);ctx.stroke();
+   }
+ }else if(type==='nav'){
+   ctx.beginPath();ctx.arc(cx,cy,12,0,Math.PI*2);ctx.stroke();
+   ctx.beginPath();ctx.arc(cx,cy,3.5,0,Math.PI*2);ctx.fill();
+   ctx.beginPath();
+   ctx.moveTo(cx,cy-18);ctx.lineTo(cx,cy-9);
+   ctx.moveTo(cx,cy+9);ctx.lineTo(cx,cy+18);
+   ctx.moveTo(cx-18,cy);ctx.lineTo(cx-9,cy);
+   ctx.moveTo(cx+9,cy);ctx.lineTo(cx+18,cy);
+   ctx.stroke();
+ }else if(type==='comms'){
+   ctx.beginPath();ctx.arc(cx,cy+7,2.8,0,Math.PI*2);ctx.fill();
+   ctx.beginPath();ctx.arc(cx,cy+7,10,-2.45,-.69);ctx.stroke();
+   ctx.beginPath();ctx.arc(cx,cy+7,17,-2.45,-.69);ctx.stroke();
+ }
+ ctx.restore();
+}
+function paintStatusCanvas(cfg){
  const base=document.getElementById('engineMapBase');
- const canvas=document.getElementById('coreStatusCanvas');
+ const canvas=document.getElementById(cfg.id);
  if(!base||!canvas||!base.complete||!base.naturalWidth)return;
  const ctx=canvas.getContext('2d',{willReadFrequently:true});
- ctx.clearRect(0,0,125,155);
+ ctx.clearRect(0,0,cfg.w,cfg.h);
 
- // Copy the exact existing sign, including its original metal housing.
- ctx.drawImage(base,10,330,125,155,0,0,125,155);
+ // Copy the exact pixels from the current approved Engine Map, including housing,
+ // perspective, shadows, wear and surrounding machinery.
+ ctx.drawImage(base,cfg.sx,cfg.sy,cfg.w,cfg.h,0,0,cfg.w,cfg.h);
 
- // Turn the original red illuminated parts green while preserving texture/shading.
- const data=ctx.getImageData(0,0,125,155);
+ // Recolor only the existing red illuminated pixels to green.
+ const data=ctx.getImageData(0,0,cfg.w,cfg.h);
  const p=data.data;
  for(let i=0;i<p.length;i+=4){
    const r=p[i],g=p[i+1],b=p[i+2];
-   if(r>70 && r>g*1.18 && r>b*1.08){
+   if(r>62 && r>g*1.20 && r>b*1.08){
      const lum=Math.max(r,g,b);
-     p[i]=Math.round(lum*.18);
-     p[i+1]=lum;
-     p[i+2]=Math.round(lum*.52);
+     p[i]=Math.round(lum*.16);
+     p[i+1]=Math.min(255,Math.round(lum*1.04));
+     p[i+2]=Math.round(lum*.46);
    }
  }
  ctx.putImageData(data,0,0);
 
- // Replace only the message area inside the same glass screen.
+ // Replace only the existing glass/message area. The metal housing remains copied
+ // directly from the source map.
+ const gr=cfg.glass;
  ctx.save();
- roundRectPath(ctx,29,35,70,94,5);
+ roundRectPath(ctx,gr.x,gr.y,gr.w,gr.h,5);
  ctx.clip();
- const glass=ctx.createLinearGradient(0,35,0,129);
- glass.addColorStop(0,'rgba(2,52,36,.98)');
- glass.addColorStop(.55,'rgba(2,35,27,.98)');
- glass.addColorStop(1,'rgba(1,24,20,.98)');
+ const glass=ctx.createLinearGradient(0,gr.y,0,gr.y+gr.h);
+ glass.addColorStop(0,'rgba(2,58,40,.98)');
+ glass.addColorStop(.52,'rgba(2,39,29,.98)');
+ glass.addColorStop(1,'rgba(1,25,20,.98)');
  ctx.fillStyle=glass;
- ctx.fillRect(29,35,70,94);
- ctx.strokeStyle='rgba(145,255,205,.10)';
+ ctx.fillRect(gr.x,gr.y,gr.w,gr.h);
+ ctx.strokeStyle='rgba(150,255,210,.09)';
  ctx.lineWidth=1;
- for(let y=41;y<126;y+=7){ctx.beginPath();ctx.moveTo(31,y);ctx.lineTo(97,y);ctx.stroke();}
+ for(let y=gr.y+6;y<gr.y+gr.h-3;y+=7){
+   ctx.beginPath();ctx.moveTo(gr.x+3,y);ctx.lineTo(gr.x+gr.w-3,y);ctx.stroke();
+ }
  ctx.restore();
+
+ const cx=gr.x+gr.w/2;
+ drawStatusIcon(ctx,cfg.icon,cx,gr.y+23);
 
  ctx.save();
  ctx.textAlign='center';
  ctx.textBaseline='middle';
- ctx.shadowColor='rgba(96,255,175,.75)';
- ctx.shadowBlur=5;
- ctx.strokeStyle='#d7ffea';
- ctx.fillStyle='#eafff3';
- ctx.lineWidth=2;
-
- // Repaired core icon.
- ctx.beginPath();ctx.arc(64,53,12,0,Math.PI*2);ctx.stroke();
- ctx.beginPath();
- ctx.moveTo(66,40);ctx.lineTo(56,54);ctx.lineTo(63,54);
- ctx.lineTo(59,66);ctx.lineTo(73,49);ctx.lineTo(66,49);
- ctx.closePath();ctx.fill();
-
+ ctx.fillStyle='#effff7';
+ ctx.shadowColor='rgba(96,255,175,.65)';
  ctx.shadowBlur=3;
- ctx.font='900 15px Arial, sans-serif';
- ctx.fillText('CORE',64,87);
- ctx.fillText('ONLINE',64,106);
+ const fs=cfg.fontSize||14;
+ ctx.font='900 '+fs+'px Arial, sans-serif';
+ const startY=gr.y+55;
+ cfg.lines.forEach(function(line,i){ctx.fillText(line,cx,startY+i*(fs+3));});
 
- // Bottom status bars, same visual language as the old warning bars.
- ctx.fillStyle='#63ff9e';
+ // Preserve the original diagonal status-bar language at the bottom.
+ ctx.fillStyle='#66ff9f';
  ctx.shadowBlur=4;
- [40,55,70,85].forEach(function(x){
+ const barY=gr.y+gr.h-14;
+ const total=cfg.barCount||4;
+ const span=Math.min(gr.w-20,total*15);
+ const bx=cx-span/2;
+ for(let i=0;i<total;i++){
+   const x=bx+i*15;
    ctx.beginPath();
-   ctx.moveTo(x,119);ctx.lineTo(x+11,119);ctx.lineTo(x+5,128);ctx.lineTo(x-6,128);
+   ctx.moveTo(x,barY);ctx.lineTo(x+11,barY);ctx.lineTo(x+5,barY+8);ctx.lineTo(x-6,barY+8);
    ctx.closePath();ctx.fill();
- });
+ }
  ctx.restore();
 }
+const STATUS_CANVASES=[
+ {id:'coreStatusCanvas',sx:0,sy:320,w:150,h:180,glass:{x:39,y:45,w:70,h:94},icon:'core',lines:['CORE','ONLINE'],fontSize:15},
+ {id:'routingStatusCanvas',sx:1285,sy:320,w:150,h:180,glass:{x:41,y:47,w:85,h:112},icon:'routing',lines:['ROUTING','ONLINE'],fontSize:13},
+ {id:'coolingStatusCanvas',sx:0,sy:600,w:160,h:180,glass:{x:40,y:47,w:93,h:108},icon:'cooling',lines:['TEMP','STABLE'],fontSize:15},
+ {id:'navStatusCanvas',sx:475,sy:650,w:150,h:180,glass:{x:37,y:47,w:80,h:118},icon:'nav',lines:['SIGNAL','LOCKED'],fontSize:13},
+ {id:'commsStatusCanvas',sx:1280,sy:600,w:160,h:180,glass:{x:39,y:46,w:93,h:110},icon:'comms',lines:['COMMS','ONLINE'],fontSize:14}
+];
+function paintAllStatusCanvases(){STATUS_CANVASES.forEach(paintStatusCanvas);}
 function loadEngineAssets(){
  const base=document.getElementById('engineMapBase');
- base.addEventListener('load',paintCoreStatusCanvas,{once:true});
+ base.addEventListener('load',paintAllStatusCanvases,{once:true});
  loadB64Image(base,'./assets/starfall-engine-map.b64');
  document.querySelectorAll('.repair-overlay[data-b64]').forEach(function(el){loadB64Image(el,el.getAttribute('data-b64'))});
 }
@@ -708,12 +773,12 @@ function renderEngine(){
    el.classList.toggle('hidden',id<=state.completed);
  });
  document.querySelectorAll('.engine-scene-art .status-screen[data-status-system]').forEach(function(el){
-   const id=Number(el.getAttribute('data-status-system'));
-   if(id===1){el.classList.remove('visible');return;}
-   el.classList.toggle('visible',id<=state.completed);
+   el.classList.remove('visible');
  });
- const coreCanvas=document.getElementById('coreStatusCanvas');
- if(coreCanvas)coreCanvas.classList.toggle('visible',state.completed>=1);
+ STATUS_CANVASES.forEach(function(cfg,index){
+   const canvas=document.getElementById(cfg.id);
+   if(canvas)canvas.classList.toggle('visible',state.completed>=index+1);
+ });
  const remaining=Math.max(0,5-state.completed);
  document.getElementById('shipStatus').textContent=remaining===0?'ALL SYSTEMS ONLINE':remaining+' SYSTEM'+(remaining===1?'':'S')+' OFFLINE';
  document.getElementById('engineProgressText').textContent=state.completed+' / 5 RESTORED';
