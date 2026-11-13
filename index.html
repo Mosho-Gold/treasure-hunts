@@ -335,6 +335,38 @@ button:not(:disabled):not(.locked):active{
 .modal{position:fixed;inset:0;background:#020b16ee;display:none;align-items:center;justify-content:center;padding:18px;z-index:50}.modal.show{display:flex}
 .modal-card{width:min(440px,100%);border:2px solid #2cd7ff;border-radius:17px;background:#071b31;padding:17px;box-shadow:0 0 38px #20cfff2b}.modal h3{margin:0 0 5px}.modal p{font-size:12px;color:#9cc9df}
 .parent-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.parent-grid button{border:1px solid #296787;background:#0d2c44;color:#d8f6ff;border-radius:10px;padding:11px;font-weight:800}.parent-grid .danger{border-color:#874151;color:#ffc4cb}
+.launcher-modal{background:
+ radial-gradient(circle at 50% 18%,rgba(49,215,255,.15),transparent 30%),
+ radial-gradient(circle at 10% 82%,rgba(35,111,164,.16),transparent 28%),
+ #020914f7}
+.launcher-card{
+  width:min(720px,calc(100vw - 28px));
+  border:2px solid #25cfff;
+  border-radius:24px;
+  background:linear-gradient(180deg,rgba(7,29,52,.98),rgba(3,16,31,.99));
+  padding:34px 30px 28px;
+  box-shadow:0 0 50px #20cfff2f,inset 0 0 0 1px #7cecff22;
+  text-align:center;
+  position:relative;
+  overflow:hidden
+}
+.launcher-card:before,.launcher-card:after{
+  content:"";position:absolute;top:0;width:120px;height:5px;background:#2bd8ff;box-shadow:0 0 16px #2bd8ff
+}
+.launcher-card:before{left:0}.launcher-card:after{right:0}
+.launcher-kicker{font-size:11px;letter-spacing:4px;font-weight:900;color:#79eaff}
+.launcher-title{font-size:clamp(34px,7vw,64px);line-height:1;margin:13px 0 8px;letter-spacing:2px;text-shadow:0 0 26px #31d7ff66}
+.launcher-sub{font-size:13px;letter-spacing:1.5px;color:#93cde5;font-weight:800;margin-bottom:28px}
+.launcher-status{border:1px solid #1e6288;border-radius:12px;background:#061a2e;padding:10px 12px;margin:0 auto 16px;max-width:420px;font-size:11px;letter-spacing:1px;color:#8fcbe4;font-weight:800}
+.launcher-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:500px;margin:0 auto}
+.launcher-actions button{min-height:54px;font-weight:900;letter-spacing:.8px}
+.launcher-actions .primary{font-size:14px}
+.launcher-footer{margin-top:22px;font-size:9px;letter-spacing:2px;color:#517993;font-weight:900}
+.pin-card{width:min(390px,100%);text-align:center}
+.pin-input{width:100%;margin:14px 0 8px;padding:14px;border:2px solid #2a7197;border-radius:11px;background:#031526;color:#dffaff;text-align:center;font-size:24px;letter-spacing:10px;font-weight:900;outline:none}
+.pin-input:focus{border-color:#31d7ff;box-shadow:0 0 14px #31d7ff44}
+.pin-error{min-height:18px;font-size:11px;color:#ff9aa6;font-weight:800;letter-spacing:.5px}
+@media(max-width:560px){.launcher-card{padding:28px 18px 22px}.launcher-actions{grid-template-columns:1fr}.launcher-title{font-size:40px}}
 .countdown{font-size:76px;color:#82efff;text-shadow:0 0 24px #38dcff;margin:10px 0;text-align:center}
 .contact-card{width:min(680px,100%);padding:0!important;overflow:hidden}
 .contact-head{padding:12px 16px;background:linear-gradient(90deg,#0a3558,#082441);border-bottom:2px solid #2bd8ff}
@@ -528,6 +560,34 @@ button:not(:disabled):not(.locked):active{
   </div>
 </div>
 
+<div class="modal launcher-modal" id="launcherModal">
+  <div class="launcher-card">
+    <div class="launcher-kicker">INTERACTIVE FAMILY ADVENTURE</div>
+    <div class="launcher-title">PROJECT: STARFALL</div>
+    <div class="launcher-sub">SHIP RESTORATION TERMINAL</div>
+    <div class="launcher-status" id="launcherStatus">NO ACTIVE MISSION DETECTED</div>
+    <div class="launcher-actions">
+      <button class="primary" id="launcherNew">START NEW MISSION</button>
+      <button class="secondary" id="launcherContinue">CONTINUE MISSION</button>
+    </div>
+    <div class="launcher-footer">NOVA SYSTEMS • CREW ACCESS TERMINAL</div>
+  </div>
+</div>
+
+<div class="modal" id="pinModal">
+  <div class="modal-card pin-card">
+    <div class="brand">PROJECT: STARFALL</div>
+    <h3 style="margin-top:7px">GAME MASTER ACCESS</h3>
+    <p>Enter the 4-digit Game Master PIN.</p>
+    <input id="gmPinInput" class="pin-input" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Game Master PIN">
+    <div id="gmPinError" class="pin-error"></div>
+    <div class="actions" style="justify-content:center">
+      <button class="secondary" id="gmPinCancel">CANCEL</button>
+      <button class="primary" id="gmPinSubmit">UNLOCK</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="introModal">
   <div class="modal-card intro-card">
     <div class="intro-head">
@@ -649,6 +709,7 @@ const PREVIEW_ALL_MISSIONS=false;
 const FUEL_CODE='4827';
 const COOLANT_CODE='429163';
 const COMMS_CHANNEL='EDEN';
+const GAME_MASTER_PIN='2468';
 const missions=[
  {id:1,title:'POWER CORE',desc:'Cross the laser field and verify the replacement core'},
  {id:2,title:'POWER ROUTING',desc:'Solve the routing logic and restore power flow'},
@@ -668,6 +729,31 @@ let state={
  introSeen:!!parsed.introSeen
 };
 function save(){localStorage.setItem('starfallProgress',JSON.stringify(state))}
+function hasMissionProgress(){
+ return state.completed>0 || state.navVerified || state.fuelVerified || state.introSeen;
+}
+function showLauncher(){
+ const has=hasMissionProgress();
+ document.getElementById('launcherStatus').textContent=has
+   ? 'ACTIVE MISSION FOUND • '+state.completed+' / 5 SYSTEMS RESTORED'
+   : 'NO ACTIVE MISSION DETECTED';
+ const cont=document.getElementById('launcherContinue');
+ cont.style.display=has?'block':'none';
+ document.getElementById('launcherModal').classList.add('show');
+}
+function requestGameMasterAccess(){
+ const modal=document.getElementById('pinModal');
+ const input=document.getElementById('gmPinInput');
+ document.getElementById('gmPinError').textContent='';
+ input.value='';
+ modal.classList.add('show');
+ setTimeout(function(){input.focus()},50);
+}
+function openGameMaster(){
+ document.getElementById('pinModal').classList.remove('show');
+ renderParent();
+ document.getElementById('parentModal').classList.add('show');
+}
 function show(id){['engineView','terminalView','missionView'].forEach(function(v){document.getElementById(v).classList.toggle('active',v===id)})}
 function missionState(id){
  if(id<=state.completed)return 'complete';
@@ -1053,7 +1139,29 @@ document.getElementById('ackHomeTransmission').onclick=function(){
  document.getElementById('homeTransmissionModal').classList.remove('show');
  completeMission(5);
 };
-document.getElementById('openMenu').onclick=function(e){e.stopPropagation();renderParent();document.getElementById('parentModal').classList.add('show')};
+document.getElementById('launcherNew').onclick=function(){
+ if(hasMissionProgress() && !window.confirm('Start a new STARFALL mission? Current progress on this device will be erased.'))return;
+ state={completed:0,navVerified:false,fuelVerified:false,introSeen:false};
+ save();render();
+ document.getElementById('launcherModal').classList.remove('show');
+ show('engineView');
+ showIntro();
+};
+document.getElementById('launcherContinue').onclick=function(){
+ document.getElementById('launcherModal').classList.remove('show');
+ render();
+ if(state.completed>=4 && !state.fuelVerified)showFuelEmergency();
+ else show('engineView');
+};
+document.getElementById('gmPinSubmit').onclick=function(){
+ const input=document.getElementById('gmPinInput');
+ const pin=(input.value||'').replace(/\D/g,'');
+ if(pin===GAME_MASTER_PIN){openGameMaster()}
+ else{document.getElementById('gmPinError').textContent='PIN NOT RECOGNIZED';input.value='';input.focus()}
+};
+document.getElementById('gmPinInput').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('gmPinSubmit').click()});
+document.getElementById('gmPinCancel').onclick=function(){document.getElementById('pinModal').classList.remove('show')};
+document.getElementById('openMenu').onclick=function(e){e.stopPropagation();requestGameMasterAccess()};
 document.getElementById('openTerminal').onclick=function(){renderTerminal();show('terminalView')};
 document.getElementById('terminalBack').onclick=function(){show('engineView')};
 document.getElementById('backBtn').onclick=function(){renderTerminal();show('terminalView')};
@@ -1061,7 +1169,7 @@ document.getElementById('closeParent').onclick=function(){document.getElementByI
 
 let holdTimer;
 const header=document.getElementById('secretHeader');
-['mousedown','touchstart'].forEach(function(evt){header.addEventListener(evt,function(){holdTimer=setTimeout(function(){document.getElementById('parentModal').classList.add('show')},2000)},{passive:true})});
+['mousedown','touchstart'].forEach(function(evt){header.addEventListener(evt,function(){holdTimer=setTimeout(function(){requestGameMasterAccess()},2000)},{passive:true})});
 ['mouseup','mouseleave','touchend','touchcancel'].forEach(function(evt){header.addEventListener(evt,function(){clearTimeout(holdTimer)},{passive:true})});
 
 document.getElementById('launchBtn').onclick=function(){
@@ -1073,8 +1181,7 @@ document.getElementById('closeLaunch').onclick=function(){document.getElementByI
 
 render();
 loadEngineAssets();
-if(!state.introSeen)showIntro();
-else if(state.completed>=4 && !state.fuelVerified)showFuelEmergency();
+showLauncher();
 if('serviceWorker' in navigator){
  navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister()})}).catch(function(){});
  if('caches' in window)caches.keys().then(function(keys){keys.forEach(function(k){caches.delete(k)})}).catch(function(){});
