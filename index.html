@@ -366,6 +366,14 @@ button:not(:disabled):not(.locked):active{
 .pin-input{width:100%;margin:14px 0 8px;padding:14px;border:2px solid #2a7197;border-radius:11px;background:#031526;color:#dffaff;text-align:center;font-size:24px;letter-spacing:10px;font-weight:900;outline:none}
 .pin-input:focus{border-color:#31d7ff;box-shadow:0 0 14px #31d7ff44}
 .pin-error{min-height:18px;font-size:11px;color:#ff9aa6;font-weight:800;letter-spacing:.5px}
+.access-card{width:min(520px,calc(100vw - 28px));text-align:center}
+.access-title{font-size:30px;letter-spacing:1.4px;margin:8px 0 4px}
+.access-copy{font-size:12px!important;line-height:1.5;color:#9cc9df!important;max-width:390px;margin:7px auto 17px}
+.access-input{width:100%;padding:15px 14px;border:2px solid #286d93;border-radius:12px;background:#031526;color:#e8fcff;text-align:center;font-size:20px;letter-spacing:3px;font-weight:900;text-transform:uppercase;outline:none}
+.access-input:focus{border-color:#31d7ff;box-shadow:0 0 15px #31d7ff44}
+.access-message{min-height:20px;margin:9px 0 2px;font-size:11px;font-weight:900;letter-spacing:.5px;color:#8fcbe4}
+.access-message.bad{color:#ff9aa6}.access-message.good{color:#8affc8}
+.access-help{margin-top:14px;font-size:9px;line-height:1.5;letter-spacing:.7px;color:#527b94}
 @media(max-width:560px){.launcher-card{padding:28px 18px 22px}.launcher-actions{grid-template-columns:1fr}.launcher-title{font-size:40px}}
 .countdown{font-size:76px;color:#82efff;text-shadow:0 0 24px #38dcff;margin:10px 0;text-align:center}
 .contact-card{width:min(680px,100%);padding:0!important;overflow:hidden}
@@ -560,6 +568,18 @@ button:not(:disabled):not(.locked):active{
   </div>
 </div>
 
+<div class="modal launcher-modal" id="accessModal">
+  <div class="modal-card access-card">
+    <div class="launcher-kicker">PROJECT: STARFALL</div>
+    <div class="access-title">CREW ACCESS</div>
+    <p class="access-copy">Enter the access code included with your STARFALL game to activate this device.</p>
+    <input id="accessCodeInput" class="access-input" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="24" placeholder="XXXX-XXXX-XXXX" aria-label="STARFALL access code">
+    <div id="accessMessage" class="access-message">AWAITING ACCESS CODE</div>
+    <button class="primary" id="accessActivate" style="width:100%;margin-top:5px">ACTIVATE STARFALL</button>
+    <div class="access-help">One purchase code can be activated on a limited number of devices. Reopening STARFALL on an activated device does not use another activation.</div>
+  </div>
+</div>
+
 <div class="modal launcher-modal" id="launcherModal">
   <div class="launcher-card">
     <div class="launcher-kicker">INTERACTIVE FAMILY ADVENTURE</div>
@@ -710,6 +730,9 @@ const FUEL_CODE='4827';
 const COOLANT_CODE='429163';
 const COMMS_CHANNEL='EDEN';
 const GAME_MASTER_PIN='2468';
+// Set to the deployed Supabase Edge Function URL to enable customer purchase-code validation.
+// While blank, the live app stays in owner/testing mode and opens the launcher directly.
+const ACCESS_API_URL='';
 const missions=[
  {id:1,title:'POWER CORE',desc:'Cross the laser field and verify the replacement core'},
  {id:2,title:'POWER ROUTING',desc:'Solve the routing logic and restore power flow'},
@@ -740,6 +763,49 @@ function showLauncher(){
  const cont=document.getElementById('launcherContinue');
  cont.style.display=has?'block':'none';
  document.getElementById('launcherModal').classList.add('show');
+}
+function getClientDeviceId(){
+ let id=localStorage.getItem('starfallDeviceId');
+ if(!id){
+   id=(crypto.randomUUID?crypto.randomUUID():('sf_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2)));
+   localStorage.setItem('starfallDeviceId',id);
+ }
+ return id;
+}
+function setAccessMessage(text,kind){
+ const el=document.getElementById('accessMessage');
+ el.textContent=text;
+ el.className='access-message'+(kind?' '+kind:'');
+}
+async function callAccessApi(payload){
+ const r=await fetch(ACCESS_API_URL,{
+   method:'POST',
+   headers:{'Content-Type':'application/json'},
+   body:JSON.stringify(payload)
+ });
+ let data={};
+ try{data=await r.json()}catch(e){}
+ return {ok:r.ok,data:data};
+}
+function showAccessGate(message){
+ document.getElementById('accessModal').classList.add('show');
+ document.getElementById('launcherModal').classList.remove('show');
+ const input=document.getElementById('accessCodeInput');
+ input.value='';
+ setAccessMessage(message||'AWAITING ACCESS CODE','');
+ setTimeout(function(){input.focus()},80);
+}
+async function bootstrapClient(){
+ if(!ACCESS_API_URL){showLauncher();return}
+ const token=localStorage.getItem('starfallAccessToken');
+ if(!token){showAccessGate();return}
+ setAccessMessage('VERIFYING DEVICE...','');
+ try{
+   const result=await callAccessApi({deviceId:getClientDeviceId(),activationToken:token});
+   if(result.ok && result.data && result.data.authorized){showLauncher();return}
+ }catch(e){}
+ localStorage.removeItem('starfallAccessToken');
+ showAccessGate('ACCESS NEEDS TO BE REACTIVATED');
 }
 function requestGameMasterAccess(){
  const modal=document.getElementById('pinModal');
@@ -1139,6 +1205,33 @@ document.getElementById('ackHomeTransmission').onclick=function(){
  document.getElementById('homeTransmissionModal').classList.remove('show');
  completeMission(5);
 };
+document.getElementById('accessActivate').onclick=async function(){
+ const button=this;
+ const code=(document.getElementById('accessCodeInput').value||'').trim();
+ if(code.replace(/[^a-z0-9]/gi,'').length<8){setAccessMessage('CHECK THE ACCESS CODE AND TRY AGAIN','bad');return}
+ button.disabled=true;
+ setAccessMessage('VERIFYING ACCESS...','');
+ try{
+   const result=await callAccessApi({deviceId:getClientDeviceId(),code:code});
+   if(result.ok && result.data && result.data.authorized && result.data.activationToken){
+     localStorage.setItem('starfallAccessToken',result.data.activationToken);
+     setAccessMessage('ACCESS CONFIRMED','good');
+     setTimeout(function(){
+       document.getElementById('accessModal').classList.remove('show');
+       showLauncher();
+     },350);
+   }else{
+     const error=result.data&&result.data.error;
+     if(error==='DEVICE_LIMIT_REACHED')setAccessMessage('DEVICE LIMIT REACHED • CONTACT THE SELLER','bad');
+     else if(error==='CODE_EXPIRED')setAccessMessage('THIS ACCESS CODE HAS EXPIRED','bad');
+     else setAccessMessage('ACCESS CODE NOT RECOGNIZED','bad');
+   }
+ }catch(e){
+   setAccessMessage('CONNECTION ERROR • CHECK INTERNET AND TRY AGAIN','bad');
+ }
+ button.disabled=false;
+};
+document.getElementById('accessCodeInput').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('accessActivate').click()});
 document.getElementById('launcherNew').onclick=function(){
  if(hasMissionProgress() && !window.confirm('Start a new STARFALL mission? Current progress on this device will be erased.'))return;
  state={completed:0,navVerified:false,fuelVerified:false,introSeen:false};
@@ -1181,7 +1274,7 @@ document.getElementById('closeLaunch').onclick=function(){document.getElementByI
 
 render();
 loadEngineAssets();
-showLauncher();
+bootstrapClient();
 if('serviceWorker' in navigator){
  navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister()})}).catch(function(){});
  if('caches' in window)caches.keys().then(function(keys){keys.forEach(function(k){caches.delete(k)})}).catch(function(){});
