@@ -327,17 +327,16 @@ button:not(:disabled):not(.locked):active{
 
           <!-- Small physical plaque mounted in the Cooling System scene -->
           <g id="coolantPlaque">
-            <rect x="29" y="579" width="116" height="36" rx="6" fill="#07131d" opacity=".42"/>
-            <rect x="30" y="576" width="116" height="36" rx="6" fill="url(#plaqueMetal)" stroke="#9ab0bd" stroke-width="1.7"/>
-            <rect x="37" y="582" width="102" height="24" rx="3.5" fill="#071f31" stroke="#29c7e8" stroke-width="1.2"/>
-            <circle cx="37" cy="582" r="2.2" fill="#aebfc8" stroke="#243b47" stroke-width=".9"/>
-            <circle cx="139" cy="582" r="2.2" fill="#aebfc8" stroke="#243b47" stroke-width=".9"/>
-            <circle cx="37" cy="606" r="2.2" fill="#aebfc8" stroke="#243b47" stroke-width=".9"/>
-            <circle cx="139" cy="606" r="2.2" fill="#aebfc8" stroke="#243b47" stroke-width=".9"/>
-            <text x="88" y="591.5" text-anchor="middle" font-size="6.6" font-weight="800" letter-spacing=".7" fill="#8de9fb">COOLANT ACTIVATION</text>
-            <text x="88" y="603" text-anchor="middle" font-size="10.4" font-weight="800" letter-spacing="1.7" fill="#c2f7ff" filter="url(#cyanGlow)">○ △ ★ □ ☾ ◇</text>
+            <rect x="13" y="579" width="137" height="41" rx="6.5" fill="#07131d" opacity=".42"/>
+            <rect x="14" y="576" width="137" height="41" rx="6.5" fill="url(#plaqueMetal)" stroke="#9ab0bd" stroke-width="1.7"/>
+            <rect x="21" y="582" width="123" height="29" rx="3.8" fill="#071f31" stroke="#29c7e8" stroke-width="1.2"/>
+            <circle cx="21" cy="582" r="2.2" fill="#aebfc8" stroke="#243b47" stroke-width=".9"/>
+            <circle cx="144" cy="582" r="2.2" fill="#aebfc8" stroke="#243b47" stroke-width=".9"/>
+            <circle cx="21" cy="611" r="2.2" fill="#aebfc8" stroke="#243b47" stroke-width=".9"/>
+            <circle cx="144" cy="611" r="2.2" fill="#aebfc8" stroke="#243b47" stroke-width=".9"/>
+            <text x="82.5" y="592" text-anchor="middle" font-size="7.2" font-weight="800" letter-spacing=".72" fill="#8de9fb">COOLANT ACTIVATION</text>
+            <text x="82.5" y="606.5" text-anchor="middle" font-size="11.3" font-weight="800" letter-spacing="1.85" fill="#c2f7ff" filter="url(#cyanGlow)">○ △ ★ □ ☾ ◇</text>
           </g>
-
           <!-- Mission-complete states: only the existing red glass changes -->
           <g class="status-screen" data-status-system="1">
             <rect x="35" y="365" width="78" height="105" rx="8" fill="url(#onlineGlass)" stroke="#62ffb1" stroke-width="2"/>
@@ -659,7 +658,7 @@ function drawStatusIcon(ctx,type,cx,cy,scale){
  ctx.restore();
 }
 const STATUS_SCREENS=[
- {x:39,y:365,w:70,h:94,icon:'core',lines:['CORE','ONLINE'],fontSize:15},
+ {x:30,y:362,w:85,h:113,frame:{x:26,y:350,w:93,h:130},icon:'core',lines:['CORE','ONLINE'],fontSize:16},
  {x:1326,y:367,w:85,h:112,icon:'routing',lines:['ROUTING','ONLINE'],fontSize:13},
  {x:40,y:647,w:93,h:108,icon:'cooling',lines:['TEMP','STABLE'],fontSize:15},
  {x:512,y:697,w:80,h:118,icon:'nav',lines:['SIGNAL','LOCKED'],fontSize:13},
@@ -668,8 +667,8 @@ const STATUS_SCREENS=[
 function paintStatusIntoMap(ctx,cfg){
  // Recolor the existing red screen glow around the glass without replacing its housing.
  const pad=6;
- const rx=Math.max(0,cfg.x-pad), ry=Math.max(0,cfg.y-pad);
- const rw=cfg.w+pad*2, rh=cfg.h+pad*2;
+ const fr=cfg.frame||{x:Math.max(0,cfg.x-pad),y:Math.max(0,cfg.y-pad),w:cfg.w+pad*2,h:cfg.h+pad*2};
+ const rx=fr.x, ry=fr.y, rw=fr.w, rh=fr.h;
  const data=ctx.getImageData(rx,ry,rw,rh), p=data.data;
  for(let i=0;i<p.length;i+=4){
    const r=p[i],g=p[i+1],b=p[i+2];
