@@ -54,10 +54,6 @@ button:not(:disabled):not(.locked):active{
   box-shadow:0 0 28px #0acfff20
 }
 .engine-map-base{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block}
-.engine-map-canvas{
-  position:absolute;inset:0;width:100%;height:100%;z-index:2;
-  pointer-events:none;display:block;
-}
 .engine-scene-art{
   position:absolute;inset:0;width:100%;height:100%;z-index:6;
   pointer-events:none;overflow:visible;
@@ -298,7 +294,6 @@ button:not(:disabled):not(.locked):active{
     <section class="engine-shell">
       <div class="engine-map-wrap" id="secretHeader">
         <img id="engineMapBase" class="engine-map-base" alt="Project Starfall damaged engine map">
-        <canvas id="engineMapCanvas" class="engine-map-canvas" width="1448" height="1086" aria-hidden="true"></canvas>
         <svg class="engine-scene-art" viewBox="0 0 1448 1086" aria-hidden="true">
           <defs>
             <linearGradient id="onlineGlass" x1="0" y1="0" x2="0" y2="1">
@@ -604,128 +599,8 @@ async function loadB64Image(el,path){
    el.src='data:image/jpeg;base64,'+b64;
  }catch(e){console.error('STARFALL asset failed',path,e)}
 }
-function roundRectPath(ctx,x,y,w,h,r){
- ctx.beginPath();
- ctx.moveTo(x+r,y);
- ctx.arcTo(x+w,y,x+w,y+h,r);
- ctx.arcTo(x+w,y+h,x,y+h,r);
- ctx.arcTo(x,y+h,x,y,r);
- ctx.arcTo(x,y,x+w,y,r);
- ctx.closePath();
-}
-function drawStatusIcon(ctx,type,cx,cy,scale){
- scale=scale||1;
- ctx.save();
- ctx.strokeStyle='#d7ffea';
- ctx.fillStyle='#d7ffea';
- ctx.lineWidth=2.2*scale;
- ctx.lineCap='round';
- ctx.lineJoin='round';
- ctx.shadowColor='rgba(96,255,175,.78)';
- ctx.shadowBlur=5*scale;
- if(type==='core'){
-   ctx.beginPath();ctx.arc(cx,cy,12*scale,0,Math.PI*2);ctx.stroke();
-   ctx.beginPath();
-   ctx.moveTo(cx+2*scale,cy-13*scale);ctx.lineTo(cx-8*scale,cy+1*scale);ctx.lineTo(cx-1*scale,cy+1*scale);
-   ctx.lineTo(cx-5*scale,cy+13*scale);ctx.lineTo(cx+9*scale,cy-4*scale);ctx.lineTo(cx+2*scale,cy-4*scale);
-   ctx.closePath();ctx.fill();
- }else if(type==='routing'){
-   ctx.beginPath();
-   ctx.moveTo(cx-18*scale,cy+7*scale);ctx.lineTo(cx-7*scale,cy-5*scale);ctx.lineTo(cx+3*scale,cy+2*scale);ctx.lineTo(cx+18*scale,cy-12*scale);
-   ctx.stroke();
-   [[-18,7],[-7,-5],[3,2],[18,-12]].forEach(function(p){
-     ctx.beginPath();ctx.arc(cx+p[0]*scale,cy+p[1]*scale,3*scale,0,Math.PI*2);ctx.fill();
-   });
- }else if(type==='cooling'){
-   for(let a=0;a<Math.PI;a+=Math.PI/3){
-     const dx=Math.cos(a)*14*scale,dy=Math.sin(a)*14*scale;
-     ctx.beginPath();ctx.moveTo(cx-dx,cy-dy);ctx.lineTo(cx+dx,cy+dy);ctx.stroke();
-   }
- }else if(type==='nav'){
-   ctx.beginPath();ctx.arc(cx,cy,12*scale,0,Math.PI*2);ctx.stroke();
-   ctx.beginPath();ctx.arc(cx,cy,3.5*scale,0,Math.PI*2);ctx.fill();
-   ctx.beginPath();
-   ctx.moveTo(cx,cy-18*scale);ctx.lineTo(cx,cy-9*scale);
-   ctx.moveTo(cx,cy+9*scale);ctx.lineTo(cx,cy+18*scale);
-   ctx.moveTo(cx-18*scale,cy);ctx.lineTo(cx-9*scale,cy);
-   ctx.moveTo(cx+9*scale,cy);ctx.lineTo(cx+18*scale,cy);
-   ctx.stroke();
- }else if(type==='comms'){
-   ctx.beginPath();ctx.arc(cx,cy+7*scale,2.8*scale,0,Math.PI*2);ctx.fill();
-   ctx.beginPath();ctx.arc(cx,cy+7*scale,10*scale,-2.45,-.69);ctx.stroke();
-   ctx.beginPath();ctx.arc(cx,cy+7*scale,17*scale,-2.45,-.69);ctx.stroke();
- }
- ctx.restore();
-}
-const STATUS_SCREENS=[
- {x:29,y:362,w:89,h:116,icon:'core',lines:['CORE','ONLINE'],fontSize:15},
- {x:1328,y:357,w:91,h:121,icon:'routing',lines:['ROUTING','ONLINE'],fontSize:12},
- {x:30,y:641,w:101,h:122,icon:'cooling',lines:['TEMP','STABLE'],fontSize:15},
- {x:509,y:693,w:87,h:121,icon:'nav',lines:['SIGNAL','LOCKED'],fontSize:12},
- {x:1321,y:638,w:96,h:124,icon:'comms',lines:['COMMS','ONLINE'],fontSize:13}
-];
-function paintStatusIntoMap(ctx,cfg){
- // Repaint only the measured glass face inside the original screen.
- // The surrounding metal housing remains the untouched approved Engine Map.
- ctx.save();
- roundRectPath(ctx,cfg.x,cfg.y,cfg.w,cfg.h,5);
- ctx.clip();
- const glass=ctx.createLinearGradient(0,cfg.y,0,cfg.y+cfg.h);
- glass.addColorStop(0,'rgba(2,65,43,.97)');
- glass.addColorStop(.5,'rgba(2,43,31,.97)');
- glass.addColorStop(1,'rgba(1,25,20,.98)');
- ctx.fillStyle=glass;
- ctx.fillRect(cfg.x,cfg.y,cfg.w,cfg.h);
- ctx.strokeStyle='rgba(105,255,174,.92)';
- ctx.lineWidth=2;
- roundRectPath(ctx,cfg.x+1,cfg.y+1,cfg.w-2,cfg.h-2,5);
- ctx.stroke();
- ctx.strokeStyle='rgba(160,255,215,.10)';
- ctx.lineWidth=1;
- for(let y=cfg.y+5;y<cfg.y+cfg.h-3;y+=7){
-   ctx.beginPath();ctx.moveTo(cfg.x+3,y);ctx.lineTo(cfg.x+cfg.w-3,y);ctx.stroke();
- }
- ctx.restore();
-
- const cx=cfg.x+cfg.w/2;
- drawStatusIcon(ctx,cfg.icon,cx,cfg.y+22,1);
-
- ctx.save();
- ctx.textAlign='center';
- ctx.textBaseline='middle';
- ctx.fillStyle='#effff7';
- ctx.shadowColor='rgba(96,255,175,.65)';
- ctx.shadowBlur=3;
- ctx.font='900 '+cfg.fontSize+'px Arial, sans-serif';
- const startY=cfg.y+55;
- cfg.lines.forEach(function(line,i){ctx.fillText(line,cx,startY+i*(cfg.fontSize+3));});
- ctx.fillStyle='#66ff9f';
- ctx.shadowBlur=4;
- const barY=cfg.y+cfg.h-14;
- const total=4, span=Math.min(cfg.w-20,total*15), bx=cx-span/2;
- for(let i=0;i<total;i++){
-   const x=bx+i*15;
-   ctx.beginPath();
-   ctx.moveTo(x,barY);ctx.lineTo(x+11,barY);ctx.lineTo(x+5,barY+8);ctx.lineTo(x-6,barY+8);
-   ctx.closePath();ctx.fill();
- }
- ctx.restore();
-}
-function paintEngineMap(){
- const base=document.getElementById('engineMapBase');
- const canvas=document.getElementById('engineMapCanvas');
- if(!base||!canvas||!base.complete||!base.naturalWidth)return;
- const ctx=canvas.getContext('2d',{willReadFrequently:true});
- ctx.clearRect(0,0,1448,1086);
- ctx.drawImage(base,0,0,1448,1086);
- for(let i=0;i<state.completed && i<STATUS_SCREENS.length;i++){
-   paintStatusIntoMap(ctx,STATUS_SCREENS[i]);
- }
-}
 function loadEngineAssets(){
- const base=document.getElementById('engineMapBase');
- base.addEventListener('load',paintEngineMap,{once:true});
- loadB64Image(base,'./assets/starfall-engine-map.b64');
+ loadB64Image(document.getElementById('engineMapBase'),'./assets/starfall-engine-map.b64');
 }
 function renderEngine(){
  document.querySelectorAll('.damage-fx[data-fx]').forEach(function(el){
@@ -735,7 +610,6 @@ function renderEngine(){
  document.querySelectorAll('.engine-scene-art .status-screen[data-status-system]').forEach(function(el){
    el.classList.remove('visible');
  });
- paintEngineMap();
  const remaining=Math.max(0,5-state.completed);
  document.getElementById('shipStatus').textContent=remaining===0?'ALL SYSTEMS ONLINE':remaining+' SYSTEM'+(remaining===1?'':'S')+' OFFLINE';
  document.getElementById('engineProgressText').textContent=state.completed+' / 5 RESTORED';
