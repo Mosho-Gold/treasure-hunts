@@ -23,7 +23,7 @@ function json(req: Request, body: unknown, status = 200) {
 }
 
 function normalizeCode(value: unknown) {
-  return String(value || '').toUpperCase().replace(/[^A-Z0-9]/g, '')
+  return String(value || '').replace(/\D/g, '')
 }
 
 function cleanDeviceId(value: unknown) {
@@ -89,7 +89,7 @@ Deno.serve(async (req) => {
 
   // New activation: verify purchase code without ever storing its plaintext value.
   const code = normalizeCode(body?.code)
-  if (code.length < 8) return json(req, { ok: false, error: 'INVALID_CODE' }, 400)
+  if (!/^\d{6}$/.test(code)) return json(req, { ok: false, error: 'INVALID_CODE' }, 400)
 
   const codeHash = await sha256(code)
   const { data: access, error: accessError } = await db
