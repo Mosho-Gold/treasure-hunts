@@ -93,7 +93,7 @@ Deno.serve(async (req) => {
 
     const shopResponse = await fetch(
       'https://api.etsy.com/v3/application/users/'+encodeURIComponent(userId)+'/shops',
-      { headers: { 'x-api-key': keystring+':'+sharedSecret } }
+      { headers: { 'x-api-key': keystring+':'+sharedSecret, 'Authorization': 'Bearer '+accessToken } }
     )
 
     if (!shopResponse.ok) {
@@ -152,7 +152,7 @@ Deno.serve(async (req) => {
   const auth = new URL('https://www.etsy.com/oauth/connect')
   auth.searchParams.set('response_type','code')
   auth.searchParams.set('redirect_uri',REDIRECT_URI)
-  auth.searchParams.set('scope','transactions_r')
+  auth.searchParams.set('scope','transactions_r shops_r')
   auth.searchParams.set('client_id',keystring)
   auth.searchParams.set('state',state)
   auth.searchParams.set('code_challenge',challenge)
