@@ -642,21 +642,21 @@ button:not(:disabled):not(.locked):active{
         <div class="sheet-panel-title">NOVA BRIEFING</div>
         <div class="nova-sheet-body">
           <div class="mission-nova-frame"><img class="mission-nova-img" alt="NOVA hologram"></div>
-          <div class="nova-speech">Crew, Navigation is online — but our fuel reserves are critically low. We cannot continue until the emergency tank is refilled. Work together and recover enough fuel to reveal the tank's hidden safety code.</div>
+          <div class="nova-speech">Crew, we are running low on fuel! We need to activate the Emergency Fuel Supply, transfer the fuel to the reserve container, fill the container, and collect the Fuel Chip. Work together, keep the line steady, and move the fuel quickly!</div>
         </div>
       </div>
       <div class="sheet-panel">
         <div class="sheet-panel-title">MISSION RULES</div>
         <div class="rules-body">
-          <div class="rule-row"><div class="rule-num">1</div><div class="rule-text">Form a crew line from the Emergency Fuel Supply to the reserve container.</div></div>
-          <div class="rule-row"><div class="rule-num">2</div><div class="rule-text">Pass the fuel down the line so every crew member takes part.</div></div>
-          <div class="rule-row"><div class="rule-num">3</div><div class="rule-text">Pour the fuel into the reserve container and repeat until it is full.</div></div>
-          <div class="rule-row"><div class="rule-num">4</div><div class="rule-text">Take the Fuel Chip and enter its four-digit Fuel Safety Code below.</div></div>
+          <div class="rule-row"><div class="rule-num">1</div><div class="rule-text">Activate the Emergency Fuel Supply.</div></div>
+          <div class="rule-row"><div class="rule-num">2</div><div class="rule-text">Pass the fuel along your crew line.</div></div>
+          <div class="rule-row"><div class="rule-num">3</div><div class="rule-text">Fill the reserve container.</div></div>
+          <div class="rule-row"><div class="rule-num">4</div><div class="rule-text">Take the Fuel Chip.</div></div>
         </div>
       </div>
       <div class="success-panel">
         <div class="sheet-panel-title">MISSION SUCCESS</div>
-        <div class="success-body">Read the four-digit Fuel Safety Code on the Fuel Chip and enter it below. Mission 5 remains locked until the code is verified.</div>
+        <div class="success-body">With the Fuel Chip secured, the ship has a fuel reserve and can continue the mission!</div>
       </div>
       <div class="answer-panel" id="fuelInputPanel">
         <div class="input-panel">
@@ -982,15 +982,14 @@ function missionBriefData(id){
    success:'When the route is verified, the Navigation Array will come online. Stay alert — the ship may still detect another problem before Communications can be accessed.'
  };
  return {
-   briefing:'Crew, the Communications Array is still offline. The crash damaged the Decoder Array and scrambled the signal. Recover the Signal Chips and rebuild the decoder so we can restore the transmission link and contact home.',
+   briefing:'Crew, the Communications Array is still offline. The crash damaged the orbital decoder and scattered the Signal Chips. Recover the Signal Chips, rebuild the Decoder, and decipher the messages to find the communication channel. The Decoder may reveal more than one message. Follow each message carefully until you discover the communication channel.',
    rules:[
     'Recover the Signal Chips.',
-    'Match the edge markers and rebuild all seven positions in the Decoder.',
-    'Starting at START, read the blue letters clockwise.',
-    'Follow the recovered instruction and determine the communication channel.',
-    'Enter the four-letter communication channel in the Mission Terminal.'
+    'Rebuild the Decoder ring.',
+    'Decipher the messages in the Decoder.',
+    'Input the channel name in the Mission Terminal.'
    ],
-   success:'When the correct communication channel is entered, NOVA can establish contact with home. The Communications Array will come online after the transmission is received.'
+   success:'When the correct channel is entered, the Communications Array comes back online.'
  };
 }
 function briefHTML(id){
