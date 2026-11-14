@@ -572,11 +572,11 @@ button:not(:disabled):not(.locked):active{
   <div class="modal-card access-card">
     <div class="launcher-kicker">PROJECT: STARFALL</div>
     <div class="access-title">CREW ACCESS</div>
-    <p class="access-copy">Enter the access code included with your STARFALL game to activate this device.</p>
-    <input id="accessCodeInput" class="access-input" autocomplete="off" autocapitalize="characters" spellcheck="false" inputmode="numeric" maxlength="6" placeholder="000000" aria-label="STARFALL 6-digit access code">
-    <div id="accessMessage" class="access-message">AWAITING ACCESS CODE</div>
-    <button class="primary" id="accessActivate" style="width:100%;margin-top:5px">ACTIVATE STARFALL</button>
-    <div class="access-help">One purchase code can be activated on a limited number of devices. Reopening STARFALL on an activated device does not use another activation.</div>
+    <p class="access-copy" id="accessCopy">Enter your Etsy order number to verify your STARFALL purchase and activate this device.</p>
+    <input id="accessCodeInput" class="access-input" autocomplete="off" spellcheck="false" inputmode="numeric" maxlength="20" placeholder="Etsy order number" aria-label="Etsy order number">
+    <div id="accessMessage" class="access-message">AWAITING ETSY ORDER NUMBER</div>
+    <button class="primary" id="accessActivate" style="width:100%;margin-top:5px">VERIFY PURCHASE</button>
+    <div class="access-help" id="accessHelp">Each paid STARFALL Etsy order can activate up to 3 devices. Reopening STARFALL on an activated device does not use another activation.</div>
   </div>
 </div>
 
@@ -732,7 +732,10 @@ const COMMS_CHANNEL='EDEN';
 const GAME_MASTER_PIN='1801';
 // Set to the deployed Supabase Edge Function URL to enable customer purchase-code validation.
 // While blank, the live app stays in owner/testing mode and opens the launcher directly.
-const ACCESS_API_URL='https://txqomkghtxfhwvvhjpbo.supabase.co/functions/v1/starfall-access';
+const ACCESS_API_URL='https://txqomkghtxfhwvvhjpbo.supabase.co/functions/v1/starfall-etsy-verify';
+const OWNER_ACCESS_API_URL='https://txqomkghtxfhwvvhjpbo.supabase.co/functions/v1/starfall-access';
+const OWNER_ACCESS_MODE=new URLSearchParams(window.location.search).get('owner')==='1';
+const ACTIVE_ACCESS_API_URL=OWNER_ACCESS_MODE?OWNER_ACCESS_API_URL:ACCESS_API_URL;
 const missions=[
  {id:1,title:'POWER CORE',desc:'Cross the laser field and verify the replacement core'},
  {id:2,title:'POWER ROUTING',desc:'Solve the routing logic and restore power flow'},
@@ -778,7 +781,7 @@ function setAccessMessage(text,kind){
  el.className='access-message'+(kind?' '+kind:'');
 }
 async function callAccessApi(payload){
- const r=await fetch(ACCESS_API_URL,{
+ const r=await fetch(ACTIVE_ACCESS_API_URL,{
    method:'POST',
    headers:{'Content-Type':'application/json'},
    body:JSON.stringify(payload)
@@ -791,20 +794,49 @@ function showAccessGate(message){
  document.getElementById('accessModal').classList.add('show');
  document.getElementById('launcherModal').classList.remove('show');
  const input=document.getElementById('accessCodeInput');
+ const copy=document.getElementById('accessCopy');
+ const help=document.getElementById('accessHelp');
+ const button=document.getElementById('accessActivate');
  input.value='';
- setAccessMessage(message||'AWAITING ACCESS CODE','');
+ if(OWNER_ACCESS_MODE){
+   copy.textContent='Owner/test access: enter your 6-digit STARFALL access code.';
+   input.maxLength=6;
+   input.placeholder='000000';
+   input.setAttribute('aria-label','STARFALL owner/test access code');
+   help.textContent='Owner/test mode only. Public customers verify with their Etsy order number.';
+   button.textContent='ACTIVATE STARFALL';
+   setAccessMessage(message||'AWAITING OWNER ACCESS CODE','');
+ }else{
+   copy.textContent='Enter your Etsy order number to verify your STARFALL purchase and activate this device.';
+   input.maxLength=20;
+   input.placeholder='Etsy order number';
+   input.setAttribute('aria-label','Etsy order number');
+   help.textContent='Each paid STARFALL Etsy order can activate up to 3 devices. Reopening STARFALL on an activated device does not use another activation.';
+   button.textContent='VERIFY PURCHASE';
+   setAccessMessage(message||'AWAITING ETSY ORDER NUMBER','');
+ }
  setTimeout(function(){input.focus()},80);
 }
 async function bootstrapClient(){
- if(!ACCESS_API_URL){showLauncher();return}
+ if(!ACTIVE_ACCESS_API_URL){showLauncher();return}
+ const mode=OWNER_ACCESS_MODE?'owner':'etsy';
+ const savedMode=localStorage.getItem('starfallAccessMode');
+ if(savedMode && savedMode!==mode){
+   localStorage.removeItem('starfallAccessToken');
+ }
  const token=localStorage.getItem('starfallAccessToken');
  if(!token){showAccessGate();return}
  setAccessMessage('VERIFYING DEVICE...','');
  try{
    const result=await callAccessApi({deviceId:getClientDeviceId(),activationToken:token});
-   if(result.ok && result.data && result.data.authorized){showLauncher();return}
+   if(result.ok && result.data && result.data.authorized){
+     localStorage.setItem('starfallAccessMode',mode);
+     showLauncher();
+     return;
+   }
  }catch(e){}
  localStorage.removeItem('starfallAccessToken');
+ localStorage.removeItem('starfallAccessMode');
  showAccessGate('ACCESS NEEDS TO BE REACTIVATED');
 }
 function requestGameMasterAccess(){
@@ -1206,15 +1238,23 @@ document.getElementById('ackHomeTransmission').onclick=function(){
 };
 document.getElementById('accessActivate').onclick=async function(){
  const button=this;
- const code=(document.getElementById('accessCodeInput').value||'').trim();
- if(!/^\d{6}$/.test(code)){setAccessMessage('ENTER YOUR 6-DIGIT ACCESS CODE','bad');return}
+ const value=(document.getElementById('accessCodeInput').value||'').replace(/\D/g,'');
+ let payload;
+ if(OWNER_ACCESS_MODE){
+   if(!/^\d{6}$/.test(value)){setAccessMessage('ENTER YOUR 6-DIGIT OWNER ACCESS CODE','bad');return}
+   payload={deviceId:getClientDeviceId(),code:value};
+ }else{
+   if(!/^\d{6,20}$/.test(value)){setAccessMessage('ENTER YOUR ETSY ORDER NUMBER','bad');return}
+   payload={deviceId:getClientDeviceId(),orderNumber:value};
+ }
  button.disabled=true;
- setAccessMessage('VERIFYING ACCESS...','');
+ setAccessMessage(OWNER_ACCESS_MODE?'VERIFYING ACCESS...':'VERIFYING ETSY PURCHASE...','');
  try{
-   const result=await callAccessApi({deviceId:getClientDeviceId(),code:code});
+   const result=await callAccessApi(payload);
    if(result.ok && result.data && result.data.authorized && result.data.activationToken){
      localStorage.setItem('starfallAccessToken',result.data.activationToken);
-     setAccessMessage('ACCESS CONFIRMED','good');
+     localStorage.setItem('starfallAccessMode',OWNER_ACCESS_MODE?'owner':'etsy');
+     setAccessMessage(OWNER_ACCESS_MODE?'ACCESS CONFIRMED':'PURCHASE VERIFIED','good');
      setTimeout(function(){
        document.getElementById('accessModal').classList.remove('show');
        showLauncher();
@@ -1222,8 +1262,14 @@ document.getElementById('accessActivate').onclick=async function(){
    }else{
      const error=result.data&&result.data.error;
      if(error==='DEVICE_LIMIT_REACHED')setAccessMessage('DEVICE LIMIT REACHED • CONTACT THE SELLER','bad');
+     else if(error==='ORDER_NOT_FOUND')setAccessMessage('ETSY ORDER NOT FOUND','bad');
+     else if(error==='ORDER_NOT_PAID')setAccessMessage('ETSY ORDER IS NOT YET PAID','bad');
+     else if(error==='ORDER_CANCELED')setAccessMessage('THIS ETSY ORDER WAS CANCELED','bad');
+     else if(error==='STARFALL_NOT_IN_ORDER')setAccessMessage('THIS ORDER DOES NOT INCLUDE STARFALL','bad');
+     else if(error==='STARFALL_LISTING_NOT_CONFIGURED')setAccessMessage('STARFALL PURCHASE VERIFICATION IS NOT YET CONFIGURED','bad');
+     else if(error==='ETSY_NOT_CONNECTED' || error==='ETSY_LOOKUP_FAILED')setAccessMessage('ETSY VERIFICATION IS TEMPORARILY UNAVAILABLE','bad');
      else if(error==='CODE_EXPIRED')setAccessMessage('THIS ACCESS CODE HAS EXPIRED','bad');
-     else setAccessMessage('ACCESS CODE NOT RECOGNIZED','bad');
+     else setAccessMessage(OWNER_ACCESS_MODE?'ACCESS CODE NOT RECOGNIZED':'ORDER COULD NOT BE VERIFIED','bad');
    }
  }catch(e){
    setAccessMessage('CONNECTION ERROR • CHECK INTERNET AND TRY AGAIN','bad');
