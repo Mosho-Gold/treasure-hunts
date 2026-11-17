@@ -150,7 +150,7 @@ Deno.serve(async (req) => {
     return json(req, { ok: false, error: status === 'canceled' ? 'ORDER_CANCELED' : 'ORDER_NOT_PAID' }, 403)
   }
 
-  const starfallListingId = String(etsyConfig.starfall_listing_id || '')
+  const starfallListingId = String(Deno.env.get('STARFALL_LISTING_ID') || etsyConfig.starfall_listing_id || '')
   if (!starfallListingId) return json(req, { ok: false, error: 'STARFALL_LISTING_NOT_CONFIGURED' }, 503)
 
   const transactions = Array.isArray(receipt.transactions) ? receipt.transactions : []
