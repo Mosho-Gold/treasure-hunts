@@ -6,3 +6,6 @@ verify_jwt = false
 
 [functions.starfall-etsy-oauth]
 verify_jwt = false
+
+[functions.foggy-etsy-verify]
+verify_jwt = false
