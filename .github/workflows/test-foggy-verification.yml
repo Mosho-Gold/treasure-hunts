@@ -1,0 +1,19 @@
+name: Test Foggy verification (mock Etsy receipts)
+on:
+  pull_request:
+    paths:
+      - 'supabase/functions/foggy-etsy-verify/**'
+      - '.github/workflows/test-foggy-verification.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mock-etsy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Verify order authorization rules with mocked receipts
+        run: deno test --allow-none supabase/functions/foggy-etsy-verify/receipt_rules_test.ts
