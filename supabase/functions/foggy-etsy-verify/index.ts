@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@^2.95.0'
+import { evaluateFoggyReceipt } from './receipt_rules.ts'
 
 const ALLOWED_ORIGIN = 'https://mosho-gold.github.io'
 
@@ -200,19 +201,14 @@ Deno.serve(async (req) => {
   try { receipt = await fetchEtsyReceipt(receiptId, String(etsyConfig.shop_id), String(etsyConfig.refresh_token)) }
   catch (e) { console.error(e); return json(req, { ok: false, error: 'ETSY_LOOKUP_FAILED' }, 502) }
 
-  if (!receipt) return json(req, { ok: false, error: 'ORDER_NOT_FOUND' }, 404)
-
-  const status = String(receipt.status || '').toLowerCase()
-  if (!['paid','completed'].includes(status)) {
-    return json(req, { ok: false, error: status === 'canceled' ? 'ORDER_CANCELED' : 'ORDER_NOT_PAID' }, 403)
-  }
-
   const foggyListingId = String(Deno.env.get('FOGGY_LISTING_ID') || '')
-  if (!foggyListingId) return json(req, { ok: false, error: 'FOGGY_LISTING_NOT_CONFIGURED' }, 503)
-
-  const transactions = Array.isArray(receipt.transactions) ? receipt.transactions : []
-  const ownsFoggy = transactions.some((t: any) => String(t?.listing_id || '') === foggyListingId)
-  if (!ownsFoggy) return json(req, { ok: false, error: 'FOGGY_NOT_IN_ORDER' }, 403)
+  const verdict = evaluateFoggyReceipt(receipt, foggyListingId)
+  if (!verdict.ok) {
+    const status = verdict.error === 'ORDER_NOT_FOUND' ? 404 :
+      verdict.error === 'FOGGY_LISTING_NOT_CONFIGURED' ? 503 : 403
+    return json(req, { ok: false, error: verdict.error }, status)
+  }
+  const status = verdict.status!
 
   const now = new Date().toISOString()
   const { error: orderError } = await db.from('foggy_etsy_orders').upsert({
