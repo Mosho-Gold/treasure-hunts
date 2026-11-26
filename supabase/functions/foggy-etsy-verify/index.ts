@@ -96,6 +96,56 @@ async function fetchEtsyReceipt(receiptId: string, shopId: string, refreshToken:
   return receipt
 }
 
+
+// Owner-only verification is disabled unless explicitly configured.
+// Use a high-entropy test code, stored only as a SHA-256 digest in Supabase secrets.
+// Test access never creates or impersonates a paid Etsy order.
+function safeHexEqual(a: string, b: string) {
+  if (!/^[0-9a-f]{64}$/.test(a) || !/^[0-9a-f]{64}$/.test(b)) return false
+  let different = 0
+  for (let i = 0; i < 64; i++) different |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  return different === 0
+}
+
+async function verifyOwnerTestCode(req: Request, db: ReturnType<typeof adminClient>, deviceId: string, code: unknown) {
+  // Separate test credentials from customer receipts; no public master code in HTML.
+  if (Deno.env.get('FOGGY_TEST_MODE') !== 'enabled') return json(req, { ok: false, error: 'TEST_ACCESS_DISABLED' }, 403)
+  const expectedHash = (Deno.env.get('FOGGY_TEST_CODE_SHA256') || '').toLowerCase()
+  const proposed = typeof code === 'string' ? code : ''
+  if (proposed.length < 24 || proposed.length > 128 || !/^[a-zA-Z0-9_-]+$/.test(proposed)) {
+    return json(req, { ok: false, error: 'INVALID_TEST_CODE' }, 401)
+  }
+  if (!safeHexEqual(await sha256(proposed), expectedHash)) {
+    return json(req, { ok: false, error: 'INVALID_TEST_CODE' }, 401)
+  }
+  const activationToken = randomToken()
+  const expiresAt = new Date(Date.now() + 7 * 86400000).toISOString()
+  const { error } = await db.from('foggy_test_devices').upsert({
+    device_id: deviceId,
+    activation_token_hash: await sha256(activationToken),
+    expires_at: expiresAt,
+    last_seen_at: new Date().toISOString(),
+  }, { onConflict: 'device_id' })
+  if (error) {
+    console.error('Foggy test activation failed', error.message)
+    return json(req, { ok: false, error: 'SERVER_ERROR' }, 500)
+  }
+  return json(req, { ok: true, authorized: true, testMode: true, expiresAt, activationToken })
+}
+
+async function checkOwnerTestToken(db: ReturnType<typeof adminClient>, tokenHash: string, deviceId: string) {
+  if (Deno.env.get('FOGGY_TEST_MODE') !== 'enabled') return false
+  const { data, error } = await db.from('foggy_test_devices')
+    .select('device_id,expires_at,revoked')
+    .eq('activation_token_hash', tokenHash)
+    .eq('device_id', deviceId)
+    .maybeSingle()
+  if (error || !data || data.revoked || Date.parse(data.expires_at) <= Date.now()) return false
+  await db.from('foggy_test_devices').update({ last_seen_at: new Date().toISOString() })
+    .eq('device_id', deviceId)
+  return true
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders(req) })
   if (req.method !== 'POST') return json(req, { ok: false, error: 'METHOD_NOT_ALLOWED' }, 405)
@@ -108,8 +158,15 @@ Deno.serve(async (req) => {
 
   const db = adminClient()
 
+  if (body?.testCode !== undefined) {
+    return verifyOwnerTestCode(req, db, deviceId, body.testCode)
+  }
+
   if (body?.activationToken) {
     const tokenHash = await sha256(String(body.activationToken))
+    if (await checkOwnerTestToken(db, tokenHash, deviceId)) {
+      return json(req, { ok: true, authorized: true, testMode: true })
+    }
     const { data, error } = await db
       .from('foggy_etsy_devices')
       .select('id,device_id,receipt_id,foggy_etsy_orders!inner(order_status)')
